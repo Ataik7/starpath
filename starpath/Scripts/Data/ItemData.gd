@@ -12,5 +12,5 @@ enum ItemType { CONSUMABLE, WEAPON, ARMOR }
 @export var price:          int    = 10
 @export var attack_bonus:   int    = 0
 @export var defense_bonus:  int    = 0
-## "todo" | "guerrero" | "mago" | "objeto"
+# "todo" | "guerrero" | "mago" | "objeto"
 @export var shop_category:  String = "todo"

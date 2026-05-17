@@ -1,4 +1,4 @@
-﻿extends Node2D
+extends Node2D
 class_name NPC
 
 @export var speaker_name : String        = "Aldeano"
@@ -18,7 +18,7 @@ class_name NPC
 var _player   : PlayerController = null
 var _in_range : bool             = false
 
-# ── Menú de opciones ─────────────────────────────────────────────────────────
+# Menú de opciones
 var _menu_layer : CanvasLayer = null
 var _menu_open  : bool        = false
 
@@ -127,7 +127,7 @@ func _make_separator() -> HSeparator:
 	sep.add_theme_stylebox_override("separator", st)
 	return sep
 
-# ── Detección del jugador ─────────────────────────────────────────────────────
+# Detección del jugador
 func _on_body_entered(body: Node2D) -> void:
 	if body is not PlayerController:
 		return
@@ -154,7 +154,7 @@ func _on_body_exited(body: Node2D) -> void:
 	if _menu_open:
 		_close_menu()
 
-# ── Interacción ───────────────────────────────────────────────────────────────
+# Interacción
 func _on_interact() -> void:
 	if not _in_range or _menu_open:
 		return
@@ -180,7 +180,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			_close_menu()
 
-# ── Opciones del menú ─────────────────────────────────────────────────────────
+# Opciones del menú
 func _on_hablar() -> void:
 	_close_menu()
 	DialogManager.start_dialog(dialog_lines, speaker_name)
@@ -200,7 +200,7 @@ func _on_closed() -> void:
 	if _in_range:
 		_hint.show()
 
-# ── Catálogo por defecto ──────────────────────────────────────────────────────
+# Catálogo por defecto
 func _fill_default_catalog() -> void:
 	var sword             := ItemData.new()
 	sword.item_name        = "Espada de Hierro"

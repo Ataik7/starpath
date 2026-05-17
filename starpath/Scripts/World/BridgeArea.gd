@@ -1,7 +1,7 @@
-## BridgeArea.gd
-## Area2D que cubre el puente.
-## Al entrar el jugador retira la capa 2 de su máscara (ignora el agua).
-## Al salir la restaura.
+# BridgeArea.gd
+# Area2D que cubre el puente.
+# Al entrar el jugador retira la capa 2 de su máscara (ignora el agua).
+# Al salir la restaura.
 
 extends Area2D
 

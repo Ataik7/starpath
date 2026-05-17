@@ -1,7 +1,7 @@
 class_name BattleManager
 extends Node
 
-# ── Máquina de Estados ─────────────────────────────────────────────────────
+# Máquina de Estados
 enum BattleState { STARTING, NEXT_TURN, PLAYER_INPUT, SELECTING_TARGET, ENEMY_TURN, WON, LOST }
 var current_state: BattleState = BattleState.STARTING
 
@@ -9,15 +9,15 @@ var _pending_attacker: BaseEntity = null
 var _pending_skill: SkillData     = null
 var _pending_item: ItemData       = null
 
-# ── Recompensas de victoria (se leen desde BattleScene) ───────────────────
+# Recompensas de victoria (se leen desde BattleScene)
 var victory_xp:    int   = 0
 var victory_gold:  int   = 0
 var victory_items: Array = []   # Array[Dictionary] {name, effect, amount}
 
-# ── Referencias a los componentes de Lógica ────────────────────────────────
+# Referencias a los componentes de Lógica
 @export var turn_queue: TurnQueue
 
-# ── Señales para que la Interfaz Gráfica escuche ───────────────────────────
+# Señales para que la Interfaz Gráfica escuche
 signal text_log_updated(message: String)
 signal action_menu_toggled(show: bool)
 signal battle_ended(player_won: bool)
@@ -31,7 +31,7 @@ func _ready() -> void:
 		push_error("BattleManager: No se ha asignado un TurnQueue.")
 		return
 
-# ── BUCLE PRINCIPAL DEL COMBATE ────────────────────────────────────────────
+# BUCLE PRINCIPAL DEL COMBATE
 
 func start_battle(heroes: Array[BaseEntity], enemies: Array[BaseEntity]) -> void:
 	current_state = BattleState.STARTING
@@ -228,7 +228,7 @@ func player_target_cancelled() -> void:
 	ally_target_selection_needed.emit(_empty)
 	action_menu_toggled.emit(true)
 
-# ── COMPROBACIÓN DE VICTORIA/DERROTA ───────────────────────────────────────
+# COMPROBACIÓN DE VICTORIA/DERROTA
 
 func _check_battle_end() -> bool:
 	var heroes_alive = false
@@ -247,7 +247,7 @@ func _check_battle_end() -> bool:
 		battle_ended.emit(false) # false = el jugador no ganó
 		return true
 	elif not enemies_alive:
-		# ── Calcular recompensas (sin aplicarlas; BattleScene las anima) ──
+		# Calcular recompensas (sin aplicarlas; BattleScene las anima)
 		victory_xp    = 0
 		victory_gold  = 0
 		victory_items = []
@@ -266,7 +266,7 @@ func _check_battle_end() -> bool:
 		
 	return false # Si ambos equipos tienen vivos, el combate sigue
 
-# ── FUNCIONES AUXILIARES (HELPERS) ─────────────────────────────────────────
+# FUNCIONES AUXILIARES (HELPERS)
 
 func _log(message: String) -> void:
 	print(message)

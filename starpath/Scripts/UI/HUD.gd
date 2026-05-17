@@ -23,7 +23,7 @@ func _ready() -> void:
 	# El HUD de mundo fue reemplazado por el panel de grupo en el menú de pausa.
 	visible = false
 
-# ── Construcción ──────────────────────────────────────────────────────────────
+# Construcción
 
 func _build_hud() -> void:
 	var root := Control.new()
@@ -65,7 +65,7 @@ func _build_hud() -> void:
 	vbox.add_theme_constant_override("separation", 8)
 	margin.add_child(vbox)
 
-	# ── Nombre del personaje ──────────────────────────────────────────────
+	# Nombre del personaje
 	var name_lbl := Label.new()
 	name_lbl.text = "✦  LYRA"
 	name_lbl.add_theme_font_size_override("font_size", 12)
@@ -77,10 +77,10 @@ func _build_hud() -> void:
 		name_lbl.add_theme_font_override("font", _font)
 	vbox.add_child(name_lbl)
 
-	# ── Barra HP ──────────────────────────────────────────────────────────
+	# Barra HP
 	vbox.add_child(_build_bar_row("HP", C_HP, C_HP_BG, true))
 
-	# ── Barra MP ──────────────────────────────────────────────────────────
+	# Barra MP
 	vbox.add_child(_build_bar_row("MP", C_MP, C_MP_BG, false))
 
 
@@ -138,7 +138,7 @@ func _build_bar_row(tag: String, bar_color: Color, bg_color: Color, is_hp: bool)
 
 	return col
 
-# ── Refresco de datos ─────────────────────────────────────────────────────────
+# Refresco de datos
 
 func _refresh() -> void:
 	if _stats == null:

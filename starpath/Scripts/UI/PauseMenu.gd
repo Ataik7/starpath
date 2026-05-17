@@ -6,7 +6,7 @@ const HERO_PATHS: Array[String] = [
 ]
 var _equip_hero_index: int = 0
 
-## Compañeros conocidos (mismo orden que party_members puede registrarlos)
+# Compañeros conocidos (mismo orden que party_members puede registrarlos)
 const ALL_COMPANIONS: Array = [
 	{"id": "athelios",         "stats": "res://Resources/Characters/Athelios.tres"},
 	{"id": "byran",            "stats": "res://Resources/Characters/Byran.tres"},
@@ -34,9 +34,9 @@ const C_MP        := Color(0.35, 0.60, 1.00, 1.00)   # azul maná
 const MAIN_MENU_SCENE := "res://Scenes/UI/menu_inicio.tscn"
 
 const PORTRAIT_TEX: Dictionary = {
-	"lyra":     "res://Assets/Characters/Lyra.png",
-	"athelios": "res://Assets/Characters/Athelios.png",
-	"byran":    "res://Assets/Characters/Byran.png",
+	"lyra":     "res://Assets/Characters/Heroes/Lyra.png",
+	"athelios": "res://Assets/Characters/Heroes/Athelios.png",
+	"byran":    "res://Assets/Characters/Heroes/Byran.png",
 }
 const PORTRAIT_COLOR: Dictionary = {
 	"lyra":     Color(0.38, 0.20, 0.58),
@@ -91,7 +91,7 @@ func _ready() -> void:
 	_play_start_unix = Time.get_unix_time_from_system()
 	_build_ui()
 
-# ── Abrir / Cerrar / Toggle ────────────────────────────────────────────────────
+# Abrir / Cerrar / Toggle
 
 func toggle() -> void:
 	if visible:
@@ -147,7 +147,7 @@ func _unhandled_input(event: InputEvent) -> void:
 				close()
 			get_viewport().set_input_as_handled()
 
-# ── Construcción de la UI ──────────────────────────────────────────────────────
+# Construcción de la UI
 
 func _build_ui() -> void:
 	# Fondo semitransparente
@@ -174,7 +174,7 @@ func _build_ui() -> void:
 	add_child(_keyboard_panel)
 	add_child(_confirm_panel)
 
-# ── Panel principal ────────────────────────────────────────────────────────────
+# Panel principal
 
 func _build_main_panel() -> Control:
 	# Raíz a pantalla completa
@@ -187,7 +187,7 @@ func _build_main_panel() -> Control:
 	hbox.add_theme_constant_override("separation", 0)
 	root.add_child(hbox)
 
-	# ── Panel izquierdo: personajes (~68 % ancho) ─────────────────────────
+	# Panel izquierdo: personajes (~68 % ancho)
 	var left_panel := PanelContainer.new()
 	left_panel.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	left_panel.size_flags_stretch_ratio = 2.2
@@ -223,7 +223,7 @@ func _build_main_panel() -> Control:
 		gold_lbl.add_theme_font_override("font", _font)
 	left_vbox.add_child(gold_lbl)
 
-	# ── Panel derecho: botones (~32 % ancho) ─────────────────────────────
+	# Panel derecho: botones (~32 % ancho)
 	var right_panel := PanelContainer.new()
 	right_panel.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	right_panel.size_flags_stretch_ratio = 1.0
@@ -311,7 +311,7 @@ func _build_main_panel() -> Control:
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right_vbox.add_child(spacer)
 
-	# ── Panel TIEMPO & ORO (abajo derecha, estilo FF9) ────────────────────
+	# Panel TIEMPO & ORO (abajo derecha, estilo FF9)
 	var tgo_panel := PanelContainer.new()
 	var tgo_style := StyleBoxFlat.new()
 	tgo_style.bg_color    = Color(0.05, 0.04, 0.09, 0.98)
@@ -378,7 +378,7 @@ func _build_main_panel() -> Control:
 
 	return root
 
-# ── Panel de objetos (pantalla completa) ──────────────────────────────────────
+# Panel de objetos (pantalla completa)
 
 func _build_items_panel() -> Control:
 	var root := Control.new()
@@ -391,7 +391,7 @@ func _build_items_panel() -> Control:
 	hbox.add_theme_constant_override("separation", 0)
 	root.add_child(hbox)
 
-	# ── Panel izquierdo: título + volver ─────────────────────────────────────
+	# Panel izquierdo: título + volver
 	var lp := PanelContainer.new()
 	lp.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	lp.size_flags_stretch_ratio = 0.55
@@ -436,7 +436,7 @@ func _build_items_panel() -> Control:
 	btn_back.pressed.connect(_show_main)
 	lv.add_child(btn_back)
 
-	# ── Panel derecho: lista de objetos ──────────────────────────────────────
+	# Panel derecho: lista de objetos
 	var rp := PanelContainer.new()
 	rp.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	rp.size_flags_stretch_ratio = 1.45
@@ -470,7 +470,7 @@ func _build_items_panel() -> Control:
 
 	return root
 
-# ── Navegación ────────────────────────────────────────────────────────────────
+# Navegación
 
 func _show_main() -> void:
 	_rebinding_action       = ""
@@ -537,7 +537,7 @@ func _show_keyboard() -> void:
 	_keyboard_panel.visible = true
 	_refresh_keyboard_panel()
 
-# ── Refresco de datos ─────────────────────────────────────────────────────────
+# Refresco de datos
 
 func _refresh_stats() -> void:
 	if _party_list == null:
@@ -546,7 +546,7 @@ func _refresh_stats() -> void:
 	for child in _party_list.get_children():
 		child.queue_free()
 
-	# ── Lyra ──────────────────────────────────────────────────────────────
+	# Lyra
 	var hero_stats: CharacterStats = load(HERO_PATHS[0])
 	if hero_stats:
 		_add_ff9_party_row(
@@ -557,7 +557,7 @@ func _refresh_stats() -> void:
 			Inventory.current_mp, Inventory.get_max_mp()
 		)
 
-	# ── Compañeros ────────────────────────────────────────────────────────
+	# Compañeros
 	for comp: Dictionary in ALL_COMPANIONS:
 		var id    : String         = comp["id"]
 		var spath : String         = comp["stats"]
@@ -578,12 +578,12 @@ func _refresh_stats() -> void:
 		else:
 			_add_empty_party_slot(_party_list)
 
-	# ── Oro (barra inferior izquierda) ───────────────────────────────────
+	# Oro (barra inferior izquierda)
 	var gold_lbl := _main_panel.find_child("GoldLbl", true, false) as Label
 	if gold_lbl:
 		gold_lbl.text = "✦  Oro:  %d" % Inventory.gold
 
-	# ── Tiempo & Oro (panel inferior derecho) ────────────────────────────
+	# Tiempo & Oro (panel inferior derecho)
 	var elapsed := int(SaveManager.get_total_play_time())
 	@warning_ignore("integer_division")
 	var h := elapsed / 3600
@@ -597,7 +597,7 @@ func _refresh_stats() -> void:
 	if tgo_gold:
 		tgo_gold.text = "%d G" % Inventory.gold
 
-# ── Tarjeta de personaje estilo RPG ──────────────────────────────────────────
+# Tarjeta de personaje estilo RPG
 
 func _add_party_card(parent: Node, char_name: String, class_label: String,
 		level: int, xp: int, xp_cap: int,
@@ -711,7 +711,7 @@ func _add_empty_party_slot(parent: Node) -> void:
 	outer.add_child(_separator_h(C_BORDER2, 1))
 
 
-## Fila FF9: retrato + nombre/nivel + stats como texto (sin barras).
+# Fila FF9: retrato + nombre/nivel + stats como texto (sin barras).
 func _add_ff9_party_row(parent: Node, char_id: String, char_name: String,
 		class_label: String, level: int, _xp: int, _xp_cap: int,
 		hp: int, max_hp: int, mp: int, max_mp: int) -> void:
@@ -784,7 +784,7 @@ func _add_ff9_party_row(parent: Node, char_id: String, char_name: String,
 	sv.add_child(_ff9_stat_row("HP", hp, max_hp, C_HP))
 	sv.add_child(_ff9_stat_row("MP", mp, max_mp, C_MP))
 
-## Fila de stat sin barra: "HP     80 / 80"
+# Fila de stat sin barra: "HP     80 / 80"
 func _ff9_stat_row(tag: String, val: int, max_val: int, tag_color: Color) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 0)
@@ -808,7 +808,7 @@ func _ff9_stat_row(tag: String, val: int, max_val: int, tag_color: Color) -> HBo
 
 	return row
 
-## Barra de HP/MP estilo FF9 con etiqueta y valor numérico.
+# Barra de HP/MP estilo FF9 con etiqueta y valor numérico.
 func _build_ff9_bar(tag: String, val: int, max_val: int,
 		bar_color: Color, bg_color: Color) -> HBoxContainer:
 	var row := HBoxContainer.new()
@@ -850,7 +850,7 @@ func _build_ff9_bar(tag: String, val: int, max_val: int,
 
 	return row
 
-## Caja de retrato: se expande para llenar la altura de la fila (estilo FF9).
+# Caja de retrato: se expande para llenar la altura de la fila (estilo FF9).
 func _make_portrait(char_id: String) -> Control:
 	var container := PanelContainer.new()
 	container.custom_minimum_size = Vector2(78, 0)   # ancho mínimo; alto libre
@@ -954,7 +954,7 @@ func _refresh_item_list() -> void:
 			qlbl.add_theme_color_override("font_color", C_ACCENT)
 			row.add_child(qlbl)
 
-# ── Helpers de construcción ───────────────────────────────────────────────────
+# Helpers de construcción
 
 func _make_centered_root(w: int, h: int) -> Control:
 	var root := Control.new()
@@ -1070,7 +1070,7 @@ func _spacer(px: int) -> Control:
 	c.custom_minimum_size = Vector2(0, px)
 	return c
 
-# ── Panel de equipamiento (pantalla completa estilo FF9) ──────────────────────
+# Panel de equipamiento (pantalla completa estilo FF9)
 
 func _build_equip_panel() -> Control:
 	var root := Control.new()
@@ -1083,7 +1083,7 @@ func _build_equip_panel() -> Control:
 	hbox.add_theme_constant_override("separation", 0)
 	root.add_child(hbox)
 
-	# ── Panel izquierdo: INFO del personaje ──────────────────────────────────
+	# Panel izquierdo: INFO del personaje
 	var left_panel := PanelContainer.new()
 	left_panel.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	left_panel.size_flags_stretch_ratio = 1.1
@@ -1119,7 +1119,7 @@ func _build_equip_panel() -> Control:
 	btn_back.pressed.connect(_show_main)
 	left_vbox.add_child(btn_back)
 
-	# ── Panel derecho: selector + equipo + habilidades ──────────────────────
+	# Panel derecho: selector + equipo + habilidades
 	var right_panel := PanelContainer.new()
 	right_panel.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	right_panel.size_flags_stretch_ratio = 1.4
@@ -1183,8 +1183,8 @@ func _build_equip_panel() -> Control:
 
 	return root
 
-## Lista dinámica de personajes disponibles en el panel de equipamiento.
-## Lyra siempre primero; luego los compañeros que se hayan unido.
+# Lista dinámica de personajes disponibles en el panel de equipamiento.
+# Lyra siempre primero; luego los compañeros que se hayan unido.
 func _get_equip_chars() -> Array:
 	var result: Array = []
 	result.append({"id": "lyra", "stats": "res://Resources/Characters/Hero.tres"})
@@ -1206,11 +1206,11 @@ func _refresh_equip() -> void:
 	var stats      : CharacterStats = load(spath)
 	var is_lyra    : bool           = (char_id == "lyra")
 
-	# ── Selector ─────────────────────────────────────────────────────────────
+	# Selector
 	if _equip_char_lbl:
 		_equip_char_lbl.text = stats.character_name.to_upper() if stats else char_id.to_upper()
 
-	# ── Panel izquierdo: retrato grande + info estilo FF9 ────────────────────
+	# Panel izquierdo: retrato grande + info estilo FF9
 	for c in _equip_info_vbox.get_children():
 		c.queue_free()
 
@@ -1222,7 +1222,7 @@ func _refresh_equip() -> void:
 	var atk_bonus : int = Inventory.get_attack_bonus()  if is_lyra else Inventory.get_atk_bonus_for(char_id)
 	var def_bonus : int = Inventory.get_defense_bonus() if is_lyra else Inventory.get_def_bonus_for(char_id)
 
-	# ── Fila superior: retrato pequeño + nombre/HP/MP (estilo FF9 INFO) ─────────
+	# Fila superior: retrato pequeño + nombre/HP/MP (estilo FF9 INFO)
 	var top_row := HBoxContainer.new()
 	top_row.add_theme_constant_override("separation", 14)
 	_equip_info_vbox.add_child(top_row)
@@ -1259,7 +1259,7 @@ func _refresh_equip() -> void:
 
 	_equip_info_vbox.add_child(_separator_h(C_BORDER2, 1))
 
-	# ── Stats en columna única estilo FF9 (dos grupos con separación) ────────
+	# Stats en columna única estilo FF9 (dos grupos con separación)
 	if stats:
 		var group1 := [
 			["Velocidad", stats.speed],
@@ -1280,7 +1280,7 @@ func _refresh_equip() -> void:
 		for entry in group2:
 			_equip_info_vbox.add_child(_equip_stat_row(entry[0], entry[1]))
 
-	# ── Slots de equipo (todos los personajes interactivos) ──────────────────
+	# Slots de equipo (todos los personajes interactivos)
 	for c in _equip_slots_vbox.get_children():
 		c.queue_free()
 	_hide_equip_picker()
@@ -1291,7 +1291,7 @@ func _refresh_equip() -> void:
 	_add_slot_row_unified(_equip_slots_vbox, "Armadura:", a_item, char_id, ItemData.ItemType.ARMOR)
 
 
-## Retrato grande para el panel de equipo: llena el espacio disponible (estilo FF9).
+# Retrato grande para el panel de equipo: llena el espacio disponible (estilo FF9).
 func _make_equip_portrait(char_id: String) -> Control:
 	var container := PanelContainer.new()
 	container.custom_minimum_size    = Vector2(80, 80)
@@ -1318,15 +1318,15 @@ func _make_equip_portrait(char_id: String) -> Control:
 			container.add_child(img_rect)
 	return container
 
-const _ICON_POTIONS := "res://Assets/Icons/PotionBottles.png"
-const _ICON_WEAPONS := "res://Assets/Icons/Weapons.png"
-const _ICON_ARMOR   := "res://Assets/Icons/Armor.png"
+const _ICON_POTIONS := "res://Assets/Icons/Items/PotionBottles.png"
+const _ICON_WEAPONS := "res://Assets/Icons/Items/Weapons.png"
+const _ICON_ARMOR   := "res://Assets/Icons/Items/Armor.png"
 const _ICON_CELL_W  := 128.0 / 5.0   # 25.6 px por icono
 
-## Crea un TextureRect con el icono del ítem desde el spritesheet correspondiente.
-## Índices Potions : 0=azul(maná) 1=verde(antídoto) 2=amarillo 3=naranja 4=rojo(vida)
-## Índices Weapons : 0=daga 1=espada 2=arco 3=hacha 4=bastón
-## Índices Armor   : 0=casco 1=pecho 2=pantalón 3=botas 4=escudo
+# Crea un TextureRect con el icono del ítem desde el spritesheet correspondiente.
+# Índices Potions : 0=azul(maná) 1=verde(antídoto) 2=amarillo 3=naranja 4=rojo(vida)
+# Índices Weapons : 0=daga 1=espada 2=arco 3=hacha 4=bastón
+# Índices Armor   : 0=casco 1=pecho 2=pantalón 3=botas 4=escudo
 func _item_icon_node(item: ItemData, size: float = 20.0) -> TextureRect:
 	var n    := item.item_name.to_lower()
 	var path := _ICON_POTIONS
@@ -1364,7 +1364,7 @@ func _item_icon_node(item: ItemData, size: float = 20.0) -> TextureRect:
 	rect.mouse_filter          = Control.MOUSE_FILTER_IGNORE
 	return rect
 
-## Slot interactivo unificado para todos los personajes.
+# Slot interactivo unificado para todos los personajes.
 func _add_slot_row_unified(parent: Node, slot_label: String, item: ItemData,
 		char_id: String, slot_type: ItemData.ItemType) -> void:
 	var box := PanelContainer.new()
@@ -1426,7 +1426,7 @@ func _add_slot_row_unified(parent: Node, slot_label: String, item: ItemData,
 		btn_c.pressed.connect(func(): _show_equip_picker(c_id, c_type))
 		row.add_child(btn_c)
 
-## Muestra el picker de ítems para un slot concreto.
+# Muestra el picker de ítems para un slot concreto.
 func _show_equip_picker(char_id: String, slot_type: ItemData.ItemType) -> void:
 	if _equip_picker_vbox == null:
 		return
@@ -1506,8 +1506,8 @@ func _do_unequip(char_id: String, item: ItemData) -> void:
 	_refresh_equip()
 	_refresh_stats()
 
-## Fila de equipo solo lectura (sin botón de desequipar).
-# ── Panel de Habilidades ──────────────────────────────────────────────────────
+# Fila de equipo solo lectura (sin botón de desequipar).
+# Panel de Habilidades
 
 func _build_skills_panel() -> Control:
 	var root := Control.new()
@@ -1520,7 +1520,7 @@ func _build_skills_panel() -> Control:
 	hbox.add_theme_constant_override("separation", 0)
 	root.add_child(hbox)
 
-	# ── Panel izquierdo: info del personaje ──────────────────────────────────
+	# Panel izquierdo: info del personaje
 	var left_panel := PanelContainer.new()
 	left_panel.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	left_panel.size_flags_stretch_ratio = 1.1
@@ -1555,7 +1555,7 @@ func _build_skills_panel() -> Control:
 	btn_back.pressed.connect(_show_main)
 	left_vbox.add_child(btn_back)
 
-	# ── Panel derecho: selector + habilidades ────────────────────────────────
+	# Panel derecho: selector + habilidades
 	var right_panel := PanelContainer.new()
 	right_panel.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	right_panel.size_flags_stretch_ratio = 1.4
@@ -1633,7 +1633,7 @@ func _refresh_skills_panel() -> void:
 	if _skills_char_lbl:
 		_skills_char_lbl.text = stats.character_name if stats else char_id.capitalize()
 
-	# ── Panel izquierdo: retrato + stats ─────────────────────────────────────
+	# Panel izquierdo: retrato + stats
 	for c in _skills_info_vbox.get_children():
 		c.queue_free()
 
@@ -1668,7 +1668,7 @@ func _refresh_skills_panel() -> void:
 		lvl_lbl.add_theme_color_override("font_color", C_ACCENT)
 		info_col.add_child(lvl_lbl)
 
-	# ── Panel derecho: tarjetas de habilidad ─────────────────────────────────
+	# Panel derecho: tarjetas de habilidad
 	for c in _skills_list_vbox.get_children():
 		c.queue_free()
 
@@ -1679,7 +1679,7 @@ func _refresh_skills_panel() -> void:
 	for sk: SkillData in stats.skills:
 		if sk:
 			_add_skill_card(_skills_list_vbox, sk)
-## Tarjeta visual de habilidad con fondo, tipo, daño y coste MP.
+# Tarjeta visual de habilidad con fondo, tipo, daño y coste MP.
 func _add_skill_card(parent: Node, sk: SkillData) -> void:
 	var card := PanelContainer.new()
 	var is_magic := sk.is_magical
@@ -1737,7 +1737,7 @@ func _add_skill_card(parent: Node, sk: SkillData) -> void:
 	mp_lbl.add_theme_font_size_override("font_size", 13)
 	mp_lbl.add_theme_color_override("font_color", C_MP)
 	row.add_child(mp_lbl)
-## Fila de habilidad: nombre · tipo · daño · coste MP.
+# Fila de habilidad: nombre · tipo · daño · coste MP.
 func _add_skill_row(parent: Node, sk: SkillData) -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
@@ -1779,7 +1779,7 @@ func _add_skill_row(parent: Node, sk: SkillData) -> void:
 	mp_lbl.add_theme_color_override("font_color", C_MP)
 	row.add_child(mp_lbl)
 
-# ── Guardar / Cargar ──────────────────────────────────────────────────────────
+# Guardar / Cargar
 
 func _do_save(slot: int) -> void:
 	SaveManager.save_game(slot)
@@ -1806,7 +1806,7 @@ func _show_slot_feedback(msg: String) -> void:
 	tw.tween_interval(1.5)
 	tw.tween_property(_slot_feedback_lbl, "modulate:a", 0.0, 0.5)
 
-# ── Panel de ranuras (pantalla completa) ──────────────────────────────────────
+# Panel de ranuras (pantalla completa)
 
 func _build_slot_panel() -> Control:
 	var root := Control.new()
@@ -1819,7 +1819,7 @@ func _build_slot_panel() -> Control:
 	hbox.add_theme_constant_override("separation", 0)
 	root.add_child(hbox)
 
-	# ── Panel izquierdo ───────────────────────────────────────────────────────
+	# Panel izquierdo
 	var lp := PanelContainer.new()
 	lp.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	lp.size_flags_stretch_ratio = 0.55
@@ -1864,7 +1864,7 @@ func _build_slot_panel() -> Control:
 	btn_back.pressed.connect(_show_main)
 	lv.add_child(btn_back)
 
-	# ── Panel derecho: lista de ranuras ───────────────────────────────────────
+	# Panel derecho: lista de ranuras
 	var rp := PanelContainer.new()
 	rp.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	rp.size_flags_stretch_ratio = 1.45
@@ -1943,7 +1943,7 @@ func _refresh_slot_list() -> void:
 				btn.pressed.connect(func(): _do_load(captured_i))
 			row.add_child(btn)
 
-# ── Panel de opciones (pantalla completa) ─────────────────────────────────────
+# Panel de opciones (pantalla completa)
 
 func _build_options_panel() -> Control:
 	var root := Control.new()
@@ -1956,7 +1956,7 @@ func _build_options_panel() -> Control:
 	hbox.add_theme_constant_override("separation", 0)
 	root.add_child(hbox)
 
-	# ── Panel izquierdo: título + audio ───────────────────────────────────────
+	# Panel izquierdo: título + audio
 	var lp := PanelContainer.new()
 	lp.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	lp.size_flags_stretch_ratio = 1.0
@@ -2001,7 +2001,7 @@ func _build_options_panel() -> Control:
 	btn_back.pressed.connect(_show_main)
 	lv.add_child(btn_back)
 
-	# ── Panel derecho: vídeo ──────────────────────────────────────────────────
+	# Panel derecho: vídeo
 	var rp := PanelContainer.new()
 	rp.size_flags_horizontal    = Control.SIZE_EXPAND_FILL
 	rp.size_flags_stretch_ratio = 1.0
@@ -2093,7 +2093,7 @@ func _make_volume_row(label: String, slider_name: String, val_name: String) -> H
 	return row
 
 func _refresh_options() -> void:
-	# ── Audio ──
+	# Audio
 	var music_slider := _options_panel.find_child("MusicSlider", true, false) as HSlider
 	var sfx_slider   := _options_panel.find_child("SFXSlider",   true, false) as HSlider
 	var music_val    := _options_panel.find_child("MusicVal",     true, false) as Label
@@ -2110,7 +2110,7 @@ func _refresh_options() -> void:
 	if sfx_val:
 		sfx_val.text = "%d%%" % int(AudioManager.sfx_volume * 100)
 
-	# ── Vídeo ──
+	# Vídeo
 	var fs_btn  := _options_panel.find_child("FullscreenBtn",  true, false) as Button
 	var res_opt := _options_panel.find_child("ResolutionOpt",  true, false) as OptionButton
 	var fs      := SettingsManager.is_fullscreen()
@@ -2121,7 +2121,7 @@ func _refresh_options() -> void:
 		res_opt.selected = SettingsManager.get_resolution_idx()
 		res_opt.disabled = fs
 
-# ── Panel de teclado ──────────────────────────────────────────────────────────
+# Panel de teclado
 
 func _build_keyboard_panel() -> Control:
 	var root := Control.new()
@@ -2289,7 +2289,7 @@ func _on_fullscreen_toggle() -> void:
 func _on_resolution_selected(idx: int) -> void:
 	SettingsManager.set_resolution(idx)
 
-# ── Salir del juego / Menú principal ─────────────────────────────────────────
+# Salir del juego / Menú principal
 
 func _request_confirm(title: String, save_label: String, nosave_label: String, action: Callable) -> void:
 	_pending_action = action
@@ -2395,7 +2395,7 @@ func _build_confirm_panel() -> Control:
 
 	return root
 
-## Fila de estadística: "Nombre     XX" alineado a la derecha (estilo FF9).
+# Fila de estadística: "Nombre     XX" alineado a la derecha (estilo FF9).
 func _equip_stat_row(stat_name: String, value: int) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 0)

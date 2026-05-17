@@ -5,7 +5,7 @@ const BG_TEX := "res://Assets/Backgrounds/battle_field.png"
 func _ready() -> void:
 	var vp := get_viewport().get_visible_rect().size
 
-	# ── Cielo sólido que cubre todo (incluyendo la franja superior) ───────────
+	# Cielo sólido que cubre todo (incluyendo la franja superior)
 	var sky := ColorRect.new()
 	sky.color    = Color(0.55, 0.68, 0.55)   # verde grisáceo que imita la nxxiebla del PNG
 	sky.position = Vector2.ZERO
@@ -13,7 +13,7 @@ func _ready() -> void:
 	sky.z_index  = -10
 	add_child(sky)
 
-	# ── Imagen de fondo escalada para cubrir toda la pantalla ────────────────
+	# Imagen de fondo escalada para cubrir toda la pantalla
 	var bg      := Sprite2D.new()
 	bg.texture   = load(BG_TEX) as Texture2D
 	bg.centered  = false

@@ -1,4 +1,4 @@
-﻿class_name PlayerController
+class_name PlayerController
 extends CharacterBody2D
 
 signal interaction_requested
@@ -11,7 +11,7 @@ signal menu_requested
 var _last_dir: String = "down"
 var _tutorial_moved: bool = false
 
-const SPRITE_PATH := "res://Assets/Characters/lyra.png"
+const SPRITE_PATH := "res://Assets/Characters/Heroes/Lyra.png"
 
 func _ready() -> void:
 	add_to_group("player")
@@ -21,7 +21,7 @@ func _ready() -> void:
 	else:
 		push_error("PlayerController: no se encontró " + SPRITE_PATH)
 
-# ── Construye todas las animaciones desde el spritesheet en código ────────────
+# Construye todas las animaciones desde el spritesheet en código
 # Layout Pipoya 32x32:  fila 0 = abajo │ fila 1 = izquierda │ fila 2 = derecha │ fila 3 = arriba
 func _setup_animations(sprite_texture: Texture2D) -> void:
 	var frames := SpriteFrames.new()
@@ -57,7 +57,7 @@ func _setup_animations(sprite_texture: Texture2D) -> void:
 	anim_sprite.offset = Vector2(0, -16)
 	anim_sprite.play("idle_down")
 
-# ── Movimiento y animación ────────────────────────────────────────────────────
+# Movimiento y animación
 
 func _physics_process(_delta: float) -> void:
 	# Bloquear movimiento mientras hay un diálogo o tienda abiertos

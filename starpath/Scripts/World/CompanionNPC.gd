@@ -1,18 +1,18 @@
-﻿extends Node2D
+extends Node2D
 class_name CompanionNPC
 
-## ID único del compañero (debe coincidir con Inventory.has_party_member).
-## Valores esperados: "athelios" | "byran"
+# ID único del compañero (debe coincidir con Inventory.has_party_member).
+# Valores esperados: "athelios" | "byran"
 @export var companion_id   : String        = ""
 @export var speaker_name   : String        = "Compañero"
 @export var npc_texture    : Texture2D
 @export_range(0, 3) var sprite_row: int    = 0
 
-## Diálogo mostrado antes de unirse
+# Diálogo mostrado antes de unirse
 @export var pre_join_dialog  : Array[String] = ["Hola, viajero."]
-## Frase corta al aceptar unirse (solo una línea)
+# Frase corta al aceptar unirse (solo una línea)
 @export var join_dialog      : Array[String] = ["¡Me uno a tu grupo!"]
-## Diálogo después de haberse unido
+# Diálogo después de haberse unido
 @export var post_join_dialog : Array[String] = ["Ya somos un equipo."]
 
 @onready var _sprite       : Sprite2D = $Sprite2D
@@ -46,18 +46,23 @@ func _ready() -> void:
 	_interact_area.body_exited.connect(_on_body_exited)
 	_build_menu()
 
-## Elimina el NPC del mundo: oculta el sprite y desactiva colisiones.
+# Elimina el NPC del mundo: oculta el sprite y desactiva colisiones.
 func _hide_from_world() -> void:
 	visible = false
 	# Desactivar área de interacción
 	if is_instance_valid(_interact_area):
 		_interact_area.set_deferred("monitoring",  false)
 		_interact_area.set_deferred("monitorable", false)
+	# Desactivar colisión física del cuerpo
+	var body := get_node_or_null("Body") as StaticBody2D
+	if body != null:
+		body.set_deferred("collision_layer", 0)
+		body.set_deferred("collision_mask",  0)
 	# Cerrar menú si estuviera abierto
 	if _menu_open:
 		_close_menu()
 
-# ── Construcción del menú ─────────────────────────────────────────────────────
+# Construcción del menú
 
 func _build_menu() -> void:
 	_menu_layer = CanvasLayer.new()
@@ -138,7 +143,7 @@ func _make_separator() -> HSeparator:
 	sep.add_theme_stylebox_override("separator", st)
 	return sep
 
-# ── Detección del jugador ─────────────────────────────────────────────────────
+# Detección del jugador
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is not PlayerController:
@@ -157,7 +162,7 @@ func _on_body_exited(body: Node2D) -> void:
 	if _menu_open:
 		_close_menu()
 
-# ── Interacción ───────────────────────────────────────────────────────────────
+# Interacción
 
 func _on_interact() -> void:
 	if not _in_range or _menu_open:
@@ -182,7 +187,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			get_viewport().set_input_as_handled()
 			_close_menu()
 
-# ── Opciones del menú ─────────────────────────────────────────────────────────
+# Opciones del menú
 
 func _on_hablar() -> void:
 	_close_menu()

@@ -1,26 +1,26 @@
-## DialogManager.gd  –  Autoload (CanvasLayer)
-## Gestiona la caja de diálogo RPG con efecto de máquina de escribir.
+# DialogManager.gd  –  Autoload (CanvasLayer)
+# Gestiona la caja de diálogo RPG con efecto de máquina de escribir.
 ##
-## Uso desde cualquier script:
-##   DialogManager.start_dialog(["Línea 1", "Línea 2"], "Nombre NPC")
+# Uso desde cualquier script:
+#   DialogManager.start_dialog(["Línea 1", "Línea 2"], "Nombre NPC")
 ##
-## El jugador pulsa Enter/Espacio para avanzar.
-## La señal `dialog_finished` se emite al cerrar el diálogo.
+# El jugador pulsa Enter/Espacio para avanzar.
+# La señal `dialog_finished` se emite al cerrar el diálogo.
 
 extends CanvasLayer
 
 signal dialog_finished
 
-## true mientras el diálogo está abierto (el PlayerController lo comprueba)
+# true mientras el diálogo está abierto (el PlayerController lo comprueba)
 var is_open: bool = false
 
-# ── Nodos UI ──────────────────────────────────────────────────────────────────
+# Nodos UI
 var _panel:      PanelContainer
 var _name_label: Label
 var _text_label: RichTextLabel
 var _hint_label: Label
 
-# ── Estado del efecto máquina de escribir ─────────────────────────────────────
+# Estado del efecto máquina de escribir
 var _lines:      Array[String] = []
 var _line_index: int           = 0
 var _full_text:  String        = ""
@@ -30,14 +30,14 @@ var _timer:      float         = 0.0
 
 const TYPE_SPEED := 0.035   # segundos por carácter
 
-# ─────────────────────────────────────────────────────────────────────────────
+#
 func _ready() -> void:
 	layer = 128          # por encima de cualquier elemento de juego
 	_build_ui()
 	_panel.hide()
 
 func _build_ui() -> void:
-	# ── Panel principal — anclado al borde inferior, hijo directo del CanvasLayer
+	# Panel principal — anclado al borde inferior, hijo directo del CanvasLayer
 	_panel = PanelContainer.new()
 	_panel.set_anchors_preset(Control.PRESET_BOTTOM_WIDE)
 	_panel.offset_top    = -170
@@ -57,7 +57,7 @@ func _build_ui() -> void:
 	_panel.add_theme_stylebox_override("panel", panel_style)
 	add_child(_panel)
 
-	# ── Layout vertical dentro del panel ──────────────────────────────────────
+	# Layout vertical dentro del panel
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 6)
 	_panel.add_child(vbox)
@@ -87,8 +87,8 @@ func _build_ui() -> void:
 	_hint_label.visible = false
 	vbox.add_child(_hint_label)
 
-# ─────────────────────────────────────────────────────────────────────────────
-## Inicia un diálogo.  `lines` = array de frases, `speaker` = nombre (opcional).
+#
+# Inicia un diálogo.  `lines` = array de frases, `speaker` = nombre (opcional).
 func start_dialog(lines: Array[String], speaker: String = "") -> void:
 	if is_open or lines.is_empty():
 		return
@@ -108,7 +108,7 @@ func _show_line(text: String) -> void:
 	_hint_label.hide()
 	_text_label.text = ""
 
-# ── Máquina de escribir ───────────────────────────────────────────────────────
+# Máquina de escribir
 func _process(delta: float) -> void:
 	if not is_open or not _typing:
 		return
@@ -121,7 +121,7 @@ func _process(delta: float) -> void:
 			_typing = false
 			_hint_label.show()
 
-# ── Entrada del jugador ───────────────────────────────────────────────────────
+# Entrada del jugador
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_open:
 		return

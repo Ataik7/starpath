@@ -43,7 +43,7 @@ func heal_self(hp_amount: int = 30, mp_cost: int = 15) -> bool:
 	stats_changed.emit()
 	return true
 
-## Descuenta MP; devuelve false si no hay suficiente.
+# Descuenta MP; devuelve false si no hay suficiente.
 func spend_mp(amount: int) -> bool:
 	if current_mp < amount:
 		return false
@@ -51,12 +51,12 @@ func spend_mp(amount: int) -> bool:
 	stats_changed.emit()
 	return true
 
-## Cura HP directamente (sin coste de MP).
+# Cura HP directamente (sin coste de MP).
 func heal_hp(amount: int) -> void:
 	current_hp = mini(current_hp + amount, stats.max_hp)
 	stats_changed.emit()
 
-## Restaura MP directamente.
+# Restaura MP directamente.
 func heal_mp(amount: int) -> void:
 	current_mp = mini(current_mp + amount, stats.max_mp)
 	stats_changed.emit()

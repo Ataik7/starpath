@@ -1,29 +1,29 @@
 class_name EnemyWalker
 extends CharacterBody2D
 
-## Enemigo deambulante del mapa del mundo.
+# Enemigo deambulante del mapa del mundo.
 ##
-## Uso:
-##   1. Instancia Scenes/World/EnemyWalker.tscn en WorldMap.
-##   2. (Opcional) Asigna enemy_texture en el Inspector para cambiar el sprite.
-##   3. Ajusta speed y wander_radius según el enemigo.
+# Uso:
+#   1. Instancia Scenes/World/EnemyWalker.tscn en WorldMap.
+#   2. (Opcional) Asigna enemy_texture en el Inspector para cambiar el sprite.
+#   3. Ajusta speed y wander_radius según el enemigo.
 
-# ── Exportables ───────────────────────────────────────────────────────────────
+# Exportables
 @export var speed:         float      = 55.0
 @export var wander_radius: float      = 180.0
-## Textura spritesheet Pipoya 32×32 (4 filas: abajo/izq/der/arriba, 3 cols: walk).
-## Si se deja en blanco se usa npc1.png con tinte rojo.
+# Textura spritesheet Pipoya 32×32 (4 filas: abajo/izq/der/arriba, 3 cols: walk).
+# Si se deja en blanco se usa npc1.png con tinte rojo.
 @export var enemy_texture: Texture2D  = null
 
-# ── Constantes ────────────────────────────────────────────────────────────────
-const _DEFAULT_TEX  := "res://Assets/Characters/skeleton.png"
+# Constantes
+const _DEFAULT_TEX  := "res://Assets/Characters/Enemies/Skeleton.png"
 const BATTLE_SCENE  := "res://Scenes/Battle/BattleScene.tscn"
 
-# ── Nodos hijos ───────────────────────────────────────────────────────────────
+# Nodos hijos
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 @onready var _detect: Area2D           = $DetectionArea
 
-# ── Estado ────────────────────────────────────────────────────────────────────
+# Estado
 var _spawn:      Vector2 = Vector2.ZERO
 var _dir:        Vector2 = Vector2.ZERO
 var _last_dir:   String  = "down"
@@ -33,9 +33,12 @@ var _waiting:    bool    = false
 var _in_battle:  bool    = false
 
 
-# ── Inicialización ────────────────────────────────────────────────────────────
+# Inicialización
 
 func _ready() -> void:
+	if name in Inventory.defeated_enemies:
+		queue_free()
+		return
 	_spawn = global_position
 	add_to_group("enemy_walkers")
 
@@ -97,7 +100,7 @@ func _setup_animations(tex: Texture2D) -> void:
 	_sprite.play("idle_down")
 
 
-# ── Bucle de física ───────────────────────────────────────────────────────────
+# Bucle de física
 
 func _physics_process(delta: float) -> void:
 	if _in_battle:
@@ -134,7 +137,7 @@ func _physics_process(delta: float) -> void:
 	_play_anim(_dir)
 
 
-# ── Helpers ───────────────────────────────────────────────────────────────────
+# Helpers
 
 func _pick_dir() -> void:
 	var angle   := randf() * TAU
@@ -158,7 +161,7 @@ func _play_anim(dir: Vector2) -> void:
 		_sprite.play(anim)
 
 
-# ── Contacto con el jugador → batalla ────────────────────────────────────────
+# Contacto con el jugador → batalla
 
 func _on_player_detected(body: Node) -> void:
 	if _in_battle or not (body is PlayerController):
@@ -167,4 +170,6 @@ func _on_player_detected(body: Node) -> void:
 	Inventory.pre_battle_position   = body.global_position
 	Inventory.pre_battle_direction  = body._last_dir
 	Inventory.returning_from_battle = true
+	Inventory.last_enemy_id         = name
+	Inventory.battle_was_won        = false
 	SceneTransition.go_to(BATTLE_SCENE)

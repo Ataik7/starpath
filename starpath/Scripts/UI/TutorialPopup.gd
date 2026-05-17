@@ -33,7 +33,7 @@ func _ready() -> void:
 	TutorialManager.show_requested.connect(_on_show_requested)
 
 
-# ── Construcción ──────────────────────────────────────────────────────────────
+# Construcción
 
 func _build_popup() -> void:
 	var root := Control.new()
@@ -120,7 +120,7 @@ func _build_popup() -> void:
 	vbox.add_child(hint)
 
 
-# ── Mostrar ───────────────────────────────────────────────────────────────────
+# Mostrar
 
 func _on_show_requested(_id: String, title: String, body: String, blocking: bool) -> void:
 	_title_lbl.text  = title
@@ -143,7 +143,7 @@ func _on_show_requested(_id: String, title: String, body: String, blocking: bool
 	tw.parallel().tween_property(_panel, "offset_bottom", _OFF_BOTTOM, 0.30).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 
 
-# ── Cerrar ────────────────────────────────────────────────────────────────────
+# Cerrar
 
 func _dismiss() -> void:
 	if not visible:

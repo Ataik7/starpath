@@ -1,5 +1,5 @@
-## LevelUpPopup — autoload CanvasLayer.
-## Escucha Inventory.level_changed y muestra un panel dorado animado.
+# LevelUpPopup — autoload CanvasLayer.
+# Escucha Inventory.level_changed y muestra un panel dorado animado.
 extends CanvasLayer
 
 const FONT_PATH := "res://Assets/Fonts/CinzelDecorative-Bold.ttf"
@@ -26,7 +26,7 @@ func _ready() -> void:
 	Inventory.level_changed.connect(_on_level_changed)
 
 
-# ── Construcción ──────────────────────────────────────────────────────────────
+# Construcción
 
 func _build() -> void:
 	var root := Control.new()
@@ -112,7 +112,7 @@ func _build() -> void:
 	vbox.add_child(hint)
 
 
-# ── Mostrar ───────────────────────────────────────────────────────────────────
+# Mostrar
 
 func _on_level_changed(new_level: int) -> void:
 	if _auto_tw:
@@ -130,7 +130,7 @@ func _on_level_changed(new_level: int) -> void:
 	_auto_tw.tween_callback(_dismiss)
 
 
-# ── Cerrar ────────────────────────────────────────────────────────────────────
+# Cerrar
 
 func _dismiss() -> void:
 	if not visible:

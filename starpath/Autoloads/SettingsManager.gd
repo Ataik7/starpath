@@ -11,7 +11,7 @@ const RESOLUTION_LABELS: Array[String] = [
 	"1920 × 1080  (Full HD)",
 ]
 
-## Keycodes por defecto para cada acción configurable.
+# Keycodes por defecto para cada acción configurable.
 const DEFAULT_BINDINGS: Dictionary = {
 	"move_up":    KEY_W,
 	"move_down":  KEY_S,
@@ -21,7 +21,7 @@ const DEFAULT_BINDINGS: Dictionary = {
 	"open_menu":  KEY_X,
 }
 
-## Nombres legibles para mostrar en la UI de configuración de teclado.
+# Nombres legibles para mostrar en la UI de configuración de teclado.
 const ACTION_LABELS: Dictionary = {
 	"move_up":    "Mover arriba",
 	"move_down":  "Mover abajo",
@@ -42,7 +42,7 @@ func _ready() -> void:
 	_load_config()
 	_apply_all()
 
-# ── Teclado ───────────────────────────────────────────────────────────────────
+# Teclado
 
 func get_binding(action: String) -> Key:
 	return (_bindings.get(action, DEFAULT_BINDINGS.get(action, KEY_NONE))) as Key
@@ -69,7 +69,7 @@ func _apply_binding(action: String, key: Key) -> void:
 	ev.keycode = key
 	InputMap.action_add_event(action, ev)
 
-# ── Audio ──────────────────────────────────────────────────────────────────────
+# Audio
 
 func set_resolution(idx: int) -> void:
 	_resolution_idx = clampi(idx, 0, RESOLUTIONS.size() - 1)
@@ -104,7 +104,7 @@ func get_music_volume() -> float:
 func get_sfx_volume() -> float:
 	return _sfx_volume
 
-# ── Aplicación ────────────────────────────────────────────────────────────────
+# Aplicación
 
 func _apply_all() -> void:
 	_apply_window_mode()
@@ -137,7 +137,7 @@ func _apply_sfx_volume() -> void:
 		return
 	AudioServer.set_bus_volume_db(bus, linear_to_db(_sfx_volume) if _sfx_volume > 0.0 else -80.0)
 
-# ── Persistencia ──────────────────────────────────────────────────────────────
+# Persistencia
 
 func _save_config() -> void:
 	var cfg := ConfigFile.new()

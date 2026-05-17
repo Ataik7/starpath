@@ -20,7 +20,7 @@ func _ready() -> void:
 	_session_start = Time.get_unix_time_from_system()
 	Inventory.changed.connect(func(): has_unsaved_changes = true)
 
-## Tiempo total = guardado + sesión actual (en segundos).
+# Tiempo total = guardado + sesión actual (en segundos).
 func get_total_play_time() -> int:
 	return play_time_sec + int(Time.get_unix_time_from_system() - _session_start)
 
@@ -169,7 +169,7 @@ func load_game(slot: int) -> bool:
 	game_loaded.emit(slot)
 	return true
 
-## Llamar desde WorldMap._ready() para colocar al jugador en la posición guardada.
+# Llamar desde WorldMap._ready() para colocar al jugador en la posición guardada.
 func apply_pending_spawn(player: PlayerController) -> void:
 	if not has_pending_spawn:
 		return

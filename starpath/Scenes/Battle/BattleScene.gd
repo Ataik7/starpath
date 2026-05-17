@@ -7,7 +7,7 @@ extends Node2D
 @onready var battle_hud     = $BattleHUD
 @onready var turn_queue: TurnQueue = $TurnQueue
 
-# ── Compañeros dinámicos ──────────────────────────────────────────────────────
+# Compañeros dinámicos
 var hero2_logic  : BaseEntity = null   # Athelios (si está en el grupo)
 var hero3_logic  : BaseEntity = null   # Byran    (si está en el grupo)
 
@@ -15,7 +15,7 @@ var hero3_logic  : BaseEntity = null   # Byran    (si está en el grupo)
 var _all_hero_entities  : Array[BaseEntity] = []
 var _all_enemy_entities : Array[BaseEntity] = []
 
-# ── Orden de turnos estilo Octopath ──────────────────────────────────────────
+# Orden de turnos estilo Octopath
 const _SLOT_SHOW  : int = 7    # iconos visibles
 const _SLOT_SZ    : int = 50   # px por icono
 const _SLOT_GAP   : int = 6    # separación entre iconos
@@ -86,7 +86,7 @@ func _ready() -> void:
 	_all_enemy_entities = [enemy_logic, enemy2_logic]
 	_all_hero_entities  = [hero_logic]
 
-	# ── Instanciar compañeros si están en el grupo ────────────────────────────
+	# Instanciar compañeros si están en el grupo
 	var hero_x_positions := [380, 300, 220]   # posiciones X para 1-3 héroes
 
 	if Inventory.has_party_member("athelios"):
@@ -112,7 +112,7 @@ func _ready() -> void:
 	# La cola ya está ordenada por velocidad tras start_battle → construir HUD
 	_build_turn_order_ui()
 
-# ── Hover visual en selección de objetivo ────────────────────────────────────
+# Hover visual en selección de objetivo
 
 func _process(_delta: float) -> void:
 	if battle_manager == null:
@@ -142,13 +142,13 @@ func _process(_delta: float) -> void:
 			s.sprite.modulate = Color(1.0, 1.0, 1.0)
 			s.sprite.scale    = Vector2(4.0, 4.0)
 
-# ── Seguimiento del héroe activo ──────────────────────────────────────────────
+# Seguimiento del héroe activo
 
 func _on_active_entity_changed(entity: BaseEntity) -> void:
 	if entity.get_parent().is_in_group("Heroes"):
 		_active_hero = entity
 
-# ── Actualización del menú según la clase del héroe ──────────────────────────
+# Actualización del menú según la clase del héroe
 
 func _update_menu_for_hero(hero: BaseEntity) -> void:
 	if hero == null:
@@ -179,7 +179,7 @@ func _build_skill_buttons(hero: BaseEntity) -> void:
 		btn.pressed.connect(_on_skill_btn_pressed.bind(skill))
 		skills_container.add_child(btn)
 
-# ── Señales del BattleManager ─────────────────────────────────────────────────
+# Señales del BattleManager
 
 func _on_menu_toggled(show_menu: bool) -> void:
 	if not end_panel.visible:
@@ -251,7 +251,7 @@ func _on_ally_sprite_clicked(entity: BaseEntity) -> void:
 func _on_enemy_sprite_clicked(entity: BaseEntity) -> void:
 	battle_manager.player_target_confirmed(entity)
 
-# ── Detección de clic (_input se llama siempre, antes que la GUI) ─────────────
+# Detección de clic (_input se llama siempre, antes que la GUI)
 
 func _input(event: InputEvent) -> void:
 	if battle_manager.current_state != BattleManager.BattleState.SELECTING_TARGET:
@@ -280,7 +280,7 @@ func _input(event: InputEvent) -> void:
 				battle_manager.player_target_confirmed(entity)
 				return
 
-# ── Botones del menú ──────────────────────────────────────────────────────────
+# Botones del menú
 
 func _on_btn_atacar_pressed() -> void:
 	battle_manager.player_action_selected("Atacar")
@@ -340,6 +340,8 @@ func _on_skill_btn_pressed(skill: SkillData) -> void:
 func _on_battle_ended(player_won: bool) -> void:
 	_player_won          = player_won
 	menu_combate.visible = false
+	if player_won:
+		Inventory.battle_was_won = true
 
 	if player_won:
 		AudioManager.play_bgm("victory", false)
@@ -356,7 +358,7 @@ func _on_battle_ended(player_won: bool) -> void:
 func _on_btn_reiniciar_pressed() -> void:
 	SceneTransition.go_to("res://Scenes/World/WorldMap.tscn")
 
-# ── Pantalla de victoria animada ──────────────────────────────────────────────
+# Pantalla de victoria animada
 
 func _show_victory_screen() -> void:
 	var xp_reward   := battle_manager.victory_xp
@@ -387,7 +389,7 @@ func _show_victory_screen() -> void:
 	var xp_cap_after := Inventory.xp_to_next()
 	var leveled_up   := level_after > level_before
 
-	# ── Overlay oscuro ────────────────────────────────────────────────────────
+	# Overlay oscuro
 	var ui := CanvasLayer.new()
 	ui.layer = 50
 	add_child(ui)
@@ -402,7 +404,7 @@ func _show_victory_screen() -> void:
 	tw_dim.tween_property(dimmer, "color:a", 0.65, 0.35)
 	await tw_dim.finished
 
-	# ── Panel central ─────────────────────────────────────────────────────────
+	# Panel central
 	var vp_size := get_viewport().get_visible_rect().size
 
 	var panel := PanelContainer.new()
@@ -481,7 +483,7 @@ func _show_victory_screen() -> void:
 	lbl_levelup.modulate = Color(1.0, 0.9, 0.2)
 	inner_vbox.add_child(lbl_levelup)
 
-	# ── Animación de la barra de XP ───────────────────────────────────────────
+	# Animación de la barra de XP
 	await get_tree().create_timer(0.4).timeout
 
 	if leveled_up:
@@ -519,7 +521,7 @@ func _show_victory_screen() -> void:
 
 	lbl_xp_vals.text = "%d / %d XP" % [xp_after, xp_cap_after]
 
-	# ── EXP de compañeros del grupo ───────────────────────────────────────────
+	# EXP de compañeros del grupo
 	for id in Inventory.party_members:
 		var c_stats: CharacterStats = load(_COMPANION_STATS_PATHS.get(id, ""))
 		if c_stats == null:
@@ -574,7 +576,7 @@ func _show_victory_screen() -> void:
 				float(c_xp_b), float(c_xp_a), 0.8)
 			await c_tw.finished
 
-	# ── Botón de regreso ──────────────────────────────────────────────────────
+	# Botón de regreso
 	inner_vbox.add_child(HSeparator.new())
 
 	var btn_hbox := HBoxContainer.new()
@@ -590,7 +592,7 @@ func _show_victory_screen() -> void:
 		SceneTransition.go_to("res://Scenes/World/WorldMap.tscn")
 	)
 
-# ── Orden de turnos – conveyor belt estilo Octopath ──────────────────────────
+# Orden de turnos – conveyor belt estilo Octopath
 
 func _build_turn_order_ui() -> void:
 	var canvas := CanvasLayer.new()
@@ -615,7 +617,7 @@ func _build_turn_order_ui() -> void:
 		_slot_clip.add_child(slot["card"])
 		_slots.append(slot)
 
-# ── Fabrica un slot vacío y devuelve su diccionario ───────────────────────────
+# Fabrica un slot vacío y devuelve su diccionario
 
 func _make_slot() -> Dictionary:
 	var style := StyleBoxFlat.new()
@@ -663,7 +665,7 @@ func _make_slot() -> Dictionary:
 
 	return { "card": card, "portrait": portrait, "team_bar": team_bar, "style": style }
 
-# ── Rellena / actualiza el contenido visual de un slot ───────────────────────
+# Rellena / actualiza el contenido visual de un slot
 
 func _set_slot_content(slot: Dictionary, entity: BaseEntity, is_active: bool) -> void:
 	var card     : Panel        = slot["card"]
@@ -712,7 +714,7 @@ func _set_slot_content(slot: Dictionary, entity: BaseEntity, is_active: bool) ->
 		at.region = Rect2(0, row * 32, 32, 32)
 		portrait.texture = at
 
-# ── Calcula los próximos `count` turnos (índice 0 = activo actual) ───────────
+# Calcula los próximos `count` turnos (índice 0 = activo actual)
 
 func _get_turn_sequence(active: BaseEntity, count: int) -> Array[BaseEntity]:
 	var result : Array[BaseEntity] = [active]
@@ -729,7 +731,7 @@ func _get_turn_sequence(active: BaseEntity, count: int) -> Array[BaseEntity]:
 			result.append(e)
 	return result
 
-# ── Actualiza la cola con animación de conveyor belt ─────────────────────────
+# Actualiza la cola con animación de conveyor belt
 
 func _update_turn_order_highlight(active: BaseEntity) -> void:
 	var sequence := _get_turn_sequence(active, _SLOT_SHOW + 1)
@@ -752,7 +754,7 @@ func _update_turn_order_highlight(active: BaseEntity) -> void:
 	_set_slot_content(_slots[_SLOT_SHOW], tail_entity, false)
 	_slots[_SLOT_SHOW]["card"].position.x = _SLOT_SHOW * _SLOT_STRIDE
 
-	# ── Animar: todos los slots se deslizan a la izquierda ───────────────────
+	# Animar: todos los slots se deslizan a la izquierda
 	_slot_tween = create_tween()
 	_slot_tween.set_parallel(true)
 	for slot in _slots:
@@ -763,7 +765,7 @@ func _update_turn_order_highlight(active: BaseEntity) -> void:
 
 	await _slot_tween.finished
 
-	# ── Post-slide: rotar array y reciclar el primer slot ───────────────────
+	# Post-slide: rotar array y reciclar el primer slot
 	var recycled = _slots[0]
 	_slots = _slots.slice(1) + [recycled]          # rotación lógica
 	recycled["card"].position.x = _SLOT_SHOW * _SLOT_STRIDE  # off-screen derecha
@@ -772,7 +774,7 @@ func _update_turn_order_highlight(active: BaseEntity) -> void:
 	for i in range(_SLOT_SHOW + 1):
 		_set_slot_content(_slots[i], sequence[i] if i < sequence.size() else null, i == 0)
 
-# ── Animaciones de ataque ─────────────────────────────────────────────────────
+# Animaciones de ataque
 
 func _on_attack_anim(attacker: BaseEntity, target: BaseEntity, is_magical: bool) -> void:
 	var a_cs := attacker.get_parent() as CombatantSprite

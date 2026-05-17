@@ -124,4 +124,10 @@ post_join_dialog = ["Contigo hasta el final, compañero."]
 [node name="EnemyWalker" parent="." unique_id=1207775929 instance=ExtResource("12_64234")]
 position = Vector2(366, 130)
 
+[node name="EnemyWalker2" parent="." unique_id=1207775930 instance=ExtResource("12_64234")]
+position = Vector2(-300, -280)
+
+[node name="EnemyWalker3" parent="." unique_id=1207775931 instance=ExtResource("12_64234")]
+position = Vector2(150, 320)
+
 [editable path="map1"]

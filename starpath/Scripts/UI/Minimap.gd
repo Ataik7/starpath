@@ -21,7 +21,7 @@ func _ready() -> void:
 	_build_minimap()
 
 
-# ── Construcción ──────────────────────────────────────────────────────────────
+# Construcción
 
 func _build_minimap() -> void:
 	# Raíz transparente a pantalla completa
@@ -30,7 +30,7 @@ func _build_minimap() -> void:
 	root.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(root)
 
-	# ── Panel (esquina superior derecha) ──────────────────────────────────
+	# Panel (esquina superior derecha)
 	var panel := PanelContainer.new()
 	panel.anchor_left   = 1.0
 	panel.anchor_top    = 0.0
@@ -76,14 +76,14 @@ func _build_minimap() -> void:
 		title.add_theme_font_override("font", _font)
 	vbox.add_child(title)
 
-	# ── SubViewportContainer ──────────────────────────────────────────────
+	# SubViewportContainer
 	var svc := SubViewportContainer.new()
 	svc.custom_minimum_size = Vector2(MAP_PX, MAP_PX)
 	svc.stretch             = true
 	svc.mouse_filter        = Control.MOUSE_FILTER_IGNORE
 	vbox.add_child(svc)
 
-	# ── SubViewport (comparte el World2D del juego) ───────────────────────
+	# SubViewport (comparte el World2D del juego)
 	var sv := SubViewport.new()
 	sv.size                      = Vector2i(int(MAP_PX), int(MAP_PX))
 	sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
@@ -94,22 +94,22 @@ func _build_minimap() -> void:
 	# Compartir el mundo 2D tras un frame (el viewport principal ya existe)
 	sv.call_deferred("set", "world_2d", get_viewport().world_2d)
 
-	# ── Cámara del minimapa ───────────────────────────────────────────────
+	# Cámara del minimapa
 	_mini_cam = Camera2D.new()
 	_mini_cam.zoom = Vector2(ZOOM_LEVEL, ZOOM_LEVEL)
 	sv.add_child(_mini_cam)
 
-	# ── Punto del jugador (siempre en el centro del minimapa) ─────────────
+	# Punto del jugador (siempre en el centro del minimapa)
 	_dot = _PlayerDot.new()
 	svc.add_child(_dot)
 
-	# ── Borde interior sobre el viewport (marco de cierre) ───────────────
+	# Borde interior sobre el viewport (marco de cierre)
 	var frame := _FrameOverlay.new()
 	frame.set_anchors_preset(Control.PRESET_FULL_RECT)
 	svc.add_child(frame)
 
 
-# ── Actualizar posición de cámara ─────────────────────────────────────────────
+# Actualizar posición de cámara
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventKey and event.pressed and not event.echo:
@@ -128,7 +128,7 @@ func _process(_delta: float) -> void:
 	_mini_cam.global_position = _player.global_position
 
 
-# ── Nodo interno: punto amarillo centrado ──────────────────────────────────────
+# Nodo interno: punto amarillo centrado
 
 class _PlayerDot extends Control:
 	func _ready() -> void:
@@ -145,7 +145,7 @@ class _PlayerDot extends Control:
 		draw_circle(c, 3.0, Color(1.00, 0.88, 0.20, 1.0))
 
 
-# ── Nodo interno: borde interior del viewport ─────────────────────────────────
+# Nodo interno: borde interior del viewport
 
 class _FrameOverlay extends Control:
 	func _ready() -> void:

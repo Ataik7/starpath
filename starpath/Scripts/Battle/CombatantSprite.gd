@@ -6,15 +6,15 @@ signal clicked(entity: BaseEntity)
 const FRAME_W: int = 32
 const FRAME_H: int = 32
 
-# ── Referencias a los Nodos Visuales ──────────────────────────────────────
+# Referencias a los Nodos Visuales
 @onready var sprite:      AnimatedSprite2D = $AnimatedSprite2D
 @onready var health_bar:  ProgressBar      = $ProgressBar
 @onready var mana_bar:    ProgressBar      = $ManaBar
 
-# ── Configuración exportable ───────────────────────────────────────────────
+# Configuración exportable
 @export var entity_logic:  BaseEntity
 @export var sprite_texture: Texture2D = null
-## true = el sprite mira a la izquierda (enemigos); false = mira a la derecha (héroes)
+# true = el sprite mira a la izquierda (enemigos); false = mira a la derecha (héroes)
 @export var facing_left:   bool = false
 
 var is_selectable: bool = false
@@ -44,7 +44,7 @@ func _ready() -> void:
 	_on_stats_changed()
 	_initialized = true
 
-# ── Construcción de SpriteFrames desde el spritesheet ─────────────────────
+# Construcción de SpriteFrames desde el spritesheet
 
 func _build_sprite_frames(tex: Texture2D) -> void:
 	var sheet_rows: int = tex.get_height() / FRAME_H  # 3 ó 4
@@ -63,7 +63,7 @@ func _build_sprite_frames(tex: Texture2D) -> void:
 	for dir: String in ["down", "left", "right", "up"]:
 		var row: int = row_map[dir]
 
-		# ── Animación de idle (2 primeros frames, 3 fps) ──────────────────
+		# Animación de idle (2 primeros frames, 3 fps)
 		var idle: String = "idle_" + dir
 		frames.add_animation(idle)
 		frames.set_animation_loop(idle, true)
@@ -74,7 +74,7 @@ func _build_sprite_frames(tex: Texture2D) -> void:
 			at.region = Rect2(col * FRAME_W, row * FRAME_H, FRAME_W, FRAME_H)
 			frames.add_frame(idle, at)
 
-		# ── Animación de caminar (3 frames, 8 fps) ────────────────────────
+		# Animación de caminar (3 frames, 8 fps)
 		var walk: String = "walk_" + dir
 		frames.add_animation(walk)
 		frames.set_animation_loop(walk, true)
@@ -92,7 +92,7 @@ func _build_sprite_frames(tex: Texture2D) -> void:
 	sprite.flip_h = false
 	sprite.play(_idle_anim)
 
-# ── Selección de objetivo ──────────────────────────────────────────────────
+# Selección de objetivo
 
 # Detecta clics vía _unhandled_input + estado de hover (más fiable que
 # Area2D.input_event cuando hay CanvasLayers activos en la escena).
@@ -123,7 +123,7 @@ func _on_mouse_exited() -> void:
 	if is_selectable:
 		sprite.modulate = Color(0.55, 0.8, 1.0) if entity_logic.is_defending else Color(1, 1, 1)
 
-# ── Reacciones Visuales ────────────────────────────────────────────────────
+# Reacciones Visuales
 
 func _on_stats_changed() -> void:
 	var new_hp: int = entity_logic.current_hp
@@ -148,9 +148,9 @@ func _on_defeated() -> void:
 	var tween := create_tween()
 	tween.tween_property(sprite, "modulate:a", 0.0, 1.0)
 
-# ── Número flotante de daño / curación ────────────────────────────────────
+# Número flotante de daño / curación
 
-## Llama esto externamente al aplicar daño para el flash de color.
+# Llama esto externamente al aplicar daño para el flash de color.
 func play_hit_flash(is_magical: bool = false) -> void:
 	var hit_color := Color(0.35, 0.55, 1.0) if is_magical else Color(1.0, 0.25, 0.25)
 	sprite.modulate = hit_color

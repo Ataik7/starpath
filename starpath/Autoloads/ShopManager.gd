@@ -1,5 +1,5 @@
-## ShopManager.gd  –  Autoload (CanvasLayer)
-## Tienda RPG: lista de items, oro del jugador, compra con Enter, cierra con Escape.
+# ShopManager.gd  –  Autoload (CanvasLayer)
+# Tienda RPG: lista de items, oro del jugador, compra con Enter, cierra con Escape.
 
 extends CanvasLayer
 
@@ -11,7 +11,7 @@ var _filtered: Array[ItemData] = []
 var _selected: int             = 0
 var _current_category: String  = "todo"
 
-# ── Nodos UI (compra) ─────────────────────────────────────────────────────────
+# Nodos UI (compra)
 var _overlay:     ColorRect
 var _panel:       PanelContainer
 var _title_label: Label
@@ -21,7 +21,7 @@ var _items_vbox:  VBoxContainer
 var _msg_label:   Label
 var _item_rows:   Array[HBoxContainer] = []
 
-# ── Nodos UI (venta) ──────────────────────────────────────────────────────────
+# Nodos UI (venta)
 var _sell_panel:    PanelContainer
 var _sell_vbox:     VBoxContainer
 var _sell_gold_lbl: Label
@@ -40,7 +40,7 @@ const CATEGORIES := [
 	{"label": "Objetos",  "key": "objeto"},
 ]
 
-# ─────────────────────────────────────────────────────────────────────────────
+#
 func _ready() -> void:
 	layer = 127
 	_build_ui()
@@ -137,7 +137,7 @@ func _build_ui() -> void:
 	hint.add_theme_color_override("font_color", Color(0.55, 0.55, 0.75))
 	vbox.add_child(hint)
 
-# ─────────────────────────────────────────────────────────────────────────────
+#
 func open_shop(catalog: Array[ItemData], title: String = "Tienda") -> void:
 	if is_open or catalog.is_empty():
 		return
@@ -265,7 +265,7 @@ func _refresh_selection() -> void:
 		# Mostrar/ocultar flecha
 		_item_rows[i].get_child(0).visible = (i == _selected)
 
-# ── Entrada ───────────────────────────────────────────────────────────────────
+# Entrada
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_open:
 		return
@@ -335,7 +335,7 @@ func _close() -> void:
 	_filtered = []
 	shop_closed.emit()
 
-# ── Panel de venta ────────────────────────────────────────────────────────────
+# Panel de venta
 
 func _build_sell_ui() -> void:
 	_sell_panel = PanelContainer.new()

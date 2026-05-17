@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-## Pantalla de Game Over con animación de fade-in y opciones para el jugador.
+# Pantalla de Game Over con animación de fade-in y opciones para el jugador.
 
 @onready var background: Panel = $Background
 @onready var overlay: ColorRect = $Overlay
@@ -47,7 +47,7 @@ func _pulse_title() -> void:
 	pulse.tween_property(game_over_label, "modulate:a", 1.0, 1.5)
 
 
-# ── Botones ───────────────────────────────────────────────────────────────────
+# Botones
 
 func _on_retry_pressed() -> void:
 	get_tree().reload_current_scene()

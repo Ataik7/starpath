@@ -3,13 +3,13 @@ extends Node2D
 @onready var player:     PlayerController = $Player
 @onready var pause_menu: PauseMenu        = $PauseMenu
 
-# ── Sistema de seguidores estilo Octopath ────────────────────────────────────
+# Sistema de seguidores estilo Octopath
 const _FOLLOW_STEPS : int = 22   # frames de separación entre personajes
 const _HISTORY_MAX  : int = 300  # entradas máximas en el historial
 
 const _FOLLOWER_TEX : Dictionary = {
-	"athelios": "res://Assets/Characters/Athelios.png",
-	"byran":    "res://Assets/Characters/Byran.png",
+	"athelios": "res://Assets/Characters/Heroes/Athelios.png",
+	"byran":    "res://Assets/Characters/Heroes/Byran.png",
 }
 
 var _chars_layer  : Node2D        = null
@@ -44,6 +44,16 @@ func _restore_pre_battle_state() -> void:
 		"right": back = Vector2(-64,   0)
 	player.global_position = Inventory.pre_battle_position + back
 	player._last_dir       = Inventory.pre_battle_direction
+
+	# Si ganamos, eliminar el enemigo del mapa permanentemente
+	if Inventory.battle_was_won and Inventory.last_enemy_id != "":
+		Inventory.battle_was_won = false
+		if Inventory.last_enemy_id not in Inventory.defeated_enemies:
+			Inventory.defeated_enemies.append(Inventory.last_enemy_id)
+		for child in get_children():
+			if child.name == Inventory.last_enemy_id:
+				child.queue_free()
+				break
 
 func _restore_saved_position() -> void:
 	SaveManager.apply_pending_spawn(player)
@@ -139,7 +149,7 @@ func _elevate_tall_objects() -> void:
 	if map == null:
 		return
 
-	# ── Capa "building": antorcha y estatua ──────────────────────────────────
+	# Capa "building": antorcha y estatua
 	var building_layer: TileMapLayer = null
 	for child in map.get_children():
 		if child.name == "building" and child is TileMapLayer:
@@ -167,7 +177,7 @@ func _elevate_tall_objects() -> void:
 			tall_layer.set_cell(cell, src, ac, alt)
 			building_layer.erase_cell(cell)
 
-	# ── Árboles ──────────────────────────────────────────────────────────────
+	# Árboles
 	# Separa troncos (atlas.y == 2) a una nueva capa z=-1.
 	# Las hojas (atlas.y != 2) se quedan en la capa "tree" original.
 	# _setup_map_layers() le asignará z=10 a "tree", que con y_sort=false
@@ -228,7 +238,7 @@ func _setup_character_layer() -> void:
 	)
 	call_deferred("_update_followers")
 
-# ── Seguidores: registrar historial y mover ───────────────────────────────────
+# Seguidores: registrar historial y mover
 
 func _physics_process(_delta: float) -> void:
 	if player == null:
@@ -258,7 +268,7 @@ func _physics_process(_delta: float) -> void:
 		var e     : Dictionary = _path_history[idx]
 		f.update_from_history(e["pos"] as Vector2, e["dir"] as String)
 
-## Convierte una dirección textual en vector unitario.
+# Convierte una dirección textual en vector unitario.
 func _dir_to_vec(dir: String) -> Vector2:
 	match dir:
 		"up":    return Vector2( 0, -1)
@@ -267,7 +277,7 @@ func _dir_to_vec(dir: String) -> Vector2:
 		"right": return Vector2( 1,  0)
 	return Vector2(0, 1)
 
-## Crea o destruye seguidores para que coincidan con Inventory.party_members.
+# Crea o destruye seguidores para que coincidan con Inventory.party_members.
 func _update_followers() -> void:
 	if _chars_layer == null:
 		return

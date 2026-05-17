@@ -47,8 +47,8 @@ func stop_bgm() -> void:
 	_bgm.stop()
 	_current_bgm = ""
 
-func play_sfx(name: String, volume: float = 1.0) -> void:
-	var path := SFX_DIR + name + ".ogg"
+func play_sfx(sfx_name: String, volume: float = 1.0) -> void:
+	var path := SFX_DIR + sfx_name + ".ogg"
 	if not ResourceLoader.exists(path):
 		return   # archivo aún no añadido → silencio sin error
 	var stream = load(path)

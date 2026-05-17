@@ -1,14 +1,14 @@
 class_name FollowerController
 extends Node2D
 
-## Sprite que camina detrás del líder del grupo (estilo Octopath).
-## WorldMap.gd le llama update_from_history() cada physics frame.
+# Sprite que camina detrás del líder del grupo (estilo Octopath).
+# WorldMap.gd le llama update_from_history() cada physics frame.
 
 @onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
 
 var _last_dir: String = "down"
 
-# ── Configurar animaciones del spritesheet Pipoya 3×4 (32×32 px por frame) ───
+# Configurar animaciones del spritesheet Pipoya 3×4 (32×32 px por frame)
 
 func setup_texture(tex: Texture2D) -> void:
 	if tex == null:
@@ -40,7 +40,7 @@ func setup_texture(tex: Texture2D) -> void:
 	_sprite.offset        = Vector2(0, -16)
 	_sprite.play("idle_down")
 
-# ── Llamado cada frame por WorldMap con la posición del historial ─────────────
+# Llamado cada frame por WorldMap con la posición del historial
 
 func update_from_history(target_pos: Vector2, target_dir: String) -> void:
 	var diff := target_pos - global_position
@@ -50,7 +50,7 @@ func update_from_history(target_pos: Vector2, target_dir: String) -> void:
 	else:
 		_play_idle(target_dir)
 
-# ── Animación ─────────────────────────────────────────────────────────────────
+# Animación
 
 func _update_walk_anim(diff: Vector2) -> void:
 	var dir: String

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://bof5wpydm7fdd" path="res://Scripts/Battle/CombatantSprite.gd" id="1_uysmh"]
 [ext_resource type="Script" uid="uid://b2nb2ij58wmxg" path="res://Scripts/Battle/BaseEntity.gd" id="3_a3f3h"]
 [ext_resource type="Resource" uid="uid://byran00000001" path="res://Resources/Characters/Byran.tres" id="4_stats"]
-[ext_resource type="Texture2D" path="res://Assets/Characters/byran.png" id="5_tex"]
+[ext_resource type="Texture2D" path="res://Assets/Characters/Heroes/Byran.png" id="5_tex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_click"]
 size = Vector2(128, 128)

@@ -1,7 +1,7 @@
 extends HSlider
 
-## Nombre del bus de audio que controla este slider.
-## Configurado desde el Inspector (export).
+# Nombre del bus de audio que controla este slider.
+# Configurado desde el Inspector (export).
 @export var audio_bus_name: String = "Music"
 
 @onready var popup: Label = $VolumePopup

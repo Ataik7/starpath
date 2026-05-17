@@ -74,6 +74,7 @@ func _ready() -> void:
 
 	battle_manager.action_menu_toggled.connect(_on_menu_toggled)
 	battle_manager.battle_ended.connect(_on_battle_ended)
+	battle_manager.attack_animation_needed.connect(_on_attack_anim)
 	battle_manager.active_entity_changed.connect(battle_hud.set_active_entity)
 	battle_manager.active_entity_changed.connect(_on_active_entity_changed)
 	battle_manager.active_entity_changed.connect(_update_turn_order_highlight)
@@ -86,7 +87,7 @@ func _ready() -> void:
 	_all_hero_entities  = [hero_logic]
 
 	# ── Instanciar compañeros si están en el grupo ────────────────────────────
-	var hero_x_positions := [220, 150, 80]   # posiciones X para 1-3 héroes
+	var hero_x_positions := [380, 300, 220]   # posiciones X para 1-3 héroes
 
 	if Inventory.has_party_member("athelios"):
 		var s2 := preload("res://Scenes/Battle/Hero2Sprite.tscn").instantiate() as Node2D
@@ -156,8 +157,8 @@ func _update_menu_for_hero(hero: BaseEntity) -> void:
 	var class_id: int = hero.stats.character_class
 	var class_label: String = CLASS_NAMES.get(class_id, "Héroe")
 
-	# Botón de habilidades: solo Mago y Sanador
-	var has_skills: bool = class_id in MAGIC_CLASSES
+	# Botón de habilidades: cualquier héroe con habilidades asignadas
+	var has_skills: bool = not hero.stats.skills.is_empty()
 	magia_btn.visible = has_skills
 	if has_skills:
 		magia_btn.text = "Hab. de %s ▶" % class_label
@@ -770,3 +771,36 @@ func _update_turn_order_highlight(active: BaseEntity) -> void:
 	# Actualizar contenido de todos los slots según la nueva secuencia
 	for i in range(_SLOT_SHOW + 1):
 		_set_slot_content(_slots[i], sequence[i] if i < sequence.size() else null, i == 0)
+
+# ── Animaciones de ataque ─────────────────────────────────────────────────────
+
+func _on_attack_anim(attacker: BaseEntity, target: BaseEntity, is_magical: bool) -> void:
+	var a_cs := attacker.get_parent() as CombatantSprite
+	var t_cs := target.get_parent()   as CombatantSprite
+	if a_cs == null or t_cs == null:
+		return
+	if is_magical:
+		_play_cast_pulse(a_cs)
+		AudioManager.play_sfx("cast_spell")
+	else:
+		_play_dash(a_cs, t_cs)
+	# Flash + SFX de impacto al llegar (0.4 s después)
+	get_tree().create_timer(0.4).timeout.connect(func():
+		if not is_instance_valid(t_cs):
+			return
+		t_cs.play_hit_flash(is_magical)
+		AudioManager.play_sfx("hit_magic" if is_magical else "hit_physical")
+	, CONNECT_ONE_SHOT)
+
+func _play_dash(attacker: CombatantSprite, target: CombatantSprite) -> void:
+	var origin    := attacker.position
+	var direction := (target.global_position - attacker.global_position).normalized()
+	var dest      := origin + direction * 55.0
+	var tw := create_tween()
+	tw.tween_property(attacker, "position", dest,   0.22).set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
+	tw.tween_property(attacker, "position", origin, 0.20).set_ease(Tween.EASE_IN).set_trans(Tween.TRANS_CUBIC)
+
+func _play_cast_pulse(caster: CombatantSprite) -> void:
+	var tw := create_tween()
+	tw.tween_property(caster.sprite, "scale", Vector2(4.6, 4.6), 0.18).set_ease(Tween.EASE_OUT)
+	tw.tween_property(caster.sprite, "scale", Vector2(4.0, 4.0), 0.18).set_ease(Tween.EASE_IN)

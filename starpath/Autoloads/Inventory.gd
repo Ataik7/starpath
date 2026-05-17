@@ -85,26 +85,34 @@ func _add_starter_equipment(id: String) -> void:
 		return
 	match id:
 		"athelios":
-			var dagger        := ItemData.new()
-			dagger.item_name   = "Daga"
-			dagger.item_type   = ItemData.ItemType.WEAPON
-			dagger.attack_bonus = 5
+			var dagger          := ItemData.new()
+			dagger.item_name     = "Daga de Sombra"
+			dagger.item_type     = ItemData.ItemType.WEAPON
+			dagger.attack_bonus  = 9
+			dagger.price         = 120
+			dagger.shop_category = "guerrero"
 			companion_weapon["athelios"] = dagger
-			var leather           := ItemData.new()
-			leather.item_name      = "Armadura de Cuero"
-			leather.item_type      = ItemData.ItemType.ARMOR
-			leather.defense_bonus  = 3
+			var leather            := ItemData.new()
+			leather.item_name       = "Armadura de Cuero"
+			leather.item_type       = ItemData.ItemType.ARMOR
+			leather.defense_bonus   = 5
+			leather.price           = 90
+			leather.shop_category   = "guerrero"
 			companion_armor["athelios"] = leather
 		"byran":
-			var sword         := ItemData.new()
-			sword.item_name    = "Espada Corta"
-			sword.item_type    = ItemData.ItemType.WEAPON
-			sword.attack_bonus = 8
+			var sword           := ItemData.new()
+			sword.item_name      = "Espada Corta"
+			sword.item_type      = ItemData.ItemType.WEAPON
+			sword.attack_bonus   = 14
+			sword.price          = 150
+			sword.shop_category  = "guerrero"
 			companion_weapon["byran"] = sword
-			var mail           := ItemData.new()
-			mail.item_name      = "Cota de Malla"
-			mail.item_type      = ItemData.ItemType.ARMOR
-			mail.defense_bonus  = 6
+			var mail             := ItemData.new()
+			mail.item_name        = "Cota de Malla"
+			mail.item_type        = ItemData.ItemType.ARMOR
+			mail.defense_bonus    = 10
+			mail.price            = 130
+			mail.shop_category    = "guerrero"
 			companion_armor["byran"] = mail
 
 var current_hp: int = 0
@@ -168,6 +176,22 @@ func _ready() -> void:
 		_base_max_hp = base.max_hp
 		_base_max_mp = base.max_mp
 	init_stats()
+
+## Llama esto al comenzar una partida nueva (desde menu_inicio).
+func start_new_game() -> void:
+	gold            = 150
+	current_level   = 1
+	current_xp      = 0
+	items.clear()
+	equipped_weapon = null
+	equipped_armor  = null
+	party_members.clear()
+	companion_xp.clear()
+	companion_level.clear()
+	companion_weapon.clear()
+	companion_armor.clear()
+	init_stats()
+
 	var pocion := ItemData.new()
 	pocion.item_name   = "Poción"
 	pocion.item_type   = ItemData.ItemType.CONSUMABLE
@@ -183,6 +207,24 @@ func _ready() -> void:
 	eter.amount      = 30
 	eter.quantity    = 2
 	items.append(eter)
+
+	var staff := ItemData.new()
+	staff.item_name     = "Bastón de Aprendiz"
+	staff.item_type     = ItemData.ItemType.WEAPON
+	staff.attack_bonus  = 6
+	staff.price         = 80
+	staff.shop_category = "mago"
+	items.append(staff)
+	equipped_weapon = staff
+
+	var robe := ItemData.new()
+	robe.item_name      = "Túnica de Iniciada"
+	robe.item_type      = ItemData.ItemType.ARMOR
+	robe.defense_bonus  = 4
+	robe.price          = 60
+	robe.shop_category  = "mago"
+	items.append(robe)
+	equipped_armor = robe
 
 func use_item(item: ItemData) -> void:
 	item.quantity -= 1

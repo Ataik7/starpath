@@ -17,7 +17,7 @@ layer = -10
 script = ExtResource("9_bg")
 
 [node name="HeroSprite" parent="." unique_id=766005803 instance=ExtResource("2_u810s")]
-position = Vector2(220, 410)
+position = Vector2(380, 410)
 
 [node name="BattleManager" type="Node" parent="." unique_id=1446133905 node_paths=PackedStringArray("turn_queue")]
 script = ExtResource("4_47u5s")
@@ -27,10 +27,10 @@ turn_queue = NodePath("../TurnQueue")
 script = ExtResource("5_2tp6q")
 
 [node name="EnemySprite" parent="." unique_id=1135229011 instance=ExtResource("3_8uoga")]
-position = Vector2(840, 380)
+position = Vector2(750, 380)
 
 [node name="Enemy2Sprite" parent="." unique_id=320145721 instance=ExtResource("8_enemy2")]
-position = Vector2(1000, 410)
+position = Vector2(900, 410)
 
 [node name="BattleHUD" type="CanvasLayer" parent="." unique_id=320145690]
 script = ExtResource("6_bhud")

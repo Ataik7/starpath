@@ -60,7 +60,7 @@ func _setup_animations(tex: Texture2D) -> void:
 	var img := tex.get_image() if tex.has_method("get_image") else null
 	var rows: int = 4
 	if img != null:
-		rows = img.get_height() / 32
+		rows = img.get_height() / 32 as int
 	var dir_rows := {
 		"down":  0,
 		"left":  1,

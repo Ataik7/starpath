@@ -24,6 +24,7 @@ signal battle_ended(player_won: bool)
 signal active_entity_changed(entity: BaseEntity)
 signal target_selection_needed(enemies: Array[BaseEntity])
 signal ally_target_selection_needed(allies: Array[BaseEntity])
+signal attack_animation_needed(attacker: BaseEntity, target: BaseEntity, is_magical: bool)
 
 func _ready() -> void:
 	if not turn_queue:
@@ -76,8 +77,8 @@ func _execute_enemy_ai(enemy: BaseEntity) -> void:
 	await get_tree().create_timer(1.0).timeout
 	
 	_log(enemy.stats.character_name + " ataca ferozmente.")
-	await get_tree().create_timer(0.5).timeout
-	
+	await get_tree().create_timer(0.3).timeout
+
 	# 1. El enemigo elige un héroe vivo al azar
 	var alive_heroes = _get_alive_heroes()
 	if alive_heroes.is_empty():
@@ -85,7 +86,9 @@ func _execute_enemy_ai(enemy: BaseEntity) -> void:
 		return
 	var target = alive_heroes[randi() % alive_heroes.size()]
 
-	# 2. Le aplica daño (el nivel del jugador aporta defensa extra)
+	# 2. Animación → daño
+	attack_animation_needed.emit(enemy, target, false)
+	await get_tree().create_timer(0.4).timeout
 	var damage_dealt := maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
 	target.take_damage(damage_dealt)
 	_log(enemy.stats.character_name + " ataca a " + target.stats.character_name + ". ¡Ay!")
@@ -116,9 +119,12 @@ func player_action_selected(action_name: String) -> void:
 	if action_name == "Curar":
 		var success = attacker.heal_self()
 		if success:
+			AudioManager.play_sfx("heal")
 			_log(attacker.stats.character_name + " se cura y recupera HP.")
 		else:
 			_log("¡MP insuficiente para curar!")
+	elif action_name == "Defender":
+		AudioManager.play_sfx("defend")
 
 	await get_tree().create_timer(1.0).timeout
 	advance_to_next_turn()
@@ -175,7 +181,9 @@ func player_target_confirmed(target: BaseEntity) -> void:
 				_log("¡" + item.item_name + "! " + target.stats.character_name + " recibe daño.")
 	elif skill != null:
 		_log(attacker.stats.character_name + " lanza " + skill.skill_name + "!")
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(0.3).timeout
+		attack_animation_needed.emit(attacker, target, skill.is_magical)
+		await get_tree().create_timer(0.4).timeout
 		if attacker.spend_mp(skill.mp_cost):
 			target.take_damage(skill.damage, skill.is_magical)
 			var tipo = "mágico" if skill.is_magical else "físico"
@@ -184,7 +192,9 @@ func player_target_confirmed(target: BaseEntity) -> void:
 			_log("¡MP insuficiente para " + skill.skill_name + "!")
 	else:
 		_log(attacker.stats.character_name + " ataca a " + target.stats.character_name + "!")
-		await get_tree().create_timer(1.0).timeout
+		await get_tree().create_timer(0.3).timeout
+		attack_animation_needed.emit(attacker, target, false)
+		await get_tree().create_timer(0.4).timeout
 		var equip_bonus := Inventory.get_attack_bonus() + Inventory.get_level_atk_bonus() \
 				if attacker.get_parent().is_in_group("Heroes") else 0
 		target.take_damage(attacker.stats.attack + equip_bonus)

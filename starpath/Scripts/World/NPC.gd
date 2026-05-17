@@ -1,4 +1,4 @@
-extends Node2D
+﻿extends Node2D
 class_name NPC
 
 @export var speaker_name : String        = "Aldeano"
@@ -176,7 +176,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not _menu_open:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_ESCAPE or event.keycode == KEY_X:
+		if event.keycode == KEY_ESCAPE or event.is_action_pressed("open_menu"):
 			get_viewport().set_input_as_handled()
 			_close_menu()
 

@@ -8,4 +8,4 @@ skill_name = "Veneno"
 damage = 24
 mp_cost = 6
 targets_enemy = true
-is_magical = true
+is_magical = false

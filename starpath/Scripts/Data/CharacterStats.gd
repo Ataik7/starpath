@@ -10,6 +10,12 @@ enum ClassType { GUERRERO, MAGO, PICARO, SANADOR, PALADIN, ARQUERO }
 @export var attack: int = 20
 @export var defense: int = 10
 @export var speed: int = 15
+@export var strength: int = 12
+@export var magic: int = 10
+@export var spirit: int = 8
+@export var evade: int = 5
+@export var magic_defense: int = 8
+@export var magic_evade: int = 5
 @export var skills: Array[SkillData] = []
 
 ## XP que otorga este personaje/enemigo al ser derrotado.

@@ -7,13 +7,22 @@ const SLOT_COUNT := 20
 
 var has_unsaved_changes: bool = true
 
+# Tiempo de juego acumulado en guardados anteriores (segundos)
+var play_time_sec:    int   = 0
+var _session_start:   float = 0.0
+
 # Posición pendiente a aplicar cuando el WorldMap termine de cargar
 var _pending_pos: Vector2 = Vector2.ZERO
 var _pending_dir: String  = ""
 var has_pending_spawn: bool = false
 
 func _ready() -> void:
+	_session_start = Time.get_unix_time_from_system()
 	Inventory.changed.connect(func(): has_unsaved_changes = true)
+
+## Tiempo total = guardado + sesión actual (en segundos).
+func get_total_play_time() -> int:
+	return play_time_sec + int(Time.get_unix_time_from_system() - _session_start)
 
 func _slot_path(slot: int) -> String:
 	return "user://slot_%02d.save" % slot
@@ -41,7 +50,11 @@ func get_slot_info(slot: int) -> Dictionary:
 
 func save_game(slot: int) -> void:
 	var data: Dictionary = {}
-	data["save_date"] = Time.get_datetime_string_from_system().replace("T", " ").left(16)
+	data["save_date"]  = Time.get_datetime_string_from_system().replace("T", " ").left(16)
+	data["play_time"]  = get_total_play_time()
+	# Reiniciar sesión para evitar doble-conteo si se guarda varias veces
+	play_time_sec  = data["play_time"]
+	_session_start = Time.get_unix_time_from_system()
 
 	var player := _find_player()
 	if player:
@@ -96,6 +109,9 @@ func load_game(slot: int) -> bool:
 	file.close()
 	if data == null:
 		return false
+
+	play_time_sec  = int(data.get("play_time", 0))
+	_session_start = Time.get_unix_time_from_system()
 
 	Inventory.gold            = int(data.get("gold", 150))
 	Inventory.current_level   = int(data.get("level", 1))
@@ -157,7 +173,13 @@ func load_game(slot: int) -> bool:
 func apply_pending_spawn(player: PlayerController) -> void:
 	if not has_pending_spawn:
 		return
-	player.global_position = _pending_pos
+	var back := Vector2.ZERO
+	match _pending_dir:
+		"up":    back = Vector2(  0,  48)
+		"down":  back = Vector2(  0, -48)
+		"left":  back = Vector2( 48,   0)
+		"right": back = Vector2(-48,   0)
+	player.global_position = _pending_pos + back
 	player._last_dir       = _pending_dir
 	has_pending_spawn      = false
 

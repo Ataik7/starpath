@@ -150,6 +150,14 @@ func _on_defeated() -> void:
 
 # ── Número flotante de daño / curación ────────────────────────────────────
 
+## Llama esto externamente al aplicar daño para el flash de color.
+func play_hit_flash(is_magical: bool = false) -> void:
+	var hit_color := Color(0.35, 0.55, 1.0) if is_magical else Color(1.0, 0.25, 0.25)
+	sprite.modulate = hit_color
+	var tw := create_tween()
+	var restore := Color(0.55, 0.8, 1.0) if entity_logic.is_defending else Color(1.0, 1.0, 1.0)
+	tw.tween_property(sprite, "modulate", restore, 0.35)
+
 func _spawn_floating_text(text: String, color: Color) -> void:
 	var label := Label.new()
 	label.text     = text

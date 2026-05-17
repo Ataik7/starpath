@@ -333,13 +333,7 @@ func _build_confirm_dialog() -> void:
 
 
 func _start_new_game() -> void:
-	Inventory.gold             = 150
-	Inventory.current_level    = 1
-	Inventory.current_xp       = 0
-	Inventory.items.clear()
-	Inventory.equipped_weapon  = null
-	Inventory.equipped_armor   = null
-	Inventory.init_stats()
+	Inventory.start_new_game()
 	TutorialManager.reset()
 	SaveManager.has_unsaved_changes = true
 	SceneTransition.go_to(WORLD_MAP_SCENE)

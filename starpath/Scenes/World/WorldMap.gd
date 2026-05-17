@@ -35,7 +35,14 @@ func _ready() -> void:
 		call_deferred("_trigger_lore_tutorial")
 
 func _restore_pre_battle_state() -> void:
-	player.global_position = Inventory.pre_battle_position
+	# Retroceder 64 px para no aparecer dentro del área de detección del enemigo.
+	var back := Vector2.ZERO
+	match Inventory.pre_battle_direction:
+		"up":    back = Vector2(  0,  64)
+		"down":  back = Vector2(  0, -64)
+		"left":  back = Vector2( 64,   0)
+		"right": back = Vector2(-64,   0)
+	player.global_position = Inventory.pre_battle_position + back
 	player._last_dir       = Inventory.pre_battle_direction
 
 func _restore_saved_position() -> void:

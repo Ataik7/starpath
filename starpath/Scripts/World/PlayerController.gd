@@ -1,4 +1,4 @@
-class_name PlayerController
+﻿class_name PlayerController
 extends CharacterBody2D
 
 signal interaction_requested
@@ -72,13 +72,13 @@ func _physics_process(_delta: float) -> void:
 		TutorialManager.try_show(
 			"movement",
 			"Controles",
-			"↑ ↓ ← →   Moverse por el mundo\n\nE   Interactuar con personajes y objetos\n\nX   Abrir el menú del juego (equipamiento, guardar...)",
+			"W  A  S  D   Moverse por el mundo\n\nE   Interactuar con personajes y objetos\n\nX   Abrir el menú del juego (equipamiento, guardar...)",
 			false
 		)
 
 	var dir := Vector2(
-		Input.get_axis("ui_left", "ui_right"),
-		Input.get_axis("ui_up", "ui_down")
+		Input.get_axis("move_left", "move_right"),
+		Input.get_axis("move_up", "move_down")
 	).normalized()
 
 	velocity = dir * speed
@@ -102,10 +102,10 @@ func _update_animation(dir: Vector2) -> void:
 		anim_sprite.play(walk_anim)
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_accept"):
+	if event.is_action_pressed("interact"):
 		interaction_requested.emit()
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_X:
+		if event.is_action_pressed("open_menu"):
 			menu_requested.emit()
 		if event.keycode == KEY_F1:
 			print("─── DEBUG F1 ───")

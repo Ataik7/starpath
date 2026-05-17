@@ -111,7 +111,7 @@ func _build_popup() -> void:
 
 	# Pista de cierre
 	var hint := Label.new()
-	hint.text = "[ ESPACIO / X ]  Continuar"
+	hint.text = "[ ESPACIO ]  Continuar"
 	hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 	hint.add_theme_font_size_override("font_size", 11)
 	hint.add_theme_color_override("font_color", C_HINT)
@@ -164,7 +164,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode in [KEY_SPACE, KEY_ENTER, KEY_Z, KEY_X, KEY_ESCAPE]:
+		if event.keycode == KEY_SPACE:
 			get_viewport().set_input_as_handled()
 			_dismiss()
 	elif event is InputEventMouseButton and event.pressed:

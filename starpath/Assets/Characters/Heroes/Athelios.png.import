@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://e784dti6y84l"
-path="res://.godot/imported/web.svg-759a54509abd4196a0e44b9c55590f5b.ctex"
+uid="uid://dpygofe8f3icf"
+path="res://.godot/imported/Athelios.png-536d9c8e3e1aa89615dc0973310e7821.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Icons/web.svg"
-dest_files=["res://.godot/imported/web.svg-759a54509abd4196a0e44b9c55590f5b.ctex"]
+source_file="res://Assets/Characters/Heroes/Athelios.png"
+dest_files=["res://.godot/imported/Athelios.png-536d9c8e3e1aa89615dc0973310e7821.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

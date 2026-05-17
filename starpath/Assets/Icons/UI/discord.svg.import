@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://b6aipu7rhew2q"
-path="res://.godot/imported/pexels-photo-10487961.jpeg-aee35a507ac8552abe46ea45349d6da8.ctex"
+uid="uid://borcgosfgrdp1"
+path="res://.godot/imported/discord.svg-4df1e6650a7aa2bbcd4746532cde5207.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Images/pexels-photo-10487961.jpeg"
-dest_files=["res://.godot/imported/pexels-photo-10487961.jpeg-aee35a507ac8552abe46ea45349d6da8.ctex"]
+source_file="res://Assets/Icons/UI/discord.svg"
+dest_files=["res://.godot/imported/discord.svg-4df1e6650a7aa2bbcd4746532cde5207.ctex"]
 
 [params]
 
@@ -38,3 +38,6 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
+svg/scale=1.0
+editor/scale_with_editor_scale=false
+editor/convert_colors_with_editor_theme=false

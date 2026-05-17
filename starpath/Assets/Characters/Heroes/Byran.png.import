@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://drkbu1hfh0bn0"
-path="res://.godot/imported/x.svg-0cde62f4f4d7229f6d4217f24c8f641d.ctex"
+uid="uid://bj0ivw1nmkql8"
+path="res://.godot/imported/Byran.png-4c7a61eb9e68350e529f3ff96809f4ff.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Icons/x.svg"
-dest_files=["res://.godot/imported/x.svg-0cde62f4f4d7229f6d4217f24c8f641d.ctex"]
+source_file="res://Assets/Characters/Heroes/Byran.png"
+dest_files=["res://.godot/imported/Byran.png-4c7a61eb9e68350e529f3ff96809f4ff.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

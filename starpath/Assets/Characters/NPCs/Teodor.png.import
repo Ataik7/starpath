@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dpygofe8f3icf"
-path="res://.godot/imported/Athelios.png-8785d8807d2cca67229b5631750b8433.ctex"
+uid="uid://dtl2yoa31urxi"
+path="res://.godot/imported/Teodor.png-43eba8e1dd181e1d0142a0efe1d62388.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Characters/Athelios.png"
-dest_files=["res://.godot/imported/Athelios.png-8785d8807d2cca67229b5631750b8433.ctex"]
+source_file="res://Assets/Characters/NPCs/Teodor.png"
+dest_files=["res://.godot/imported/Teodor.png-43eba8e1dd181e1d0142a0efe1d62388.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bj0ivw1nmkql8"
-path="res://.godot/imported/Byran.png-c4b555d6e861295326552b7c2e5f47ac.ctex"
+uid="uid://brmcj4jtfvfii"
+path="res://.godot/imported/web.png-cbbbc3f2c4fb6a43ff5a64b972f3162b.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Characters/Byran.png"
-dest_files=["res://.godot/imported/Byran.png-c4b555d6e861295326552b7c2e5f47ac.ctex"]
+source_file="res://Assets/Icons/UI/web.png"
+dest_files=["res://.godot/imported/web.png-cbbbc3f2c4fb6a43ff5a64b972f3162b.ctex"]
 
 [params]
 

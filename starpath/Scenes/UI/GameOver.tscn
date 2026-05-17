@@ -1,9 +1,9 @@
 [gd_scene format=3]
 
-[ext_resource type="Script" path="res://Scripts/UI/GameOver.gd" id="1_go"]
+[ext_resource type="Script" uid="uid://dtjhgvssbnj2y" path="res://Scripts/UI/GameOver.gd" id="1_go"]
 [ext_resource type="FontFile" uid="uid://c6xkn5sml1f3b" path="res://Assets/Fonts/CinzelDecorative-Bold.ttf" id="2_font"]
-[ext_resource type="FontFile" path="res://Assets/Fonts/CinzelDecorative-Black.ttf" id="3_font_black"]
-[ext_resource type="Texture2D" path="res://Assets/Images/pexels-photo-10487961.jpeg" id="4_bg"]
+[ext_resource type="FontFile" uid="uid://cq3drf6yo2uwe" path="res://Assets/Fonts/CinzelDecorative-Black.ttf" id="3_font_black"]
+[ext_resource type="Texture2D" uid="uid://b6aipu7rhew2q" path="res://Assets/Images/gameover_background.jpeg" id="4_bg"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_bg"]
 texture = ExtResource("4_bg")

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://xo76eqkhisff"
-path="res://.godot/imported/Lyra.png-c8a59810e67ee749a0df0768d469b4a9.ctex"
+uid="uid://bmhvibmpiwand"
+path="res://.godot/imported/Armor.png-46aadf10b76447f5e48753be99a56ded.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Characters/Lyra.png"
-dest_files=["res://.godot/imported/Lyra.png-c8a59810e67ee749a0df0768d469b4a9.ctex"]
+source_file="res://Assets/Icons/Items/Armor.png"
+dest_files=["res://.godot/imported/Armor.png-46aadf10b76447f5e48753be99a56ded.ctex"]
 
 [params]
 

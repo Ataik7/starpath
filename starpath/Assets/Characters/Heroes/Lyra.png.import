@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://borcgosfgrdp1"
-path="res://.godot/imported/discord.svg-2aa652c0cb0953e38c166ac0fd685b1b.ctex"
+uid="uid://xo76eqkhisff"
+path="res://.godot/imported/Lyra.png-d188b33aee4284d13224f505b4508c01.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Icons/discord.svg"
-dest_files=["res://.godot/imported/discord.svg-2aa652c0cb0953e38c166ac0fd685b1b.ctex"]
+source_file="res://Assets/Characters/Heroes/Lyra.png"
+dest_files=["res://.godot/imported/Lyra.png-d188b33aee4284d13224f505b4508c01.ctex"]
 
 [params]
 
@@ -38,6 +38,3 @@ process/hdr_as_srgb=false
 process/hdr_clamp_exposure=false
 process/size_limit=0
 detect_3d/compress_to=1
-svg/scale=1.0
-editor/scale_with_editor_scale=false
-editor/convert_colors_with_editor_theme=false

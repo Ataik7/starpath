@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dngc5ykrypope"
-path="res://.godot/imported/3d-illustration-rpg-backgrounds-battle-free-photo.jpeg-b2e2cd936fadbde204c7c573c015077b.ctex"
+uid="uid://eiuse6ah4d5x"
+path="res://.godot/imported/PotionBottles.png-b809402cb6f1a659e06c29885731d7a0.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Assets/Images/3d-illustration-rpg-backgrounds-battle-free-photo.jpeg"
-dest_files=["res://.godot/imported/3d-illustration-rpg-backgrounds-battle-free-photo.jpeg-b2e2cd936fadbde204c7c573c015077b.ctex"]
+source_file="res://Assets/Icons/Items/PotionBottles.png"
+dest_files=["res://.godot/imported/PotionBottles.png-b809402cb6f1a659e06c29885731d7a0.ctex"]
 
 [params]
 

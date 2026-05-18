@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://benemy00001"]
 
 [ext_resource type="Script" path="res://Scripts/World/Enemy.gd" id="1_enemy"]
-[ext_resource type="Texture2D" path="res://Assets/Characters/skeleton.png" id="2_skel"]
+[ext_resource type="Texture2D" path="res://Assets/Characters/Enemies/Skeleton.png" id="2_skel"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_1"]
 atlas = ExtResource("2_skel")

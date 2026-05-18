@@ -8,6 +8,9 @@ class_name NPC
 @export var shop_name    : String        = "Tienda"
 @export var shop_catalog : Array[ItemData] = []
 
+@export var is_innkeeper : bool          = false
+@export var rest_cost    : int           = 50
+
 @export var npc_texture  : Texture2D
 @export_range(0, 3) var sprite_row: int = 0
 
@@ -50,7 +53,7 @@ func _build_menu() -> void:
 
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
-	var h := 210 if is_merchant else 145
+	var h := 210 if is_merchant else (185 if is_innkeeper else 145)
 	panel.offset_left   = -110
 	panel.offset_right  =  110
 	panel.offset_top    = -h / 2.0
@@ -93,6 +96,11 @@ func _build_menu() -> void:
 		var btn_sell := _make_btn("✦  Vender")
 		btn_sell.pressed.connect(_on_vender)
 		vbox.add_child(btn_sell)
+
+	if is_innkeeper:
+		var btn_rest := _make_btn("🛏  Descansar  (%d ✦)" % rest_cost)
+		btn_rest.pressed.connect(_on_descansar)
+		vbox.add_child(btn_rest)
 
 	vbox.add_child(_make_separator())
 
@@ -206,6 +214,33 @@ func _on_closed() -> void:
 	if _in_range:
 		_hint.show()
 
+func _on_descansar() -> void:
+	_close_menu()
+	if Inventory.gold < rest_cost:
+		DialogManager.start_dialog(
+			["No tienes suficiente oro para descansar aquí.",
+			 "Necesitas %d ✦." % rest_cost],
+			speaker_name
+		)
+		DialogManager.dialog_finished.connect(_on_closed, CONNECT_ONE_SHOT)
+		return
+
+	# Cobrar y curar a todo el grupo
+	Inventory.gold -= rest_cost
+	Inventory.current_hp = Inventory.get_max_hp()
+	Inventory.current_mp = Inventory.get_max_mp()
+	for id in Inventory.party_members:
+		Inventory.set_companion_hp(id, Inventory.get_companion_max_hp(id))
+		Inventory.set_companion_mp(id, Inventory.get_companion_max_mp(id))
+	Inventory.changed.emit()
+
+	DialogManager.start_dialog(
+		["Descansad bien, viajeros.",
+		 "Todas vuestras fuerzas han sido restauradas.  (- %d ✦)" % rest_cost],
+		speaker_name
+	)
+	DialogManager.dialog_finished.connect(_on_closed, CONNECT_ONE_SHOT)
+
 # Catálogo por defecto
 func _fill_default_catalog() -> void:
 	var sword             := ItemData.new()
@@ -255,6 +290,38 @@ func _fill_default_catalog() -> void:
 	arcane_staff.price          = 95
 	arcane_staff.shop_category  = "mago"
 	shop_catalog.append(arcane_staff)
+
+	var dagger            := ItemData.new()
+	dagger.item_name       = "Daga Afilada"
+	dagger.item_type       = ItemData.ItemType.WEAPON
+	dagger.attack_bonus    = 18
+	dagger.price           = 60
+	dagger.shop_category   = "picaro"
+	shop_catalog.append(dagger)
+
+	var twin_blades       := ItemData.new()
+	twin_blades.item_name      = "Hojas Gemelas"
+	twin_blades.item_type      = ItemData.ItemType.WEAPON
+	twin_blades.attack_bonus   = 26
+	twin_blades.price          = 110
+	twin_blades.shop_category  = "picaro"
+	shop_catalog.append(twin_blades)
+
+	var leather_hood      := ItemData.new()
+	leather_hood.item_name     = "Capucha de Cuero"
+	leather_hood.item_type     = ItemData.ItemType.ARMOR
+	leather_hood.defense_bonus = 8
+	leather_hood.price         = 45
+	leather_hood.shop_category = "picaro"
+	shop_catalog.append(leather_hood)
+
+	var shadow_cloak      := ItemData.new()
+	shadow_cloak.item_name     = "Capa de Sombras"
+	shadow_cloak.item_type     = ItemData.ItemType.ARMOR
+	shadow_cloak.defense_bonus = 14
+	shadow_cloak.price         = 85
+	shadow_cloak.shop_category = "picaro"
+	shop_catalog.append(shadow_cloak)
 
 	var pocion            := ItemData.new()
 	pocion.item_name       = "Poción"

@@ -138,6 +138,26 @@ func _ready() -> void:
 		team_heroes.append(hero3_logic)
 		_all_hero_entities.append(hero3_logic)
 
+	# Restaurar HP/MP desde Inventory (persiste entre combates)
+	# Duplicar stats para no modificar el recurso .tres original
+	hero_logic.stats = hero_logic.stats.duplicate()
+	hero_logic.stats.max_hp = Inventory.get_max_hp()
+	hero_logic.stats.max_mp = Inventory.get_max_mp()
+	hero_logic.current_hp = Inventory.current_hp
+	hero_logic.current_mp = Inventory.current_mp
+	if hero2_logic != null:
+		hero2_logic.stats = hero2_logic.stats.duplicate()
+		hero2_logic.stats.max_hp = Inventory.get_companion_max_hp("athelios")
+		hero2_logic.stats.max_mp = Inventory.get_companion_max_mp("athelios")
+		hero2_logic.current_hp = Inventory.get_companion_hp("athelios")
+		hero2_logic.current_mp = Inventory.get_companion_mp("athelios")
+	if hero3_logic != null:
+		hero3_logic.stats = hero3_logic.stats.duplicate()
+		hero3_logic.stats.max_hp = Inventory.get_companion_max_hp("byran")
+		hero3_logic.stats.max_mp = Inventory.get_companion_max_mp("byran")
+		hero3_logic.current_hp = Inventory.get_companion_hp("byran")
+		hero3_logic.current_mp = Inventory.get_companion_mp("byran")
+
 	battle_hud.setup(team_heroes)
 	battle_manager.start_battle(team_heroes, team_enemies)
 
@@ -388,6 +408,7 @@ func _on_btn_huir_pressed() -> void:
 func _on_battle_fled() -> void:
 	Inventory.battle_was_won  = false
 	Inventory.battle_was_fled = true
+	_sync_hp_mp_to_inventory()
 	AudioManager.stop_bgm()
 	SceneTransition.go_to("res://Scenes/World/WorldMap.tscn")
 
@@ -432,32 +453,21 @@ func _show_victory_screen() -> void:
 	var xp_reward   := battle_manager.victory_xp
 	var gold_reward := battle_manager.victory_gold
 
-	# Estado antes de aplicar las recompensas
-	var xp_before     := Inventory.current_xp
-	var level_before  := Inventory.current_level
-	var xp_cap_before := Inventory.xp_to_next()
-
-	# Capturar estado XP de compañeros antes de aplicar
-	var comp_xp_before:    Dictionary = {}
+	# Capturar niveles antes de aplicar recompensas
+	var level_before := Inventory.current_level
 	var comp_level_before: Dictionary = {}
 	for id in Inventory.party_members:
-		comp_xp_before[id]    = Inventory.get_companion_xp(id)
 		comp_level_before[id] = Inventory.get_companion_level(id)
 
-	# Aplicar recompensas al Inventario
+	# Aplicar recompensas
 	Inventory.add_xp(xp_reward)
 	Inventory.gold += gold_reward
-
-	# Dar la misma XP a cada compañero activo
 	for id in Inventory.party_members:
 		Inventory.add_companion_xp(id, xp_reward)
 
-	var level_after  := Inventory.current_level
-	var xp_after     := Inventory.current_xp
-	var xp_cap_after := Inventory.xp_to_next()
-	var leveled_up   := level_after > level_before
+	var level_after := Inventory.current_level
 
-	# Overlay oscuro
+	# ── Overlay oscuro ──────────────────────────────────────────────────────
 	var ui := CanvasLayer.new()
 	ui.layer = 50
 	add_child(ui)
@@ -465,198 +475,133 @@ func _show_victory_screen() -> void:
 	var dimmer := ColorRect.new()
 	dimmer.color = Color(0.0, 0.0, 0.0, 0.0)
 	dimmer.set_anchors_preset(Control.PRESET_FULL_RECT)
-	dimmer.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dimmer.mouse_filter = Control.MOUSE_FILTER_STOP   # bloquea clics a la UI de combate
 	ui.add_child(dimmer)
 
 	var tw_dim := create_tween()
-	tw_dim.tween_property(dimmer, "color:a", 0.65, 0.35)
+	tw_dim.tween_property(dimmer, "color:a", 0.60, 0.30)
 	await tw_dim.finished
 
-	# Panel central
+	# ── Panel compacto centrado ─────────────────────────────────────────────
 	var vp_size := get_viewport().get_visible_rect().size
 
 	var panel := PanelContainer.new()
-	panel.custom_minimum_size = Vector2(520, 0)
-	panel.position = Vector2(vp_size.x * 0.5 - 260, vp_size.y * 0.5 - 190)
+	panel.custom_minimum_size = Vector2(400, 0)
+
+	var panel_style := StyleBoxFlat.new()
+	panel_style.bg_color     = Color(0.07, 0.07, 0.12, 0.97)
+	panel_style.border_color = Color(0.65, 0.50, 0.16, 1.0)
+	panel_style.set_border_width_all(2)
+	panel_style.set_corner_radius_all(10)
+	panel_style.shadow_color = Color(0, 0, 0, 0.75)
+	panel_style.shadow_size  = 14
+	panel.add_theme_stylebox_override("panel", panel_style)
 	ui.add_child(panel)
 
+	var margin := MarginContainer.new()
+	margin.add_theme_constant_override("margin_left",   28)
+	margin.add_theme_constant_override("margin_right",  28)
+	margin.add_theme_constant_override("margin_top",    22)
+	margin.add_theme_constant_override("margin_bottom", 22)
+	panel.add_child(margin)
+
 	var vbox := VBoxContainer.new()
-	vbox.add_theme_constant_override("separation", 10)
-	panel.add_child(vbox)
+	vbox.add_theme_constant_override("separation", 12)
+	margin.add_child(vbox)
 
-	var inner := MarginContainer.new()
-	inner.add_theme_constant_override("margin_left",   24)
-	inner.add_theme_constant_override("margin_right",  24)
-	inner.add_theme_constant_override("margin_top",    18)
-	inner.add_theme_constant_override("margin_bottom", 18)
-	vbox.add_child(inner)
-
-	var inner_vbox := VBoxContainer.new()
-	inner_vbox.add_theme_constant_override("separation", 10)
-	inner.add_child(inner_vbox)
-
-	# Título
+	# ── Título ──────────────────────────────────────────────────────────────
 	var lbl_title := Label.new()
 	lbl_title.text = "★  ¡VICTORIA!  ★"
 	lbl_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_title.add_theme_font_size_override("font_size", 30)
-	lbl_title.modulate = Color(1.0, 0.92, 0.3)
-	inner_vbox.add_child(lbl_title)
+	lbl_title.add_theme_font_size_override("font_size", 26)
+	lbl_title.modulate = Color(1.0, 0.92, 0.28)
+	vbox.add_child(lbl_title)
 
-	inner_vbox.add_child(HSeparator.new())
+	vbox.add_child(HSeparator.new())
 
-	# Fila EXP ganada
-	var lbl_xp_earned := Label.new()
-	lbl_xp_earned.text = "Experiencia:   + %d EXP" % xp_reward
-	lbl_xp_earned.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_xp_earned.add_theme_font_size_override("font_size", 18)
-	inner_vbox.add_child(lbl_xp_earned)
+	# ── Recompensas en fila ─────────────────────────────────────────────────
+	var reward_hbox := HBoxContainer.new()
+	reward_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	reward_hbox.add_theme_constant_override("separation", 28)
+	vbox.add_child(reward_hbox)
 
-	# Fila Oro ganado
+	var lbl_exp := Label.new()
+	lbl_exp.text = "+ %d EXP" % xp_reward
+	lbl_exp.add_theme_font_size_override("font_size", 16)
+	lbl_exp.modulate = Color(0.75, 0.95, 1.0)
+	reward_hbox.add_child(lbl_exp)
+
+	var lbl_sep := Label.new()
+	lbl_sep.text = "·"
+	lbl_sep.add_theme_font_size_override("font_size", 16)
+	lbl_sep.modulate = Color(0.5, 0.5, 0.5)
+	reward_hbox.add_child(lbl_sep)
+
 	var lbl_gold := Label.new()
-	lbl_gold.text = "Oro obtenido:   + %d ✦" % gold_reward
-	lbl_gold.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_gold.add_theme_font_size_override("font_size", 18)
-	lbl_gold.modulate = Color(1.0, 0.85, 0.2)
-	inner_vbox.add_child(lbl_gold)
+	lbl_gold.text = "+ %d ✦ oro" % gold_reward
+	lbl_gold.add_theme_font_size_override("font_size", 16)
+	lbl_gold.modulate = Color(1.0, 0.82, 0.22)
+	reward_hbox.add_child(lbl_gold)
 
-	inner_vbox.add_child(HSeparator.new())
+	vbox.add_child(HSeparator.new())
 
-	# Nombre del héroe + nivel
-	var lbl_hero := Label.new()
-	lbl_hero.text = "Lyra   —   Nv. %d" % level_before
-	lbl_hero.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_hero.add_theme_font_size_override("font_size", 16)
-	inner_vbox.add_child(lbl_hero)
+	# ── Fila helper: nombre | nivel | badge ─────────────────────────────────
+	var _make_char_row := func(char_name: String, lv_before: int, lv_after: int) -> void:
+		var row := HBoxContainer.new()
+		row.add_theme_constant_override("separation", 8)
+		vbox.add_child(row)
 
-	# Barra de XP
-	var xp_bar := ProgressBar.new()
-	xp_bar.min_value = 0
-	xp_bar.max_value = xp_cap_before
-	xp_bar.value = xp_before
-	xp_bar.show_percentage = false
-	xp_bar.custom_minimum_size = Vector2(0, 24)
-	inner_vbox.add_child(xp_bar)
+		var lbl_name := Label.new()
+		lbl_name.text = char_name
+		lbl_name.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		lbl_name.add_theme_font_size_override("font_size", 15)
+		lbl_name.modulate = Color(0.92, 0.88, 0.80)
+		row.add_child(lbl_name)
 
-	var lbl_xp_vals := Label.new()
-	lbl_xp_vals.text = "%d / %d XP" % [xp_before, xp_cap_before]
-	lbl_xp_vals.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	inner_vbox.add_child(lbl_xp_vals)
+		var lbl_lv := Label.new()
+		lbl_lv.text = "Nv. %d" % lv_after
+		lbl_lv.add_theme_font_size_override("font_size", 15)
+		lbl_lv.modulate = Color(0.70, 0.80, 1.0)
+		row.add_child(lbl_lv)
 
-	# Label de subida de nivel (vacío hasta que ocurra)
-	var lbl_levelup := Label.new()
-	lbl_levelup.text = ""
-	lbl_levelup.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	lbl_levelup.add_theme_font_size_override("font_size", 20)
-	lbl_levelup.modulate = Color(1.0, 0.9, 0.2)
-	inner_vbox.add_child(lbl_levelup)
+		if lv_after > lv_before:
+			var lbl_up := Label.new()
+			lbl_up.text = "▲ ¡Nivel!"
+			lbl_up.add_theme_font_size_override("font_size", 14)
+			lbl_up.modulate = Color(1.0, 0.88, 0.20)
+			row.add_child(lbl_up)
 
-	# Animación de la barra de XP
-	await get_tree().create_timer(0.4).timeout
+	# Lyra
+	_make_char_row.call("Lyra", level_before, level_after)
 
-	if leveled_up:
-		# Llenar hasta el máximo del nivel anterior
-		var tw1 := create_tween()
-		tw1.tween_property(xp_bar, "value", float(xp_cap_before), 0.7)
-		tw1.parallel().tween_method(
-			func(v: float): lbl_xp_vals.text = "%d / %d XP" % [int(v), xp_cap_before],
-			float(xp_before), float(xp_cap_before), 0.7)
-		await tw1.finished
-
-		await get_tree().create_timer(0.25).timeout
-		lbl_levelup.text = "★ ¡NIVEL %d! ★" % level_after
-		lbl_hero.text = "Lyra   —   Nv. %d" % level_after
-
-		# Reiniciar barra al nuevo umbral
-		xp_bar.max_value = xp_cap_after
-		xp_bar.value     = 0.0
-		await get_tree().create_timer(0.3).timeout
-
-		# Llenar hasta el XP residual
-		var tw2 := create_tween()
-		tw2.tween_property(xp_bar, "value", float(xp_after), 0.7)
-		tw2.parallel().tween_method(
-			func(v: float): lbl_xp_vals.text = "%d / %d XP" % [int(v), xp_cap_after],
-			0.0, float(xp_after), 0.7)
-		await tw2.finished
-	else:
-		var tw := create_tween()
-		tw.tween_property(xp_bar, "value", float(xp_after), 1.0)
-		tw.parallel().tween_method(
-			func(v: float): lbl_xp_vals.text = "%d / %d XP" % [int(v), xp_cap_after],
-			float(xp_before), float(xp_after), 1.0)
-		await tw.finished
-
-	lbl_xp_vals.text = "%d / %d XP" % [xp_after, xp_cap_after]
-
-	# EXP de compañeros del grupo
+	# Compañeros
 	for id in Inventory.party_members:
 		var c_stats: CharacterStats = load(_COMPANION_STATS_PATHS.get(id, ""))
 		if c_stats == null:
 			continue
+		var c_lv_b : int = comp_level_before.get(id, 1)
+		var c_lv_a : int = Inventory.get_companion_level(id)
+		_make_char_row.call(c_stats.character_name, c_lv_b, c_lv_a)
 
-		inner_vbox.add_child(HSeparator.new())
+	vbox.add_child(HSeparator.new())
 
-		var c_lv_b   : int  = comp_level_before.get(id, 1)
-		var c_xp_b   : int  = comp_xp_before.get(id, 0)
-		var c_xp_cap : int  = c_lv_b * 100
-		var c_lv_a   : int  = Inventory.get_companion_level(id)
-		var c_xp_a   : int  = Inventory.get_companion_xp(id)
-		var c_leveled: bool = c_lv_a > c_lv_b
-
-		var lbl_c_hero := Label.new()
-		lbl_c_hero.text = "%s   —   Nv. %d" % [c_stats.character_name, c_lv_b]
-		lbl_c_hero.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl_c_hero.add_theme_font_size_override("font_size", 16)
-		inner_vbox.add_child(lbl_c_hero)
-
-		var c_xp_bar := ProgressBar.new()
-		c_xp_bar.min_value = 0
-		c_xp_bar.max_value = c_xp_cap
-		c_xp_bar.value = c_xp_b
-		c_xp_bar.show_percentage = false
-		c_xp_bar.custom_minimum_size = Vector2(0, 24)
-		inner_vbox.add_child(c_xp_bar)
-
-		var lbl_c_xp := Label.new()
-		lbl_c_xp.text = "%d / %d XP" % [c_xp_b, c_xp_cap]
-		lbl_c_xp.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		inner_vbox.add_child(lbl_c_xp)
-
-		var lbl_c_lv := Label.new()
-		lbl_c_lv.text = ""
-		lbl_c_lv.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-		lbl_c_lv.add_theme_font_size_override("font_size", 18)
-		lbl_c_lv.modulate = Color(1.0, 0.9, 0.2)
-		inner_vbox.add_child(lbl_c_lv)
-
-		if c_leveled:
-			c_xp_bar.max_value = c_lv_a * 100
-			c_xp_bar.value     = c_xp_a
-			lbl_c_xp.text      = "%d / %d XP" % [c_xp_a, c_lv_a * 100]
-			lbl_c_lv.text      = "★ ¡NIVEL %d! ★" % c_lv_a
-			lbl_c_hero.text    = "%s   —   Nv. %d" % [c_stats.character_name, c_lv_a]
-		else:
-			var c_tw := create_tween()
-			c_tw.tween_property(c_xp_bar, "value", float(c_xp_a), 0.8)
-			c_tw.parallel().tween_method(
-				func(v: float): lbl_c_xp.text = "%d / %d XP" % [int(v), c_xp_cap],
-				float(c_xp_b), float(c_xp_a), 0.8)
-			await c_tw.finished
-
-	# Botón de regreso
-	inner_vbox.add_child(HSeparator.new())
-
-	var btn_hbox := HBoxContainer.new()
-	btn_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	inner_vbox.add_child(btn_hbox)
-
+	# ── Botón ───────────────────────────────────────────────────────────────
 	var btn_map := Button.new()
 	btn_map.text = "Volver al mapa"
-	btn_map.custom_minimum_size = Vector2(220, 40)
-	btn_hbox.add_child(btn_map)
+	btn_map.custom_minimum_size = Vector2(0, 36)
+	btn_map.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_child(btn_map)
+
+	# Centrar el panel una vez que Godot lo haya dimensionado
+	await get_tree().process_frame
+	await get_tree().process_frame
+	panel.position = Vector2(
+		vp_size.x * 0.5 - panel.size.x * 0.5,
+		vp_size.y * 0.5 - panel.size.y * 0.5
+	)
 
 	btn_map.pressed.connect(func():
+		_sync_hp_mp_to_inventory()
 		SceneTransition.go_to("res://Scenes/World/WorldMap.tscn")
 	)
 
@@ -874,3 +819,19 @@ func _play_cast_pulse(caster: CombatantSprite) -> void:
 	var tw := create_tween()
 	tw.tween_property(caster.sprite, "scale", Vector2(4.6, 4.6), 0.18).set_ease(Tween.EASE_OUT)
 	tw.tween_property(caster.sprite, "scale", Vector2(4.0, 4.0), 0.18).set_ease(Tween.EASE_IN)
+
+func _sync_hp_mp_to_inventory() -> void:
+	# Lyra
+	if hero_logic and hero_logic.is_alive:
+		Inventory.current_hp = hero_logic.current_hp
+		Inventory.current_mp = hero_logic.current_mp
+	else:
+		Inventory.current_hp = 0
+		Inventory.current_mp = 0
+	# Compañeros
+	if hero2_logic != null:
+		Inventory.set_companion_hp("athelios", hero2_logic.current_hp if hero2_logic.is_alive else 0)
+		Inventory.set_companion_mp("athelios", hero2_logic.current_mp if hero2_logic.is_alive else 0)
+	if hero3_logic != null:
+		Inventory.set_companion_hp("byran", hero3_logic.current_hp if hero3_logic.is_alive else 0)
+		Inventory.set_companion_mp("byran", hero3_logic.current_mp if hero3_logic.is_alive else 0)

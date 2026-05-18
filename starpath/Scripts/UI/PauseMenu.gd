@@ -569,13 +569,15 @@ func _refresh_stats() -> void:
 			var xp    : int    = Inventory.get_companion_xp(id)
 			var xpcap : int    = Inventory.companion_xp_to_next(id)
 			var cls   : String = _CLASS_NAMES[cs.character_class] if cs else "???"
-			var hp    : int    = (cs.max_hp + (lvl - 1) * 10) if cs else 0
-			var mp    : int    = (cs.max_mp + (lvl - 1) * 5)  if cs else 0
+			var hp    : int    = Inventory.get_companion_hp(id)
+			var mhp   : int    = Inventory.get_companion_max_hp(id)
+			var mp    : int    = Inventory.get_companion_mp(id)
+			var mmp   : int    = Inventory.get_companion_max_mp(id)
 			_add_ff9_party_row(
 				_party_list, id,
 				cs.character_name.to_upper() if cs else id.to_upper(),
 				cls, lvl, xp, xpcap,
-				hp, hp, mp, mp
+				hp, mhp, mp, mmp
 			)
 		else:
 			_add_empty_party_slot(_party_list)
@@ -955,6 +957,144 @@ func _refresh_item_list() -> void:
 			qlbl.add_theme_font_size_override("font_size", 14)
 			qlbl.add_theme_color_override("font_color", C_ACCENT)
 			row.add_child(qlbl)
+			# Botón Usar solo para consumibles
+			if item.item_type == ItemData.ItemType.CONSUMABLE:
+				var btn := Button.new()
+				btn.text = "Usar"
+				btn.custom_minimum_size = Vector2(60, 28)
+				btn.add_theme_font_size_override("font_size", 12)
+				var s := StyleBoxFlat.new()
+				s.bg_color = Color(0.14, 0.24, 0.14)
+				s.set_corner_radius_all(4)
+				s.set_border_width_all(1)
+				s.border_color = Color(0.30, 0.70, 0.30)
+				var sh := StyleBoxFlat.new()
+				sh.bg_color = Color(0.20, 0.40, 0.20)
+				sh.set_corner_radius_all(4)
+				btn.add_theme_stylebox_override("normal",  s)
+				btn.add_theme_stylebox_override("hover",   sh)
+				btn.add_theme_stylebox_override("pressed", sh)
+				btn.add_theme_color_override("font_color", Color(0.60, 1.00, 0.60))
+				# Deshabilitar si HP/MP ya están al máximo
+				var at_max := false
+				if item.effect_type == "heal_hp":
+					at_max = Inventory.current_hp >= Inventory.get_max_hp()
+				elif item.effect_type == "heal_mp":
+					at_max = Inventory.current_mp >= Inventory.get_max_mp()
+				btn.disabled = at_max
+				btn.pressed.connect(_use_item_outside_combat.bind(item))
+				row.add_child(btn)
+
+func _use_item_outside_combat(item: ItemData) -> void:
+	# Si no hay compañeros, usar directo en Lyra
+	if Inventory.party_members.is_empty():
+		_apply_item_to_target("lyra", item)
+		return
+	# Mostrar selector de personaje
+	_show_target_selector(item)
+
+func _show_target_selector(item: ItemData) -> void:
+	# Panel selector centrado encima del inventario
+	var selector := PanelContainer.new()
+	selector.name = "TargetSelector"
+	selector.set_anchors_preset(Control.PRESET_CENTER)
+	selector.offset_left   = -160
+	selector.offset_right  =  160
+	selector.offset_top    = -120
+	selector.offset_bottom =  120
+
+	var sty := StyleBoxFlat.new()
+	sty.bg_color     = Color(0.07, 0.06, 0.11, 0.98)
+	sty.border_color = C_BORDER
+	sty.set_border_width_all(2)
+	sty.set_corner_radius_all(6)
+	sty.content_margin_left   = 16
+	sty.content_margin_right  = 16
+	sty.content_margin_top    = 12
+	sty.content_margin_bottom = 12
+	selector.add_theme_stylebox_override("panel", sty)
+
+	var vbox := VBoxContainer.new()
+	vbox.add_theme_constant_override("separation", 8)
+	selector.add_child(vbox)
+
+	var title := Label.new()
+	title.text = "¿A quién usar %s?" % item.item_name
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 13)
+	title.add_theme_color_override("font_color", C_TITLE)
+	vbox.add_child(title)
+
+	vbox.add_child(HSeparator.new())
+
+	# Botón para Lyra (héroe principal)
+	var is_hp := item.effect_type == "heal_hp"
+	var lyra_cur  := Inventory.current_hp if is_hp else Inventory.current_mp
+	var lyra_max  := Inventory.get_max_hp() if is_hp else Inventory.get_max_mp()
+	var btn_lyra  := _make_target_btn("Lyra", lyra_cur, lyra_max, lyra_cur >= lyra_max)
+	btn_lyra.pressed.connect(func():
+		selector.queue_free()
+		_apply_item_to_target("lyra", item)
+	)
+	vbox.add_child(btn_lyra)
+
+	# Botones para cada compañero en el grupo
+	for id in Inventory.party_members:
+		var comp_cur := Inventory.get_companion_hp(id) if is_hp else Inventory.get_companion_mp(id)
+		var comp_max := Inventory.get_companion_max_hp(id) if is_hp else Inventory.get_companion_max_mp(id)
+		var cap_id   := id.capitalize()
+		var btn_comp := _make_target_btn(cap_id, comp_cur, comp_max, comp_cur >= comp_max)
+		btn_comp.pressed.connect(func():
+			selector.queue_free()
+			_apply_item_to_target(id, item)
+		)
+		vbox.add_child(btn_comp)
+
+	vbox.add_child(HSeparator.new())
+
+	var btn_cancel := Button.new()
+	btn_cancel.text = "Cancelar"
+	btn_cancel.add_theme_font_size_override("font_size", 12)
+	btn_cancel.add_theme_color_override("font_color", C_MUTED)
+	btn_cancel.pressed.connect(func(): selector.queue_free())
+	vbox.add_child(btn_cancel)
+
+	_items_panel.add_child(selector)
+
+func _make_target_btn(char_name: String, cur: int, max_val: int, full: bool) -> Button:
+	var btn := Button.new()
+	btn.text     = "%s   %d / %d" % [char_name, cur, max_val]
+	btn.disabled = full
+	btn.custom_minimum_size = Vector2(280, 36)
+	btn.add_theme_font_size_override("font_size", 13)
+	var s := StyleBoxFlat.new()
+	s.bg_color = Color(0.09, 0.08, 0.14)
+	s.set_corner_radius_all(4)
+	s.set_border_width_all(1)
+	s.border_color = C_BORDER2
+	var sh := StyleBoxFlat.new()
+	sh.bg_color = Color(0.18, 0.14, 0.06)
+	sh.set_corner_radius_all(4)
+	btn.add_theme_stylebox_override("normal",  s)
+	btn.add_theme_stylebox_override("hover",   sh)
+	btn.add_theme_stylebox_override("pressed", sh)
+	btn.add_theme_color_override("font_color", C_MUTED if full else C_TEXT)
+	return btn
+
+func _apply_item_to_target(target_id: String, item: ItemData) -> void:
+	if target_id == "lyra":
+		if item.effect_type == "heal_hp":
+			Inventory.current_hp = mini(Inventory.current_hp + item.amount, Inventory.get_max_hp())
+		elif item.effect_type == "heal_mp":
+			Inventory.current_mp = mini(Inventory.current_mp + item.amount, Inventory.get_max_mp())
+	else:
+		if item.effect_type == "heal_hp":
+			Inventory.set_companion_hp(target_id, Inventory.get_companion_hp(target_id) + item.amount)
+		elif item.effect_type == "heal_mp":
+			Inventory.set_companion_mp(target_id, Inventory.get_companion_mp(target_id) + item.amount)
+	Inventory.remove_item(item)
+	_refresh_item_list()
+	_refresh_stats()
 
 # Helpers de construcción
 
@@ -1217,10 +1357,10 @@ func _refresh_equip() -> void:
 		c.queue_free()
 
 	var lvl : int = Inventory.current_level if is_lyra else Inventory.get_companion_level(char_id)
-	var hp  : int = Inventory.current_hp    if is_lyra else ((stats.max_hp + (lvl-1)*10) if stats else 0)
-	var mhp : int = Inventory.get_max_hp()  if is_lyra else ((stats.max_hp + (lvl-1)*10) if stats else 0)
-	var mp  : int = Inventory.current_mp    if is_lyra else ((stats.max_mp + (lvl-1)*5)  if stats else 0)
-	var mmp : int = Inventory.get_max_mp()  if is_lyra else ((stats.max_mp + (lvl-1)*5)  if stats else 0)
+	var hp  : int = Inventory.current_hp        if is_lyra else Inventory.get_companion_hp(char_id)
+	var mhp : int = Inventory.get_max_hp()      if is_lyra else Inventory.get_companion_max_hp(char_id)
+	var mp  : int = Inventory.current_mp        if is_lyra else Inventory.get_companion_mp(char_id)
+	var mmp : int = Inventory.get_max_mp()      if is_lyra else Inventory.get_companion_max_mp(char_id)
 	var atk_bonus : int = Inventory.get_attack_bonus()  if is_lyra else Inventory.get_atk_bonus_for(char_id)
 	var def_bonus : int = Inventory.get_defense_bonus() if is_lyra else Inventory.get_def_bonus_for(char_id)
 

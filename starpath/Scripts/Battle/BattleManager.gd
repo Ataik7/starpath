@@ -139,7 +139,10 @@ func player_action_selected(action_name: String) -> void:
 		else:
 			_log("¡MP insuficiente para curar!")
 	elif action_name == "Defender":
+		attacker.is_defending = true
+		attacker.defense_changed.emit(true)
 		AudioManager.play_sfx("defend")
+		_log(attacker.stats.character_name + " se pone en guardia. ¡El siguiente golpe hará menos daño!")
 
 	await get_tree().create_timer(1.0).timeout
 	advance_to_next_turn()

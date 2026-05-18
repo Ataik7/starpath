@@ -118,6 +118,38 @@ func _add_starter_equipment(id: String) -> void:
 var current_hp: int = 0
 var current_mp: int = 0
 
+# HP y MP de los compañeros (companion_id → int)
+var companion_hp: Dictionary = {}
+var companion_mp: Dictionary = {}
+
+func get_companion_hp(id: String) -> int:
+	return companion_hp.get(id, get_companion_max_hp(id))
+
+func get_companion_mp(id: String) -> int:
+	return companion_mp.get(id, get_companion_max_mp(id))
+
+func get_companion_max_hp(id: String) -> int:
+	var stats_path := "res://Resources/Characters/%s.tres" % id.capitalize()
+	var stats := load(stats_path) as CharacterStats
+	if stats == null:
+		return 80
+	var lvl := get_companion_level(id)
+	return stats.max_hp + (lvl - 1) * 10
+
+func get_companion_max_mp(id: String) -> int:
+	var stats_path := "res://Resources/Characters/%s.tres" % id.capitalize()
+	var stats := load(stats_path) as CharacterStats
+	if stats == null:
+		return 50
+	var lvl := get_companion_level(id)
+	return stats.max_mp + (lvl - 1) * 5
+
+func set_companion_hp(id: String, value: int) -> void:
+	companion_hp[id] = clampi(value, 0, get_companion_max_hp(id))
+
+func set_companion_mp(id: String, value: int) -> void:
+	companion_mp[id] = clampi(value, 0, get_companion_max_mp(id))
+
 # Posición guardada justo antes de entrar en combate
 var pre_battle_position:  Vector2 = Vector2.ZERO
 var pre_battle_direction: String  = "down"

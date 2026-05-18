@@ -37,6 +37,7 @@ const CATEGORIES := [
 	{"label": "Todo",     "key": "todo"},
 	{"label": "Guerrero", "key": "guerrero"},
 	{"label": "Mago",     "key": "mago"},
+	{"label": "Pícaro",   "key": "picaro"},
 	{"label": "Objetos",  "key": "objeto"},
 ]
 

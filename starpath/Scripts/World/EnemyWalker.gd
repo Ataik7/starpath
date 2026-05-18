@@ -33,6 +33,7 @@ var _wait_timer:   float   = 0.0
 var _waiting:      bool    = false
 var _in_battle:    bool    = false
 var _freeze_timer: float   = 0.0
+var _stuck_frames: int     = 0
 
 
 # Inicialización
@@ -149,9 +150,17 @@ func _physics_process(delta: float) -> void:
 	var prev := global_position
 	move_and_slide()
 
-	# Si lleva > 3 frames atascado, cambiar dirección
-	if global_position.distance_squared_to(prev) < 0.25:
-		_pick_dir()
+	# Detector de atasco: solo actúa si lleva varios frames sin moverse
+	if global_position.distance_squared_to(prev) < 0.1:
+		_stuck_frames += 1
+		if _stuck_frames >= 8:
+			_stuck_frames = 0
+			# Rotar 90-180 grados para escapar del obstáculo
+			var escape_angle := _dir.angle() + randf_range(PI * 0.5, PI)
+			_dir        = Vector2(cos(escape_angle), sin(escape_angle))
+			_move_timer = randf_range(0.8, 2.0)
+	else:
+		_stuck_frames = 0
 
 	_play_anim(_dir)
 

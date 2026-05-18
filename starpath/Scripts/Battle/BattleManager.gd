@@ -291,7 +291,7 @@ func _check_battle_end() -> bool:
 			if entity.get_parent().is_in_group("Enemies") and not entity.is_alive:
 				var xp_val := entity.stats.xp_reward
 				if xp_val <= 0:
-					xp_val = entity.stats.max_hp / 2 + entity.stats.attack
+					xp_val = entity.stats.max_hp / 2.0 + entity.stats.attack
 				victory_xp   += xp_val
 				victory_gold += entity.stats.gold_reward
 		_log("¡Victoria! Los enemigos han sido derrotados.")

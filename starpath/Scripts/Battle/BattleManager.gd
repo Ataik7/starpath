@@ -81,35 +81,38 @@ func _execute_enemy_ai(enemy: BaseEntity) -> void:
 	if alive_heroes.is_empty():
 		advance_to_next_turn()
 		return
-	var target = alive_heroes[randi() % alive_heroes.size()]
 
-	# Intentar usar habilidad si tiene MP y hay suerte (40%)
-	var usable_skills: Array[SkillData] = []
-	for sk: SkillData in enemy.stats.skills:
-		if enemy.current_mp >= sk.mp_cost:
-			usable_skills.append(sk)
+	var target = alive_heroes[randi() % alive_heroes.size()]
+	var usable_skills := enemy.stats.skills.filter(
+		func(sk: SkillData) -> bool: return enemy.current_mp >= sk.mp_cost
+	) as Array[SkillData]
 
 	if not usable_skills.is_empty() and randf() < 0.40:
-		var skill: SkillData = usable_skills[randi() % usable_skills.size()]
-		_log(enemy.stats.character_name + " usa " + skill.skill_name + "!")
-		await get_tree().create_timer(0.3).timeout
-		attack_animation_needed.emit(enemy, target, skill.is_magical)
-		await get_tree().create_timer(0.4).timeout
-		enemy.spend_mp(skill.mp_cost)
-		target.take_damage(skill.damage, skill.is_magical)
-		var tipo := "mágico" if skill.is_magical else "físico"
-		_log("¡" + skill.skill_name + "! " + target.stats.character_name + " recibe daño " + tipo + ".")
+		await _enemy_use_skill(enemy, target, usable_skills[randi() % usable_skills.size()])
 	else:
-		_log(enemy.stats.character_name + " ataca ferozmente.")
-		await get_tree().create_timer(0.3).timeout
-		attack_animation_needed.emit(enemy, target, false)
-		await get_tree().create_timer(0.4).timeout
-		var damage_dealt := maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
-		target.take_damage(damage_dealt)
-		_log(enemy.stats.character_name + " ataca a " + target.stats.character_name + ". ¡Ay!")
+		await _enemy_basic_attack(enemy, target)
 
 	await get_tree().create_timer(1.0).timeout
 	advance_to_next_turn()
+
+func _enemy_use_skill(enemy: BaseEntity, target: BaseEntity, skill: SkillData) -> void:
+	_log(enemy.stats.character_name + " usa " + skill.skill_name + "!")
+	await get_tree().create_timer(0.3).timeout
+	attack_animation_needed.emit(enemy, target, skill.is_magical)
+	await get_tree().create_timer(0.4).timeout
+	enemy.spend_mp(skill.mp_cost)
+	target.take_damage(skill.damage, skill.is_magical)
+	var tipo := "mágico" if skill.is_magical else "físico"
+	_log("¡" + skill.skill_name + "! " + target.stats.character_name + " recibe daño " + tipo + ".")
+
+func _enemy_basic_attack(enemy: BaseEntity, target: BaseEntity) -> void:
+	_log(enemy.stats.character_name + " ataca ferozmente.")
+	await get_tree().create_timer(0.3).timeout
+	attack_animation_needed.emit(enemy, target, false)
+	await get_tree().create_timer(0.4).timeout
+	var damage := maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
+	target.take_damage(damage)
+	_log(enemy.stats.character_name + " ataca a " + target.stats.character_name + ". ¡Ay!")
 
 func player_action_selected(action_name: String) -> void:
 	if current_state != BattleState.PLAYER_INPUT:

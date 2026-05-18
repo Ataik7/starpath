@@ -274,7 +274,7 @@ func get_available() -> Array[ItemData]:
 			result.append(item)
 	return result
 
-# Añade un item al inventario (los consumibles se apilan por nombre).
+# Añade un item al inventario (los consumibles se apilan por nombre)
 func add_item(source: ItemData) -> void:
 	if source.item_type == ItemData.ItemType.CONSUMABLE:
 		for item in items:

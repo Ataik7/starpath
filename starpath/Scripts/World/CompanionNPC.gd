@@ -74,8 +74,8 @@ func _build_menu() -> void:
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.offset_left   = -120
 	panel.offset_right  =  120
-	panel.offset_top    = -65
-	panel.offset_bottom =  65
+	panel.offset_top    = -95
+	panel.offset_bottom =  95
 
 	var style := StyleBoxFlat.new()
 	style.bg_color = C_BG
@@ -109,6 +109,12 @@ func _build_menu() -> void:
 	_join_btn = _make_btn("⚔  Unirse al grupo")
 	_join_btn.pressed.connect(_on_unirse)
 	vbox.add_child(_join_btn)
+
+	vbox.add_child(_make_separator())
+
+	var btn_close := _make_btn("✕  Cerrar")
+	btn_close.pressed.connect(_close_menu)
+	vbox.add_child(btn_close)
 
 	_menu_layer.hide()
 

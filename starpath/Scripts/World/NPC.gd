@@ -1,7 +1,7 @@
 extends Node2D
 class_name NPC
 
-@export var speaker_name : String        = "Aldeano"
+@export var speaker_name : String        = "Teodor"
 @export var dialog_lines : Array[String] = ["Hola, viajero."]
 
 @export var is_merchant  : bool          = false
@@ -50,7 +50,7 @@ func _build_menu() -> void:
 
 	var panel := PanelContainer.new()
 	panel.set_anchors_preset(Control.PRESET_CENTER)
-	var h := 160 if is_merchant else 100
+	var h := 210 if is_merchant else 145
 	panel.offset_left   = -110
 	panel.offset_right  =  110
 	panel.offset_top    = -h / 2.0
@@ -93,6 +93,12 @@ func _build_menu() -> void:
 		var btn_sell := _make_btn("✦  Vender")
 		btn_sell.pressed.connect(_on_vender)
 		vbox.add_child(btn_sell)
+
+	vbox.add_child(_make_separator())
+
+	var btn_close := _make_btn("✕  Cerrar")
+	btn_close.pressed.connect(_close_menu)
+	vbox.add_child(btn_close)
 
 	_menu_layer.hide()
 

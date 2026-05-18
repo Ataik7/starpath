@@ -75,24 +75,38 @@ func advance_to_next_turn() -> void:
 func _execute_enemy_ai(enemy: BaseEntity) -> void:
 	_log("El enemigo " + enemy.stats.character_name + " está pensando...")
 	await get_tree().create_timer(1.0).timeout
-	
-	_log(enemy.stats.character_name + " ataca ferozmente.")
-	await get_tree().create_timer(0.3).timeout
 
-	# 1. El enemigo elige un héroe vivo al azar
 	var alive_heroes = _get_alive_heroes()
 	if alive_heroes.is_empty():
 		advance_to_next_turn()
 		return
 	var target = alive_heroes[randi() % alive_heroes.size()]
 
-	# 2. Animación → daño
-	attack_animation_needed.emit(enemy, target, false)
-	await get_tree().create_timer(0.4).timeout
-	var damage_dealt := maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
-	target.take_damage(damage_dealt)
-	_log(enemy.stats.character_name + " ataca a " + target.stats.character_name + ". ¡Ay!")
-	
+	# Intentar usar habilidad si tiene MP y hay suerte (40%)
+	var usable_skills: Array[SkillData] = []
+	for sk: SkillData in enemy.stats.skills:
+		if enemy.current_mp >= sk.mp_cost:
+			usable_skills.append(sk)
+
+	if not usable_skills.is_empty() and randf() < 0.40:
+		var skill: SkillData = usable_skills[randi() % usable_skills.size()]
+		_log(enemy.stats.character_name + " usa " + skill.skill_name + "!")
+		await get_tree().create_timer(0.3).timeout
+		attack_animation_needed.emit(enemy, target, skill.is_magical)
+		await get_tree().create_timer(0.4).timeout
+		enemy.spend_mp(skill.mp_cost)
+		target.take_damage(skill.damage, skill.is_magical)
+		var tipo := "mágico" if skill.is_magical else "físico"
+		_log("¡" + skill.skill_name + "! " + target.stats.character_name + " recibe daño " + tipo + ".")
+	else:
+		_log(enemy.stats.character_name + " ataca ferozmente.")
+		await get_tree().create_timer(0.3).timeout
+		attack_animation_needed.emit(enemy, target, false)
+		await get_tree().create_timer(0.4).timeout
+		var damage_dealt := maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
+		target.take_damage(damage_dealt)
+		_log(enemy.stats.character_name + " ataca a " + target.stats.character_name + ". ¡Ay!")
+
 	await get_tree().create_timer(1.0).timeout
 	advance_to_next_turn()
 

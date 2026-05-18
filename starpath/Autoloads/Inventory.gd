@@ -125,6 +125,7 @@ var returning_from_battle: bool   = false
 var last_enemy_id:         String  = ""
 var battle_was_won:        bool    = false
 var defeated_enemies:      Array[String] = []
+var battle_enemy_scenes:   Array[String] = []
 
 # Progresión
 var current_level: int = 1

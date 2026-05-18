@@ -2,11 +2,9 @@
 
 [ext_resource type="Script" uid="uid://c2yscwkoiddrq" path="res://Scenes/Battle/BattleScene.gd" id="1_hb1yk"]
 [ext_resource type="PackedScene" uid="uid://dptgmf513gxau" path="res://Scenes/Battle/HeroSprite.tscn" id="2_u810s"]
-[ext_resource type="PackedScene" uid="uid://oovclq3a00nm" path="res://Scenes/Battle/EnemySprite.tscn" id="3_8uoga"]
 [ext_resource type="Script" uid="uid://bnj51ommwc0kv" path="res://Scripts/Battle/BattleManager.gd" id="4_47u5s"]
 [ext_resource type="Script" uid="uid://cjcioq2fm3bbd" path="res://Scripts/Battle/TurnQueue.gd" id="5_2tp6q"]
 [ext_resource type="Script" uid="uid://cd7bdp4cvvyx1" path="res://Scripts/UI/BattleHUD.gd" id="6_bhud"]
-[ext_resource type="PackedScene" uid="uid://b7hbaocp7rvuq" path="res://Scenes/Battle/Enemy2Sprite.tscn" id="8_enemy2"]
 [ext_resource type="Script" path="res://Scripts/Battle/BattleBackground.gd" id="9_bg"]
 
 [node name="BattleScene" type="Node2D" unique_id=2067720617]
@@ -25,12 +23,6 @@ turn_queue = NodePath("../TurnQueue")
 
 [node name="TurnQueue" type="Node" parent="." unique_id=797149600]
 script = ExtResource("5_2tp6q")
-
-[node name="EnemySprite" parent="." unique_id=1135229011 instance=ExtResource("3_8uoga")]
-position = Vector2(750, 380)
-
-[node name="Enemy2Sprite" parent="." unique_id=320145721 instance=ExtResource("8_enemy2")]
-position = Vector2(900, 410)
 
 [node name="BattleHUD" type="CanvasLayer" parent="." unique_id=320145690]
 script = ExtResource("6_bhud")
@@ -76,6 +68,14 @@ text = "Magia ▶"
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
 text = "Objetos ▶"
+
+[node name="AutoButton" type="Button" parent="BattleUI" unique_id=320145801]
+offset_left = 20.0
+offset_top = 370.0
+offset_right = 180.0
+offset_bottom = 405.0
+text = "⚡ Auto: OFF"
+toggle_mode = true
 
 [node name="CancelarButton" type="Button" parent="BattleUI" unique_id=320145800]
 visible = false
@@ -133,6 +133,7 @@ text = "Resultado"
 layout_mode = 2
 text = "Volver a jugar"
 
+[connection signal="toggled" from="BattleUI/AutoButton" to="." method="_on_auto_toggled"]
 [connection signal="pressed" from="BattleUI/VBoxContainer/AttackButton" to="." method="_on_btn_atacar_pressed"]
 [connection signal="pressed" from="BattleUI/VBoxContainer/CurarButton" to="." method="_on_btn_curar_pressed"]
 [connection signal="pressed" from="BattleUI/VBoxContainer/DefenderButton" to="." method="_on_btn_defender_pressed"]

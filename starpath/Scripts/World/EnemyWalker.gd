@@ -11,9 +11,10 @@ extends CharacterBody2D
 # Exportables
 @export var speed:         float      = 55.0
 @export var wander_radius: float      = 180.0
-# Textura spritesheet Pipoya 32×32 (4 filas: abajo/izq/der/arriba, 3 cols: walk).
-# Si se deja en blanco se usa npc1.png con tinte rojo.
 @export var enemy_texture: Texture2D  = null
+# Escenas que se cargarán en batalla (1 o 2 entradas).
+# Vacío = usa los esqueletos por defecto.
+@export var battle_scenes: Array[String] = []
 
 # Constantes
 const _DEFAULT_TEX  := "res://Assets/Characters/Enemies/Skeleton.png"
@@ -172,4 +173,5 @@ func _on_player_detected(body: Node) -> void:
 	Inventory.returning_from_battle = true
 	Inventory.last_enemy_id         = name
 	Inventory.battle_was_won        = false
+	Inventory.battle_enemy_scenes   = battle_scenes.duplicate()
 	SceneTransition.go_to(BATTLE_SCENE)

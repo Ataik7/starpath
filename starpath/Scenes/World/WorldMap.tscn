@@ -14,6 +14,8 @@
 [ext_resource type="Script" uid="uid://51kwhsqvlbh2" path="res://Scripts/UI/HUD.gd" id="99_hud"]
 [ext_resource type="Script" uid="uid://bbhqhkyy83vdt" path="res://Scripts/UI/Minimap.gd" id="99_minimap"]
 [ext_resource type="Script" uid="uid://drx6qvhgdxp2k" path="res://Scripts/UI/TutorialPopup.gd" id="99_tutorial"]
+[ext_resource type="Texture2D" uid="uid://blgqb8gto8kin" path="res://Assets/Characters/Enemies/Pumpkin.png" id="tex_pumpkin"]
+[ext_resource type="Texture2D" uid="uid://itc3s1tn87u" path="res://Assets/Characters/Enemies/Goblin.png" id="tex_goblin"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_left"]
 size = Vector2(20, 1940)
@@ -129,5 +131,15 @@ position = Vector2(-300, -280)
 
 [node name="EnemyWalker3" parent="." unique_id=1207775931 instance=ExtResource("12_64234")]
 position = Vector2(150, 320)
+
+[node name="EnemyWalkerPumpkin" parent="." unique_id=1207775932 instance=ExtResource("12_64234")]
+position = Vector2(450, 100)
+enemy_texture = ExtResource("tex_pumpkin")
+battle_scenes = ["res://Scenes/Battle/Enemy3Sprite.tscn", "res://Scenes/Battle/Enemy3Sprite.tscn"]
+
+[node name="EnemyWalkerGoblin" parent="." unique_id=1207775933 instance=ExtResource("12_64234")]
+position = Vector2(-150, 200)
+enemy_texture = ExtResource("tex_goblin")
+battle_scenes = ["res://Scenes/Battle/Enemy4Sprite.tscn", "res://Scenes/Battle/Enemy4Sprite.tscn"]
 
 [editable path="map1"]

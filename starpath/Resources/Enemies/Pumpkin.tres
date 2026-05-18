@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="CharacterStats" format=3 uid="uid://pumpkin00001"]
+
+[ext_resource type="Script" uid="uid://tbrn0mdsnx0t" path="res://Scripts/CharacterStats.gd" id="1_w3wub"]
+[ext_resource type="Script" uid="uid://knxc2hn10nsh" path="res://Scripts/SkillData.gd" id="2_skscr"]
+[ext_resource type="Resource" uid="uid://eskill_expl1" path="res://Resources/Skills/ExplosionCalabaza.tres" id="3_sk_expl"]
+
+[resource]
+script = ExtResource("1_w3wub")
+character_name = "Calabaza"
+max_hp = 65
+max_mp = 25
+attack = 14
+defense = 6
+speed = 9
+xp_reward = 30
+gold_reward = 12
+skills = Array[ExtResource("2_skscr")]([ExtResource("3_sk_expl")])
+metadata/_custom_type_script = "uid://tbrn0mdsnx0t"

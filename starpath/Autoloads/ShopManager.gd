@@ -43,6 +43,7 @@ const CATEGORIES := [
 #
 func _ready() -> void:
 	layer = 127
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	_build_ui()
 	_build_sell_ui()
 	_overlay.hide()
@@ -152,6 +153,7 @@ func open_shop(catalog: Array[ItemData], title: String = "Tienda") -> void:
 	_refresh_gold()
 	_overlay.show()
 	_panel.show()
+	get_tree().paused = true
 
 func _set_category(cat: String) -> void:
 	if _current_category == cat:
@@ -329,6 +331,7 @@ func _try_buy() -> void:
 
 func _close() -> void:
 	is_open = false
+	get_tree().paused = false
 	_overlay.hide()
 	_panel.hide()
 	_catalog  = []
@@ -410,6 +413,7 @@ func open_sell(title: String = "Vender") -> void:
 	_sell_gold_lbl.text = "Oro: %d ✦" % Inventory.gold
 	_overlay.show()
 	_sell_panel.show()
+	get_tree().paused = true
 
 func _populate_sell_items() -> void:
 	for child in _sell_vbox.get_children():
@@ -484,6 +488,7 @@ func _try_sell() -> void:
 
 func _close_sell() -> void:
 	is_open = false
+	get_tree().paused = false
 	_overlay.hide()
 	_sell_panel.hide()
 	_sell_items = []

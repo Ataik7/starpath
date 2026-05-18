@@ -94,6 +94,8 @@ func _ready() -> void:
 # Abrir / Cerrar / Toggle
 
 func toggle() -> void:
+	if ShopManager.is_open or DialogManager.is_open:
+		return
 	if visible:
 		close()
 	else:

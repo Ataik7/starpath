@@ -2,10 +2,17 @@ extends Node2D
 
 @onready var battle_manager: BattleManager = $BattleManager
 @onready var hero_logic     = $HeroSprite/Logic
-@onready var enemy_logic    = $EnemySprite/Logic
-@onready var enemy2_logic   = $Enemy2Sprite/Logic
 @onready var battle_hud     = $BattleHUD
 @onready var turn_queue: TurnQueue = $TurnQueue
+
+var enemy_logic:  BaseEntity = null
+var enemy2_logic: BaseEntity = null
+
+const _DEFAULT_ENEMY_SCENES: Array[String] = [
+	"res://Scenes/Battle/EnemySprite.tscn",
+	"res://Scenes/Battle/Enemy2Sprite.tscn",
+]
+const _ENEMY_POSITIONS := [Vector2(750, 380), Vector2(900, 410)]
 
 # Compañeros dinámicos
 var hero2_logic  : BaseEntity = null   # Athelios (si está en el grupo)
@@ -27,6 +34,7 @@ var _slot_tween : Tween   = null
 var _first_turn : bool    = true
 
 @onready var menu_combate     = $BattleUI/VBoxContainer
+@onready var auto_btn         = $BattleUI/AutoButton
 @onready var cancel_btn       = $BattleUI/CancelarButton
 @onready var curar_btn        = $BattleUI/VBoxContainer/CurarButton
 @onready var magia_btn        = $BattleUI/VBoxContainer/MagiaButton
@@ -40,6 +48,7 @@ var _first_turn : bool    = true
 
 var _active_hero: BaseEntity = null
 var _player_won: bool = false
+var _auto_mode: bool = false
 
 # Nombres de clase para el botón de habilidades
 const _COMPANION_STATS_PATHS: Dictionary = {
@@ -82,9 +91,31 @@ func _ready() -> void:
 	battle_manager.ally_target_selection_needed.connect(_on_ally_target_selection_needed)
 
 	var team_heroes:  Array[BaseEntity] = [hero_logic]
-	var team_enemies: Array[BaseEntity] = [enemy_logic, enemy2_logic]
-	_all_enemy_entities = [enemy_logic, enemy2_logic]
-	_all_hero_entities  = [hero_logic]
+	var team_enemies: Array[BaseEntity] = []
+	_all_hero_entities = [hero_logic]
+
+	# Instanciar enemigos de batalla (desde Inventory o por defecto Skeletons)
+	var scenes := Inventory.battle_enemy_scenes
+	if scenes.is_empty():
+		scenes = _DEFAULT_ENEMY_SCENES
+	Inventory.battle_enemy_scenes = []
+
+	for i in min(scenes.size(), 2):
+		var packed := load(scenes[i]) as PackedScene
+		if packed == null:
+			continue
+		var node := packed.instantiate() as Node2D
+		add_child(node)
+		node.position = _ENEMY_POSITIONS[i]
+		var logic := node.get_node("Logic") as BaseEntity
+		if logic == null:
+			continue
+		if i == 0:
+			enemy_logic = logic
+		else:
+			enemy2_logic = logic
+		team_enemies.append(logic)
+		_all_enemy_entities.append(logic)
 
 	# Instanciar compañeros si están en el grupo
 	var hero_x_positions := [380, 300, 220]   # posiciones X para 1-3 héroes
@@ -181,6 +212,24 @@ func _build_skill_buttons(hero: BaseEntity) -> void:
 
 # Señales del BattleManager
 
+func _on_auto_toggled(active: bool) -> void:
+	_auto_mode = active
+	auto_btn.text = "⚡ Auto: ON" if active else "⚡ Auto: OFF"
+	if active and battle_manager.current_state == BattleManager.BattleState.PLAYER_INPUT:
+		_run_auto_action()
+
+func _run_auto_action() -> void:
+	if not _auto_mode or _active_hero == null:
+		return
+	# Usar primera habilidad si tiene MP, si no atacar
+	# La confirmación de objetivo se maneja en _on_target_selection_needed
+	if not _active_hero.stats.skills.is_empty():
+		var skill: SkillData = _active_hero.stats.skills[0]
+		if _active_hero.current_mp >= skill.mp_cost:
+			battle_manager.player_skill_selected(skill)
+			return
+	battle_manager.player_action_selected("Atacar")
+
 func _on_menu_toggled(show_menu: bool) -> void:
 	if not end_panel.visible:
 		menu_combate.visible = show_menu
@@ -191,6 +240,9 @@ func _on_menu_toggled(show_menu: bool) -> void:
 		else:
 			cancel_btn.visible = false
 			_update_menu_for_hero(_active_hero)
+			if _auto_mode:
+				await get_tree().create_timer(0.3).timeout
+				_run_auto_action()
 
 func _on_target_selection_needed(enemies: Array[BaseEntity]) -> void:
 	for entity in [enemy_logic, enemy2_logic]:
@@ -218,6 +270,12 @@ func _on_target_selection_needed(enemies: Array[BaseEntity]) -> void:
 				s.sprite.modulate = Color(1.5, 1.4, 0.7)
 
 	cancel_btn.visible = true
+
+	# Auto: confirmar primer objetivo sin esperar clic del jugador
+	if _auto_mode:
+		await get_tree().create_timer(0.25).timeout
+		if _auto_mode and battle_manager.current_state == BattleManager.BattleState.SELECTING_TARGET:
+			battle_manager.player_target_confirmed(enemies[0])
 
 func _on_ally_target_selection_needed(allies: Array[BaseEntity]) -> void:
 	for entity in _all_hero_entities:

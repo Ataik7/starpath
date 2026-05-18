@@ -25,13 +25,14 @@ const BATTLE_SCENE  := "res://Scenes/Battle/BattleScene.tscn"
 @onready var _detect: Area2D           = $DetectionArea
 
 # Estado
-var _spawn:      Vector2 = Vector2.ZERO
-var _dir:        Vector2 = Vector2.ZERO
-var _last_dir:   String  = "down"
-var _move_timer: float   = 0.0
-var _wait_timer: float   = 0.0
-var _waiting:    bool    = false
-var _in_battle:  bool    = false
+var _spawn:        Vector2 = Vector2.ZERO
+var _dir:          Vector2 = Vector2.ZERO
+var _last_dir:     String  = "down"
+var _move_timer:   float   = 0.0
+var _wait_timer:   float   = 0.0
+var _waiting:      bool    = false
+var _in_battle:    bool    = false
+var _freeze_timer: float   = 0.0
 
 
 # Inicialización
@@ -42,6 +43,13 @@ func _ready() -> void:
 		return
 	_spawn = global_position
 	add_to_group("enemy_walkers")
+
+	# Si el jugador huyó de este enemigo, quedarse quieto unos segundos
+	# y deshabilitar la detección para que no reinicie la batalla al instante
+	if Inventory.battle_was_fled and Inventory.last_enemy_id == name:
+		Inventory.battle_was_fled = false
+		_freeze_timer = 4.0
+		_detect.set_deferred("monitoring", false)
 
 	# Sprite — usa la textura exportada o la por defecto con tinte rojo
 	var tex: Texture2D = enemy_texture
@@ -105,6 +113,16 @@ func _setup_animations(tex: Texture2D) -> void:
 
 func _physics_process(delta: float) -> void:
 	if _in_battle:
+		return
+
+	if _freeze_timer > 0.0:
+		_freeze_timer -= delta
+		velocity = Vector2.ZERO
+		move_and_slide()
+		_play_anim(Vector2.ZERO)
+		if _freeze_timer <= 0.0:
+			_in_battle = false
+			_detect.monitoring = true
 		return
 
 	if _waiting:

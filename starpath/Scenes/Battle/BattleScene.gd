@@ -83,6 +83,7 @@ func _ready() -> void:
 
 	battle_manager.action_menu_toggled.connect(_on_menu_toggled)
 	battle_manager.battle_ended.connect(_on_battle_ended)
+	battle_manager.battle_fled.connect(_on_battle_fled)
 	battle_manager.attack_animation_needed.connect(_on_attack_anim)
 	battle_manager.active_entity_changed.connect(battle_hud.set_active_entity)
 	battle_manager.active_entity_changed.connect(_on_active_entity_changed)
@@ -380,6 +381,15 @@ func _refresh_item_buttons() -> void:
 func _on_item_btn_pressed(item: ItemData) -> void:
 	objetos_panel.visible = false
 	battle_manager.player_item_selected(item)
+
+func _on_btn_huir_pressed() -> void:
+	battle_manager.player_flee()
+
+func _on_battle_fled() -> void:
+	Inventory.battle_was_won  = false
+	Inventory.battle_was_fled = true
+	AudioManager.stop_bgm()
+	SceneTransition.go_to("res://Scenes/World/WorldMap.tscn")
 
 func _on_btn_cancelar_pressed() -> void:
 	cancel_btn.visible    = false

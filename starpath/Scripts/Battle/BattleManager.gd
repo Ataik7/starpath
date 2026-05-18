@@ -21,6 +21,7 @@ var victory_items: Array = []   # Array[Dictionary] {name, effect, amount}
 signal text_log_updated(message: String)
 signal action_menu_toggled(show: bool)
 signal battle_ended(player_won: bool)
+signal battle_fled
 signal active_entity_changed(entity: BaseEntity)
 signal target_selection_needed(enemies: Array[BaseEntity])
 signal ally_target_selection_needed(allies: Array[BaseEntity])
@@ -216,6 +217,21 @@ func player_target_confirmed(target: BaseEntity) -> void:
 
 	await get_tree().create_timer(1.0).timeout
 	advance_to_next_turn()
+
+func player_flee() -> void:
+	if current_state != BattleState.PLAYER_INPUT:
+		return
+	action_menu_toggled.emit(false)
+	# 75% de éxito; si falla el enemigo aprovecha para atacar
+	if randf() < 0.75:
+		_log("¡Huiste del combate!")
+		current_state = BattleState.LOST
+		await get_tree().create_timer(1.0).timeout
+		battle_fled.emit()
+	else:
+		_log("¡No pudiste escapar!")
+		await get_tree().create_timer(1.0).timeout
+		advance_to_next_turn()
 
 func player_item_selected(item: ItemData) -> void:
 	if current_state != BattleState.PLAYER_INPUT:

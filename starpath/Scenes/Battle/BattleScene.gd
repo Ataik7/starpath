@@ -138,19 +138,21 @@ func _ready() -> void:
 		team_heroes.append(hero3_logic)
 		_all_hero_entities.append(hero3_logic)
 
-	# Restaurar HP/MP desde Inventory (persiste entre combates)
-	# Duplicar stats para no modificar el recurso .tres original
+	# Hay que duplicar el stats antes de tocarlo, si no se modifica el .tres
+	# y los valores base se quedan mal para siempre
 	hero_logic.stats = hero_logic.stats.duplicate()
 	hero_logic.stats.max_hp = Inventory.get_max_hp()
 	hero_logic.stats.max_mp = Inventory.get_max_mp()
 	hero_logic.current_hp = Inventory.current_hp
 	hero_logic.current_mp = Inventory.current_mp
+
 	if hero2_logic != null:
 		hero2_logic.stats = hero2_logic.stats.duplicate()
 		hero2_logic.stats.max_hp = Inventory.get_companion_max_hp("athelios")
 		hero2_logic.stats.max_mp = Inventory.get_companion_max_mp("athelios")
 		hero2_logic.current_hp = Inventory.get_companion_hp("athelios")
 		hero2_logic.current_mp = Inventory.get_companion_mp("athelios")
+
 	if hero3_logic != null:
 		hero3_logic.stats = hero3_logic.stats.duplicate()
 		hero3_logic.stats.max_hp = Inventory.get_companion_max_hp("byran")

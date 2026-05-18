@@ -191,28 +191,28 @@ func _find_player() -> PlayerController:
 
 func _serialize_item(item: ItemData) -> Dictionary:
 	return {
-		"item_name":     item.item_name,
-		"item_type":     int(item.item_type),
-		"effect_type":   item.effect_type,
-		"amount":        item.amount,
-		"quantity":      item.quantity,
+		"item_name": item.item_name,
+		"item_type": int(item.item_type),
+		"effect_type": item.effect_type,
+		"amount": item.amount,
+		"quantity": item.quantity,
 		"targets_enemy": item.targets_enemy,
-		"price":         item.price,
-		"attack_bonus":  item.attack_bonus,
+		"price": item.price,
+		"attack_bonus": item.attack_bonus,
 		"defense_bonus": item.defense_bonus,
 		"shop_category": item.shop_category,
 	}
 
 func _deserialize_item(d: Dictionary) -> ItemData:
 	var item := ItemData.new()
-	item.item_name     = d.get("item_name",     "")
-	item.item_type     = d.get("item_type",     0) as ItemData.ItemType
-	item.effect_type   = d.get("effect_type",   "")
-	item.amount        = d.get("amount",        0)
-	item.quantity      = d.get("quantity",      1)
+	item.item_name = d.get("item_name", "")
+	item.item_type = d.get("item_type", 0) as ItemData.ItemType
+	item.effect_type = d.get("effect_type", "")
+	item.amount = d.get("amount", 0)
+	item.quantity = d.get("quantity", 1)
 	item.targets_enemy = d.get("targets_enemy", false)
-	item.price         = d.get("price",         0)
-	item.attack_bonus  = d.get("attack_bonus",  0)
+	item.price = d.get("price", 0)
+	item.attack_bonus = d.get("attack_bonus", 0)
 	item.defense_bonus = d.get("defense_bonus", 0)
 	item.shop_category = d.get("shop_category", "todo")
 	return item

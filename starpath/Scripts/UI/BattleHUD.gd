@@ -3,22 +3,21 @@ extends CanvasLayer
 
 const FONT_PATH := "res://Assets/Fonts/CinzelDecorative-Bold.ttf"
 
-# Paleta
-const C_BG      := Color(0.04, 0.04, 0.10, 0.88)
-const C_BORDER  := Color(0.62, 0.48, 0.16, 1.00)
-const C_SEP     := Color(0.55, 0.42, 0.12, 0.35)
-const C_NAME    := Color(1.00, 0.96, 0.80, 1.00)
-const C_TAG     := Color(0.88, 0.86, 0.78, 0.75)
-const C_VAL     := Color(0.96, 0.94, 0.88, 1.00)
-const C_HP_F    := Color(0.22, 0.82, 0.38, 1.00)
-const C_HP_B    := Color(0.04, 0.16, 0.06, 1.00)
-const C_SP_F    := Color(0.30, 0.58, 1.00, 1.00)
-const C_SP_B    := Color(0.03, 0.06, 0.24, 1.00)
+# colores del panel
+const C_BG     := Color(0.04, 0.04, 0.10, 0.88)
+const C_BORDER := Color(0.62, 0.48, 0.16, 1.00)
+const C_SEP    := Color(0.55, 0.42, 0.12, 0.35)
+const C_NAME   := Color(1.00, 0.96, 0.80, 1.00)
+const C_TAG    := Color(0.88, 0.86, 0.78, 0.75)
+const C_VAL    := Color(0.96, 0.94, 0.88, 1.00)
+const C_HP_F   := Color(0.22, 0.82, 0.38, 1.00)
+const C_HP_B   := Color(0.04, 0.16, 0.06, 1.00)
+const C_SP_F   := Color(0.30, 0.58, 1.00, 1.00)
+const C_SP_B   := Color(0.03, 0.06, 0.24, 1.00)
 
-# Dimensiones
-const PANEL_W   := 230.0   # ancho del panel lateral derecho
-const CARD_PAD  := 12.0    # padding interior de cada tarjeta
-const BAR_H     := 10      # altura de las barras de HP/SP
+const PANEL_W  := 230.0  # ancho total del panel
+const CARD_PAD := 12.0
+const BAR_H    := 10
 
 var _hp_bars:   Dictionary = {}
 var _sp_bars:   Dictionary = {}

@@ -150,14 +150,14 @@ func _physics_process(delta: float) -> void:
 	var prev := global_position
 	move_and_slide()
 
-	# Detector de atasco: solo actúa si lleva varios frames sin moverse
+	# si lleva muchos frames sin moverse, probablemente está atascado contra algo
 	if global_position.distance_squared_to(prev) < 0.1:
 		_stuck_frames += 1
 		if _stuck_frames >= 8:
 			_stuck_frames = 0
-			# Rotar 90-180 grados para escapar del obstáculo
-			var escape_angle := _dir.angle() + randf_range(PI * 0.5, PI)
-			_dir        = Vector2(cos(escape_angle), sin(escape_angle))
+			# giramos entre 90 y 180 grados para intentar salir
+			var escape_angle = _dir.angle() + randf_range(PI * 0.5, PI)
+			_dir = Vector2(cos(escape_angle), sin(escape_angle))
 			_move_timer = randf_range(0.8, 2.0)
 	else:
 		_stuck_frames = 0

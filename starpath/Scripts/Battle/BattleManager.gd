@@ -78,15 +78,19 @@ func _execute_enemy_ai(enemy: BaseEntity) -> void:
 	await get_tree().create_timer(1.0).timeout
 
 	var alive_heroes = _get_alive_heroes()
+	# si ya no hay héroes vivos no hace falta hacer nada
 	if alive_heroes.is_empty():
 		advance_to_next_turn()
 		return
 
 	var target = alive_heroes[randi() % alive_heroes.size()]
+
+	# filtramos las habilidades que puede usar con el MP que le queda
 	var usable_skills := enemy.stats.skills.filter(
 		func(sk: SkillData) -> bool: return enemy.current_mp >= sk.mp_cost
 	) as Array[SkillData]
 
+	# 40% de probabilidad de usar habilidad si tiene alguna disponible
 	if not usable_skills.is_empty() and randf() < 0.40:
 		await _enemy_use_skill(enemy, target, usable_skills[randi() % usable_skills.size()])
 	else:
@@ -102,7 +106,7 @@ func _enemy_use_skill(enemy: BaseEntity, target: BaseEntity, skill: SkillData) -
 	await get_tree().create_timer(0.4).timeout
 	enemy.spend_mp(skill.mp_cost)
 	target.take_damage(skill.damage, skill.is_magical)
-	var tipo := "mágico" if skill.is_magical else "físico"
+	var tipo = "mágico" if skill.is_magical else "físico"
 	_log("¡" + skill.skill_name + "! " + target.stats.character_name + " recibe daño " + tipo + ".")
 
 func _enemy_basic_attack(enemy: BaseEntity, target: BaseEntity) -> void:
@@ -110,7 +114,8 @@ func _enemy_basic_attack(enemy: BaseEntity, target: BaseEntity) -> void:
 	await get_tree().create_timer(0.3).timeout
 	attack_animation_needed.emit(enemy, target, false)
 	await get_tree().create_timer(0.4).timeout
-	var damage := maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
+	# el nivel del jugador reduce un poco el daño base del enemigo
+	var damage = maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
 	target.take_damage(damage)
 	_log(enemy.stats.character_name + " ataca a " + target.stats.character_name + ". ¡Ay!")
 
@@ -291,7 +296,7 @@ func _check_battle_end() -> bool:
 			if entity.get_parent().is_in_group("Enemies") and not entity.is_alive:
 				var xp_val := entity.stats.xp_reward
 				if xp_val <= 0:
-					xp_val = entity.stats.max_hp / 2.0 + entity.stats.attack
+					xp_val = (entity.stats.max_hp >> 1) + entity.stats.attack
 				victory_xp   += xp_val
 				victory_gold += entity.stats.gold_reward
 		_log("¡Victoria! Los enemigos han sido derrotados.")

@@ -85,34 +85,36 @@ func _add_starter_equipment(id: String) -> void:
 		return
 	match id:
 		"athelios":
-			var dagger          := ItemData.new()
-			dagger.item_name     = "Daga de Sombra"
-			dagger.item_type     = ItemData.ItemType.WEAPON
-			dagger.attack_bonus  = 9
-			dagger.price         = 120
+			var dagger := ItemData.new()
+			dagger.item_name = "Daga de Sombra"
+			dagger.item_type = ItemData.ItemType.WEAPON
+			dagger.attack_bonus = 9
+			dagger.price = 120
 			dagger.shop_category = "guerrero"
 			companion_weapon["athelios"] = dagger
-			var leather            := ItemData.new()
-			leather.item_name       = "Armadura de Cuero"
-			leather.item_type       = ItemData.ItemType.ARMOR
-			leather.defense_bonus   = 5
-			leather.price           = 90
-			leather.shop_category   = "guerrero"
+
+			var leather := ItemData.new()
+			leather.item_name = "Armadura de Cuero"
+			leather.item_type = ItemData.ItemType.ARMOR
+			leather.defense_bonus = 5
+			leather.price = 90
+			leather.shop_category = "guerrero"
 			companion_armor["athelios"] = leather
 		"byran":
-			var sword           := ItemData.new()
-			sword.item_name      = "Espada Corta"
-			sword.item_type      = ItemData.ItemType.WEAPON
-			sword.attack_bonus   = 14
-			sword.price          = 150
-			sword.shop_category  = "guerrero"
+			var sword := ItemData.new()
+			sword.item_name = "Espada Corta"
+			sword.item_type = ItemData.ItemType.WEAPON
+			sword.attack_bonus = 14
+			sword.price = 150
+			sword.shop_category = "guerrero"
 			companion_weapon["byran"] = sword
-			var mail             := ItemData.new()
-			mail.item_name        = "Cota de Malla"
-			mail.item_type        = ItemData.ItemType.ARMOR
-			mail.defense_bonus    = 10
-			mail.price            = 130
-			mail.shop_category    = "guerrero"
+
+			var mail := ItemData.new()
+			mail.item_name = "Cota de Malla"
+			mail.item_type = ItemData.ItemType.ARMOR
+			mail.defense_bonus = 10
+			mail.price = 130
+			mail.shop_category = "guerrero"
 			companion_armor["byran"] = mail
 
 var current_hp: int = 0

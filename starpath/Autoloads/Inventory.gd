@@ -5,6 +5,16 @@ signal level_changed(new_level: int)
 
 const HERO_STATS_PATH := "res://Resources/Characters/Hero.tres"
 
+# Clase de cada personaje (determina qué equipo puede usar)
+const CHARACTER_CLASS: Dictionary = {
+	"lyra":     "mago",
+	"athelios": "guerrero",
+	"byran":    "guerrero",
+}
+
+func get_character_class(id: String) -> String:
+	return CHARACTER_CLASS.get(id, "")
+
 var items:            Array[ItemData] = []
 var gold:             int             = 150
 var equipped_weapon:  ItemData        = null
@@ -74,8 +84,12 @@ func equip_for(id: String, item: ItemData) -> void:
 func unequip_for(id: String, item: ItemData) -> void:
 	if companion_weapon.get(id) == item:
 		companion_weapon[id] = null
+		if not items.has(item):
+			add_item(item)
 	elif companion_armor.get(id) == item:
 		companion_armor[id] = null
+		if not items.has(item):
+			add_item(item)
 	changed.emit()
 
 # Equipo inicial del compañero

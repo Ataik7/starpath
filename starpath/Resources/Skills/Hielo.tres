@@ -1,10 +1,10 @@
-[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://cskrayo10001"]
+[gd_resource type="Resource" script_class="SkillData" format=3 uid="uid://cskhielo1001"]
 
 [ext_resource type="Script" uid="uid://knxc2hn10nsh" path="res://Scripts/SkillData.gd" id="1_skill"]
 
 [resource]
 script = ExtResource("1_skill")
-skill_name = "Rayo"
+skill_name = "Hielo"
 damage = 40
 mp_cost = 20
 is_magical = true

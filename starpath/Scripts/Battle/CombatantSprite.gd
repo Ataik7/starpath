@@ -42,6 +42,10 @@ func _ready() -> void:
 		$ClickArea.mouse_exited.connect(_on_mouse_exited)
 
 	_on_stats_changed()
+	# Esperar un frame para que BattleScene aplique el HP real de Inventory
+	# antes de activar los popups flotantes
+	await get_tree().process_frame
+	_prev_hp = entity_logic.current_hp
 	_initialized = true
 
 # Construcción de SpriteFrames desde el spritesheet

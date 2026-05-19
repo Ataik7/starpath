@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://tbrn0mdsnx0t" path="res://Scripts/CharacterStats.gd" id="1_c0c88"]
 [ext_resource type="Resource" uid="uid://cskfuego1001" path="res://Resources/Skills/Fuego.tres" id="2_fuego"]
 [ext_resource type="Script" uid="uid://knxc2hn10nsh" path="res://Scripts/SkillData.gd" id="2_up8ex"]
-[ext_resource type="Resource" uid="uid://cskrayo10001" path="res://Resources/Skills/Rayo.tres" id="3_rayo"]
+[ext_resource type="Resource" uid="uid://cskhielo1001" path="res://Resources/Skills/Hielo.tres" id="3_hielo"]
 
 [resource]
 script = ExtResource("1_c0c88")
@@ -20,5 +20,5 @@ spirit = 15
 evade = 8
 magic_defense = 18
 magic_evade = 12
-skills = Array[ExtResource("2_up8ex")]([ExtResource("2_fuego"), ExtResource("3_rayo")])
+skills = Array[ExtResource("2_up8ex")]([ExtResource("2_fuego"), ExtResource("3_hielo")])
 metadata/_custom_type_script = "uid://tbrn0mdsnx0t"

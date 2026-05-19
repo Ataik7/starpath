@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bof5wpydm7fdd" path="res://Scripts/Battle/CombatantSprite.gd" id="1_nxq3l"]
 [ext_resource type="Script" uid="uid://b2nb2ij58wmxg" path="res://Scripts/Battle/BaseEntity.gd" id="2_meaxh"]
-[ext_resource type="Resource" uid="uid://climo2000001" path="res://Resources/Enemies/Limo2.tres" id="4_limo2"]
+[ext_resource type="Resource" path="res://Resources/Enemies/Limo2.tres" id="4_limo2"]
 [ext_resource type="Texture2D" path="res://Assets/Characters/Enemies/Skeleton.png" id="5_skel"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_click"]

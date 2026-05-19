@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://bof5wpydm7fdd" path="res://Scripts/Battle/CombatantSprite.gd" id="1_nxq3l"]
 [ext_resource type="Script" uid="uid://b2nb2ij58wmxg" path="res://Scripts/Battle/BaseEntity.gd" id="2_meaxh"]
-[ext_resource type="Resource" uid="uid://goblin000001" path="res://Resources/Enemies/Goblin.tres" id="4_gob"]
+[ext_resource type="Resource" path="res://Resources/Enemies/Goblin.tres" id="4_gob"]
 [ext_resource type="Texture2D" uid="uid://itc3s1tn87u" path="res://Assets/Characters/Enemies/Goblin.png" id="5_gtex"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_click"]

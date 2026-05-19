@@ -1249,7 +1249,7 @@ func _build_equip_panel() -> Control:
 	left_vbox.add_child(_separator_h(C_BORDER2, 1))
 	left_vbox.add_child(_spacer(6))
 
-	# # Zona dinámica
+	# Zona dinámica
 	_equip_info_vbox = VBoxContainer.new()
 	_equip_info_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_equip_info_vbox.add_theme_constant_override("separation", 6)
@@ -1558,8 +1558,10 @@ func _add_slot_row_unified(parent: Node, slot_label: String, item: ItemData,
 		empty_lbl.add_theme_color_override("font_color", Color(0.38, 0.34, 0.28, 0.55))
 		row.add_child(empty_lbl)
 
-	# Botón Cambiar — solo si hay ítems del tipo en el inventario
-	var has_items := Inventory.items.any(func(i: ItemData) -> bool: return i.item_type == slot_type)
+	# Botón Cambiar — solo si hay ítems del tipo y clase compatibles en el inventario
+	var _char_class := Inventory.get_character_class(char_id)
+	var has_items := Inventory.items.any(func(i: ItemData) -> bool:
+		return i.item_type == slot_type and (_char_class.is_empty() or i.shop_category == _char_class))
 	if has_items:
 		var c_id := char_id; var c_type := slot_type
 		var btn_c := _make_button("Cambiar", 88, 28)
@@ -1583,9 +1585,12 @@ func _show_equip_picker(char_id: String, slot_type: ItemData.ItemType) -> void:
 	else:
 		current_item = Inventory.equipped_armor if is_lyra else Inventory.get_equipped_armor_for(char_id)
 
+	var _picker_class := Inventory.get_character_class(char_id)
 	var found := false
 	for item: ItemData in Inventory.items:
 		if item.item_type != slot_type:
+			continue
+		if not _picker_class.is_empty() and item.shop_category != _picker_class:
 			continue
 		found = true
 		var is_cur := (item == current_item)

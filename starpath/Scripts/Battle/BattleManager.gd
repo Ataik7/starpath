@@ -38,14 +38,14 @@ func start_battle(heroes: Array[BaseEntity], enemies: Array[BaseEntity]) -> void
 	current_state = BattleState.STARTING
 	_log("¡El combate comienza!")
 	
-	# Juntamos a todos y se los pasamos a la cola de turnos
+	# Inicializar cola
 	var all_combatants: Array[BaseEntity] = []
 	all_combatants.append_array(heroes)
 	all_combatants.append_array(enemies)
 	
 	turn_queue.setup_queue(all_combatants)
 	
-	# Damos 1 segundo de pausa para que se vea bien y pasamos al primer turno
+	# Pausa inicial
 	await get_tree().create_timer(1.0).timeout
 	advance_to_next_turn()
 
@@ -78,14 +78,14 @@ func _execute_enemy_ai(enemy: BaseEntity) -> void:
 	await get_tree().create_timer(1.0).timeout
 
 	var alive_heroes = _get_alive_heroes()
-	# si ya no hay héroes vivos no hace falta hacer nada
+	# Sin héroes vivos
 	if alive_heroes.is_empty():
 		advance_to_next_turn()
 		return
 
 	var target = alive_heroes[randi() % alive_heroes.size()]
 
-	# filtramos las habilidades que puede usar con el MP que le queda
+	# Habilidades con MP suficiente
 	var usable_skills := enemy.stats.skills.filter(
 		func(sk: SkillData) -> bool: return enemy.current_mp >= sk.mp_cost
 	) as Array[SkillData]
@@ -114,7 +114,7 @@ func _enemy_basic_attack(enemy: BaseEntity, target: BaseEntity) -> void:
 	await get_tree().create_timer(0.3).timeout
 	attack_animation_needed.emit(enemy, target, false)
 	await get_tree().create_timer(0.4).timeout
-	# el nivel del jugador reduce un poco el daño base del enemigo
+	# Reducción por nivel
 	var damage = maxi(1, enemy.stats.attack - Inventory.get_level_def_bonus())
 	target.take_damage(damage)
 	_log(enemy.stats.character_name + " ataca a " + target.stats.character_name + ". ¡Ay!")
@@ -155,7 +155,7 @@ func player_action_selected(action_name: String) -> void:
 	await get_tree().create_timer(1.0).timeout
 	advance_to_next_turn()
 
-# Llamado desde BattleScene cuando el jugador elige un hechizo del submenu.
+# Hechizo elegido
 func player_skill_selected(skill: SkillData) -> void:
 	if current_state != BattleState.PLAYER_INPUT:
 		return
@@ -166,7 +166,7 @@ func player_skill_selected(skill: SkillData) -> void:
 	if skill.targets_enemy:
 		_start_target_selection(attacker, skill)
 	else:
-		# Hechizo de apoyo sin objetivo (curación mágica, buff, etc.)
+		# Hechizo sin objetivo
 		_log(attacker.stats.character_name + " lanza " + skill.skill_name + "!")
 		await get_tree().create_timer(1.0).timeout
 		if attacker.spend_mp(skill.mp_cost):
@@ -176,7 +176,7 @@ func player_skill_selected(skill: SkillData) -> void:
 		await get_tree().create_timer(1.0).timeout
 		advance_to_next_turn()
 
-# El jugador ha elegido un objetivo en el panel de selección.
+# Objetivo confirmado
 func player_target_confirmed(target: BaseEntity) -> void:
 	if current_state != BattleState.SELECTING_TARGET:
 		return
@@ -258,7 +258,7 @@ func player_item_selected(item: ItemData) -> void:
 	else:
 		ally_target_selection_needed.emit(_get_alive_heroes())
 
-# El jugador cancela la selección de objetivo y vuelve al menú.
+# Cancelar objetivo
 func player_target_cancelled() -> void:
 	if current_state != BattleState.SELECTING_TARGET:
 		return
@@ -288,7 +288,7 @@ func _check_battle_end() -> bool:
 		battle_ended.emit(false) # false = el jugador no ganó
 		return true
 	elif not enemies_alive:
-		# Calcular recompensas (sin aplicarlas; BattleScene las anima)
+		# Calcular recompensas
 		victory_xp    = 0
 		victory_gold  = 0
 		victory_items = []

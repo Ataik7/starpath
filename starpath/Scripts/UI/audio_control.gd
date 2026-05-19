@@ -11,26 +11,26 @@ var _hide_timer: Timer
 
 
 func _ready() -> void:
-	# Validar que el bus existe
+	# Bus válido
 	audio_bus_id = AudioServer.get_bus_index(audio_bus_name)
 	if audio_bus_id == -1:
 		push_warning("Audio bus '%s' no encontrado. Los sliders funcionarán cuando crees el bus en: Editor → Audio (pestaña inferior)." % audio_bus_name)
 
-	# Leer volumen actual del bus y sincronizar el slider
+	# Sync slider
 	if audio_bus_id != -1:
 		var current_db := AudioServer.get_bus_volume_db(audio_bus_id)
 		value = db_to_linear(current_db) if current_db > -79.0 else 0.0
 	else:
 		value = 0.5
 
-	# Conectar señal del slider
+	# Conectar slider
 	value_changed.connect(_on_value_changed)
 
-	# Configurar popup de volumen
+	# Popup volumen
 	if popup:
 		popup.visible = false
 
-	# Temporizador para ocultar el popup
+	# Timer popup
 	_hide_timer = Timer.new()
 	_hide_timer.wait_time = 1.5
 	_hide_timer.one_shot = true
@@ -39,26 +39,26 @@ func _ready() -> void:
 
 
 func _on_value_changed(new_value: float) -> void:
-	# Intentar obtener el bus cada vez (por si se creó después)
+	# Obtener bus
 	if audio_bus_id == -1:
 		audio_bus_id = AudioServer.get_bus_index(audio_bus_name)
 	if audio_bus_id == -1:
 		return
 
-	# Actualizar volumen del bus
+	# Actualizar volumen
 	var db := linear_to_db(new_value) if new_value > 0.0 else -80.0
 	AudioServer.set_bus_volume_db(audio_bus_id, db)
 
-	# Mostrar popup con el porcentaje
+	# Mostrar popup
 	if popup:
 		popup.text = "%d%%" % int(new_value * 100)
 		popup.visible = true
 
-		# Posicionar el popup sobre el cursor del slider
+		# Posición popup
 		var handle_x := size.x * new_value
 		popup.global_position = global_position + Vector2(handle_x - popup.size.x / 2.0, -40.0)
 
-		# Reiniciar temporizador
+		# Reset timer
 		_hide_timer.start()
 
 

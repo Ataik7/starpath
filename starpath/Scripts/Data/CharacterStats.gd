@@ -18,8 +18,8 @@ enum ClassType { GUERRERO, MAGO, PICARO, SANADOR, PALADIN, ARQUERO }
 @export var magic_evade: int = 5
 @export var skills: Array[SkillData] = []
 
-# XP e oro que suelta este personaje al morir.
-# Si xp_reward es 0 se calcula con (max_hp/2 + attack) como valor por defecto.
+# Recompensa al morir
+# 0 = calcular automático
 @export var xp_reward: int = 0
 @export var gold_reward: int = 10
 @export var drop_chance: float = 0.30  # 0.0 = nunca dropea, 1.0 = siempre

@@ -78,9 +78,9 @@ func unequip_for(id: String, item: ItemData) -> void:
 		companion_armor[id] = null
 	changed.emit()
 
-# Asigna equipo inicial al compañero cuando se une por primera vez.
+# Equipo inicial del compañero
 func _add_starter_equipment(id: String) -> void:
-	# No sobreescribir si ya tiene equipo asignado
+	# Solo si no tiene ya equipo
 	if companion_weapon.get(id) != null or companion_armor.get(id) != null:
 		return
 	match id:
@@ -170,19 +170,19 @@ var current_xp:    int = 0
 var _base_max_hp: int = 80
 var _base_max_mp: int = 100
 
-# HP máximo según nivel actual (base + bonificación por nivel).
+# HP máximo actual
 func get_max_hp() -> int:
 	return _base_max_hp + (current_level - 1) * 10
 
-# MP máximo según nivel actual.
+# MP máximo actual
 func get_max_mp() -> int:
 	return _base_max_mp + (current_level - 1) * 5
 
-# XP necesaria para pasar del nivel actual al siguiente.
+# XP para siguiente nivel
 func xp_to_next() -> int:
 	return current_level * 100
 
-# Otorga XP; si supera el umbral, sube de nivel (puede ocurrir varias veces).
+# Dar XP y subir nivel si toca
 func add_xp(amount: int) -> void:
 	current_xp += amount
 	while current_xp >= xp_to_next():
@@ -196,15 +196,15 @@ func _apply_level_up() -> void:
 	current_mp = get_max_mp()
 	level_changed.emit(current_level)
 
-# Bonificación de ataque acumulada por niveles.
+# Bonus ATK por nivel
 func get_level_atk_bonus() -> int:
 	return (current_level - 1) * 2
 
-# Bonificación de defensa acumulada por niveles.
+# Bonus DEF por nivel
 func get_level_def_bonus() -> int:
 	return current_level - 1
 
-# Inicializa HP/MP al máximo para el nivel actual (usar en nueva partida y carga).
+# Inicializar HP/MP
 func init_stats() -> void:
 	current_hp = get_max_hp()
 	current_mp = get_max_mp()
@@ -216,7 +216,7 @@ func _ready() -> void:
 		_base_max_mp = base.max_mp
 	init_stats()
 
-# Llama esto al comenzar una partida nueva (desde menu_inicio).
+# Reset para nueva partida
 func start_new_game() -> void:
 	gold            = 150
 	current_level   = 1
@@ -276,7 +276,7 @@ func get_available() -> Array[ItemData]:
 			result.append(item)
 	return result
 
-# Añade un item al inventario (los consumibles se apilan por nombre)
+# Añadir item
 func add_item(source: ItemData) -> void:
 	if source.item_type == ItemData.ItemType.CONSUMABLE:
 		for item in items:
@@ -303,7 +303,7 @@ func unequip(item: ItemData) -> void:
 		equipped_armor = null
 	changed.emit()
 
-# Quita una unidad del item; si es arma/armadura lo elimina del array (y desequipa).
+# Quitar item
 func remove_item(item: ItemData) -> void:
 	if item.item_type == ItemData.ItemType.CONSUMABLE:
 		item.quantity -= 1

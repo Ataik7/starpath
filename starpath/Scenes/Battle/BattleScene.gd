@@ -22,7 +22,7 @@ var hero3_logic  : BaseEntity = null   # Byran    (si está en el grupo)
 var _all_hero_entities  : Array[BaseEntity] = []
 var _all_enemy_entities : Array[BaseEntity] = []
 
-# Orden de turnos estilo Octopath
+# Orden de turnos
 const _SLOT_SHOW  : int = 7    # iconos visibles
 const _SLOT_SZ    : int = 50   # px por icono
 const _SLOT_GAP   : int = 6    # separación entre iconos
@@ -342,7 +342,7 @@ func _input(event: InputEvent) -> void:
 			and (event as InputEventMouseButton).pressed):
 		return
 
-	# Prioridad 1: entidad que tiene el ratón encima (mouse_entered funciona)
+	# Entidad bajo el ratón
 	for entity: BaseEntity in _all_enemy_entities + _all_hero_entities:
 		var s := entity.get_parent() as CombatantSprite
 		if s and s.is_selectable and s._is_hovered:
@@ -350,7 +350,7 @@ func _input(event: InputEvent) -> void:
 			battle_manager.player_target_confirmed(entity)
 			return
 
-	# Prioridad 2: test geométrico con coordenadas de mundo
+	# Fallback: test por posición
 	var mouse := get_global_mouse_position()
 	var half  := Vector2(72, 72)
 	for entity: BaseEntity in _all_enemy_entities + _all_hero_entities:
@@ -469,7 +469,7 @@ func _show_victory_screen() -> void:
 
 	var level_after := Inventory.current_level
 
-	# ── Overlay oscuro ──────────────────────────────────────────────────────
+	# Overlay oscuro
 	var ui := CanvasLayer.new()
 	ui.layer = 50
 	add_child(ui)
@@ -484,7 +484,7 @@ func _show_victory_screen() -> void:
 	tw_dim.tween_property(dimmer, "color:a", 0.60, 0.30)
 	await tw_dim.finished
 
-	# ── Panel compacto centrado ─────────────────────────────────────────────
+	# Panel compacto centrado
 	var vp_size := get_viewport().get_visible_rect().size
 
 	var panel := PanelContainer.new()
@@ -511,7 +511,7 @@ func _show_victory_screen() -> void:
 	vbox.add_theme_constant_override("separation", 12)
 	margin.add_child(vbox)
 
-	# ── Título ──────────────────────────────────────────────────────────────
+	# Título
 	var lbl_title := Label.new()
 	lbl_title.text = "★  ¡VICTORIA!  ★"
 	lbl_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -521,7 +521,7 @@ func _show_victory_screen() -> void:
 
 	vbox.add_child(HSeparator.new())
 
-	# ── Recompensas en fila ─────────────────────────────────────────────────
+	# Recompensas en fila
 	var reward_hbox := HBoxContainer.new()
 	reward_hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	reward_hbox.add_theme_constant_override("separation", 28)
@@ -547,7 +547,7 @@ func _show_victory_screen() -> void:
 
 	vbox.add_child(HSeparator.new())
 
-	# ── Fila helper: nombre | nivel | badge ─────────────────────────────────
+	# Fila helper: nombre | nivel | badge
 	var _make_char_row := func(char_name: String, lv_before: int, lv_after: int) -> void:
 		var row := HBoxContainer.new()
 		row.add_theme_constant_override("separation", 8)
@@ -587,14 +587,14 @@ func _show_victory_screen() -> void:
 
 	vbox.add_child(HSeparator.new())
 
-	# ── Botón ───────────────────────────────────────────────────────────────
+	# Botón
 	var btn_map := Button.new()
 	btn_map.text = "Volver al mapa"
 	btn_map.custom_minimum_size = Vector2(0, 36)
 	btn_map.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	vbox.add_child(btn_map)
 
-	# Centrar el panel una vez que Godot lo haya dimensionado
+	# Centrar panel
 	await get_tree().process_frame
 	await get_tree().process_frame
 	panel.position = Vector2(
@@ -607,14 +607,14 @@ func _show_victory_screen() -> void:
 		SceneTransition.go_to("res://Scenes/World/WorldMap.tscn")
 	)
 
-# Orden de turnos – conveyor belt estilo Octopath
+# Cola de turnos animada
 
 func _build_turn_order_ui() -> void:
 	var canvas := CanvasLayer.new()
 	canvas.layer = 6
 	add_child(canvas)
 
-	# Contenedor con clip: corta los slots que salen/entran por los lados
+	# Clip para la animación
 	_slot_clip = Control.new()
 	_slot_clip.clip_contents  = true
 	_slot_clip.position       = Vector2(10, 10)
@@ -625,14 +625,14 @@ func _build_turn_order_ui() -> void:
 	_slot_clip.mouse_filter   = Control.MOUSE_FILTER_IGNORE
 	canvas.add_child(_slot_clip)
 
-	# SLOT_SHOW visibles + 1 extra que entra desde la derecha al animar
+	# +1 slot extra para la animación
 	for i in range(_SLOT_SHOW + 1):
 		var slot := _make_slot()
 		slot["card"].position = Vector2(i * _SLOT_STRIDE, 0)
 		_slot_clip.add_child(slot["card"])
 		_slots.append(slot)
 
-# Fabrica un slot vacío y devuelve su diccionario
+# Slot vacío
 
 func _make_slot() -> Dictionary:
 	var style := StyleBoxFlat.new()
@@ -758,13 +758,13 @@ func _update_turn_order_highlight(active: BaseEntity) -> void:
 			_set_slot_content(_slots[i], sequence[i] if i < sequence.size() else null, i == 0)
 		return
 
-	# Matar tween anterior y restaurar posiciones si estaba a medias
+	# Cancelar tween anterior
 	if _slot_tween and _slot_tween.is_running():
 		_slot_tween.kill()
 		for i in range(_slots.size()):
 			_slots[i]["card"].position.x = i * _SLOT_STRIDE
 
-	# Preparar slot extra (oculto a la derecha) con el último de la secuencia
+	# Slot extra derecha
 	var tail_entity : BaseEntity = sequence[_SLOT_SHOW] if _SLOT_SHOW < sequence.size() else null
 	_set_slot_content(_slots[_SLOT_SHOW], tail_entity, false)
 	_slots[_SLOT_SHOW]["card"].position.x = _SLOT_SHOW * _SLOT_STRIDE
@@ -780,12 +780,12 @@ func _update_turn_order_highlight(active: BaseEntity) -> void:
 
 	await _slot_tween.finished
 
-	# Post-slide: rotar array y reciclar el primer slot
+	# Rotar array tras slide
 	var recycled = _slots[0]
 	_slots = _slots.slice(1) + [recycled]          # rotación lógica
 	recycled["card"].position.x = _SLOT_SHOW * _SLOT_STRIDE  # off-screen derecha
 
-	# Actualizar contenido de todos los slots según la nueva secuencia
+	# Refrescar slots
 	for i in range(_SLOT_SHOW + 1):
 		_set_slot_content(_slots[i], sequence[i] if i < sequence.size() else null, i == 0)
 

@@ -123,7 +123,7 @@ func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
 		return
 	if event is InputEventKey and event.pressed and not event.echo:
-		# Modo rebinding: captura la siguiente tecla para la acción pendiente
+		# Rebinding de tecla
 		if _rebinding_action != "":
 			get_viewport().set_input_as_handled()
 			if event.keycode != KEY_ESCAPE:
@@ -134,8 +134,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			return
 
 		if event.keycode == KEY_ESCAPE or event.is_action_pressed("open_menu"):
-			# Ignorar si el menú se acaba de abrir en este mismo frame
-			# (evita que el mismo input que lo abre lo cierre de inmediato)
+			# Evitar que el input de apertura lo cierre
 			if Engine.get_process_frames() == _open_frame:
 				get_viewport().set_input_as_handled()
 				return
@@ -308,12 +307,12 @@ func _build_main_panel() -> Control:
 	_feedback_lbl.modulate.a = 0.0
 	right_vbox.add_child(_feedback_lbl)
 
-	# Espaciador para empujar el panel Tiempo & Oro al fondo
+	# Espaciador
 	var spacer := Control.new()
 	spacer.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	right_vbox.add_child(spacer)
 
-	# Panel TIEMPO & ORO (abajo derecha, estilo FF9)
+	# Panel tiempo y oro
 	var tgo_panel := PanelContainer.new()
 	var tgo_style := StyleBoxFlat.new()
 	tgo_style.bg_color    = Color(0.05, 0.04, 0.09, 0.98)
@@ -715,7 +714,7 @@ func _add_empty_party_slot(parent: Node) -> void:
 	outer.add_child(_separator_h(C_BORDER2, 1))
 
 
-# Fila FF9: retrato + nombre/nivel + stats como texto (sin barras).
+# Fila compañero: retrato + datos
 func _add_ff9_party_row(parent: Node, char_id: String, char_name: String,
 		class_label: String, level: int, _xp: int, _xp_cap: int,
 		hp: int, max_hp: int, mp: int, max_mp: int) -> void:
@@ -739,7 +738,7 @@ func _add_ff9_party_row(parent: Node, char_id: String, char_name: String,
 	bg_panel.add_theme_stylebox_override("panel", bg_style)
 	outer.add_child(bg_panel)
 
-	# Separador fino entre filas (actúa como divisor estilo FF9)
+	# Separador
 	outer.add_child(_separator_h(C_BORDER2, 1))
 
 	var hbox := HBoxContainer.new()
@@ -812,7 +811,7 @@ func _ff9_stat_row(tag: String, val: int, max_val: int, tag_color: Color) -> HBo
 
 	return row
 
-# Barra de HP/MP estilo FF9 con etiqueta y valor numérico.
+# Barra HP/MP con valor
 func _build_ff9_bar(tag: String, val: int, max_val: int,
 		bar_color: Color, bg_color: Color) -> HBoxContainer:
 	var row := HBoxContainer.new()
@@ -854,7 +853,7 @@ func _build_ff9_bar(tag: String, val: int, max_val: int,
 
 	return row
 
-# Caja de retrato: se expande para llenar la altura de la fila (estilo FF9).
+# Retrato del personaje
 func _make_portrait(char_id: String) -> Control:
 	var container := PanelContainer.new()
 	container.custom_minimum_size = Vector2(78, 0)   # ancho mínimo; alto libre
@@ -975,7 +974,7 @@ func _refresh_item_list() -> void:
 				btn.add_theme_stylebox_override("hover",   sh)
 				btn.add_theme_stylebox_override("pressed", sh)
 				btn.add_theme_color_override("font_color", Color(0.60, 1.00, 0.60))
-				# Deshabilitar si HP/MP ya están al máximo
+				# Solo si no está al máximo
 				var at_max := false
 				if item.effect_type == "heal_hp":
 					at_max = Inventory.current_hp >= Inventory.get_max_hp()
@@ -986,15 +985,15 @@ func _refresh_item_list() -> void:
 				row.add_child(btn)
 
 func _use_item_outside_combat(item: ItemData) -> void:
-	# Si no hay compañeros, usar directo en Lyra
+	# Sin compañeros, aplicar a Lyra
 	if Inventory.party_members.is_empty():
 		_apply_item_to_target("lyra", item)
 		return
-	# Mostrar selector de personaje
+	# Selector
 	_show_target_selector(item)
 
 func _show_target_selector(item: ItemData) -> void:
-	# Panel selector centrado encima del inventario
+	# Panel selector
 	var selector := PanelContainer.new()
 	selector.name = "TargetSelector"
 	selector.set_anchors_preset(Control.PRESET_CENTER)
@@ -1027,7 +1026,7 @@ func _show_target_selector(item: ItemData) -> void:
 
 	vbox.add_child(HSeparator.new())
 
-	# Botón para Lyra (héroe principal)
+	# Lyra
 	var is_hp := item.effect_type == "heal_hp"
 	var lyra_cur  := Inventory.current_hp if is_hp else Inventory.current_mp
 	var lyra_max  := Inventory.get_max_hp() if is_hp else Inventory.get_max_mp()
@@ -1136,7 +1135,7 @@ func _make_button(text: String, w: int, h: int) -> Button:
 	btn.custom_minimum_size = Vector2(w, h)
 	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
 
-	# Normal: borde izquierdo dorado como acento RPG
+	# Estilo normal
 	var s_norm := StyleBoxFlat.new()
 	s_norm.bg_color             = C_BTN_NORM
 	s_norm.set_corner_radius_all(4)
@@ -1149,7 +1148,7 @@ func _make_button(text: String, w: int, h: int) -> Button:
 	s_norm.shadow_color         = Color(0, 0, 0, 0.4)
 	s_norm.shadow_size          = 4
 
-	# Hover: borde izquierdo más grueso y brillante
+	# Estilo hover
 	var s_hov := StyleBoxFlat.new()
 	s_hov.bg_color              = C_BTN_HOV
 	s_hov.set_corner_radius_all(4)
@@ -1212,7 +1211,7 @@ func _spacer(px: int) -> Control:
 	c.custom_minimum_size = Vector2(0, px)
 	return c
 
-# Panel de equipamiento (pantalla completa estilo FF9)
+# Panel de equipamiento
 
 func _build_equip_panel() -> Control:
 	var root := Control.new()
@@ -1250,7 +1249,7 @@ func _build_equip_panel() -> Control:
 	left_vbox.add_child(_separator_h(C_BORDER2, 1))
 	left_vbox.add_child(_spacer(6))
 
-	# Área dinámica: retrato + nombre/stats (se borra y repobla en _refresh_equip)
+	# # Zona dinámica
 	_equip_info_vbox = VBoxContainer.new()
 	_equip_info_vbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_equip_info_vbox.add_theme_constant_override("separation", 6)
@@ -1317,7 +1316,7 @@ func _build_equip_panel() -> Control:
 	_equip_slots_vbox.add_theme_constant_override("separation", 8)
 	right_vbox.add_child(_equip_slots_vbox)
 
-	# Picker inline — aparece al pulsar "Cambiar" en un slot
+	# Picker de items
 	_equip_picker_vbox = VBoxContainer.new()
 	_equip_picker_vbox.add_theme_constant_override("separation", 4)
 	_equip_picker_vbox.visible = false
@@ -1325,8 +1324,8 @@ func _build_equip_panel() -> Control:
 
 	return root
 
-# Lista dinámica de personajes disponibles en el panel de equipamiento.
-# Lyra siempre primero; luego los compañeros que se hayan unido.
+# Lista de personajes
+# Lyra + compañeros
 func _get_equip_chars() -> Array:
 	var result: Array = []
 	result.append({"id": "lyra", "stats": "res://Resources/Characters/Hero.tres"})
@@ -1352,7 +1351,7 @@ func _refresh_equip() -> void:
 	if _equip_char_lbl:
 		_equip_char_lbl.text = stats.character_name.to_upper() if stats else char_id.to_upper()
 
-	# Panel izquierdo: retrato grande + info estilo FF9
+	# Panel izquierdo: retrato + info
 	for c in _equip_info_vbox.get_children():
 		c.queue_free()
 
@@ -1364,7 +1363,7 @@ func _refresh_equip() -> void:
 	var atk_bonus : int = Inventory.get_attack_bonus()  if is_lyra else Inventory.get_atk_bonus_for(char_id)
 	var def_bonus : int = Inventory.get_defense_bonus() if is_lyra else Inventory.get_def_bonus_for(char_id)
 
-	# Fila superior: retrato pequeño + nombre/HP/MP (estilo FF9 INFO)
+	# Cabecera del personaje
 	var top_row := HBoxContainer.new()
 	top_row.add_theme_constant_override("separation", 14)
 	_equip_info_vbox.add_child(top_row)
@@ -1400,7 +1399,7 @@ func _refresh_equip() -> void:
 
 	_equip_info_vbox.add_child(_separator_h(C_BORDER2, 1))
 
-	# Stats en columna única estilo FF9 (dos grupos con separación)
+	# Stats
 	if stats:
 		var group1 := [
 			["Velocidad", stats.speed],
@@ -1432,7 +1431,7 @@ func _refresh_equip() -> void:
 	_add_slot_row_unified(_equip_slots_vbox, "Armadura:", a_item, char_id, ItemData.ItemType.ARMOR)
 
 
-# Retrato grande para el panel de equipo: llena el espacio disponible (estilo FF9).
+# Retrato grande
 func _make_equip_portrait(char_id: String) -> Control:
 	var container := PanelContainer.new()
 	container.custom_minimum_size    = Vector2(80, 80)
@@ -1464,7 +1463,7 @@ const _ICON_WEAPONS := "res://Assets/Icons/Items/Weapons.png"
 const _ICON_ARMOR   := "res://Assets/Icons/Items/Armor.png"
 const _ICON_CELL_W  := 128.0 / 5.0   # 25.6 px por icono
 
-# Crea un TextureRect con el icono del ítem desde el spritesheet correspondiente.
+# Icono del item
 # Índices Potions : 0=azul(maná) 1=verde(antídoto) 2=amarillo 3=naranja 4=rojo(vida)
 # Índices Weapons : 0=daga 1=espada 2=arco 3=hacha 4=bastón
 # Índices Armor   : 0=casco 1=pecho 2=pantalón 3=botas 4=escudo
@@ -1505,7 +1504,7 @@ func _item_icon_node(item: ItemData, size: float = 20.0) -> TextureRect:
 	rect.mouse_filter          = Control.MOUSE_FILTER_IGNORE
 	return rect
 
-# Slot interactivo unificado para todos los personajes.
+# Slot de equipo
 func _add_slot_row_unified(parent: Node, slot_label: String, item: ItemData,
 		char_id: String, slot_type: ItemData.ItemType) -> void:
 	var box := PanelContainer.new()
@@ -1567,7 +1566,7 @@ func _add_slot_row_unified(parent: Node, slot_label: String, item: ItemData,
 		btn_c.pressed.connect(func(): _show_equip_picker(c_id, c_type))
 		row.add_child(btn_c)
 
-# Muestra el picker de ítems para un slot concreto.
+# Picker de slot
 func _show_equip_picker(char_id: String, slot_type: ItemData.ItemType) -> void:
 	if _equip_picker_vbox == null:
 		return
@@ -1647,7 +1646,7 @@ func _do_unequip(char_id: String, item: ItemData) -> void:
 	_refresh_equip()
 	_refresh_stats()
 
-# Fila de equipo solo lectura (sin botón de desequipar).
+# Slot sin botón de cambio
 # Panel de Habilidades
 
 func _build_skills_panel() -> Control:
@@ -1820,7 +1819,7 @@ func _refresh_skills_panel() -> void:
 	for sk: SkillData in stats.skills:
 		if sk:
 			_add_skill_card(_skills_list_vbox, sk)
-# Tarjeta visual de habilidad con fondo, tipo, daño y coste MP.
+# Tarjeta de habilidad
 func _add_skill_card(parent: Node, sk: SkillData) -> void:
 	var card := PanelContainer.new()
 	var is_magic := sk.is_magical
@@ -1878,7 +1877,7 @@ func _add_skill_card(parent: Node, sk: SkillData) -> void:
 	mp_lbl.add_theme_font_size_override("font_size", 13)
 	mp_lbl.add_theme_color_override("font_color", C_MP)
 	row.add_child(mp_lbl)
-# Fila de habilidad: nombre · tipo · daño · coste MP.
+# Fila de habilidad
 func _add_skill_row(parent: Node, sk: SkillData) -> void:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 6)
@@ -2447,18 +2446,20 @@ func _request_confirm(title: String, save_label: String, nosave_label: String, a
 	_confirm_panel.visible = true
 
 func _on_quit_pressed() -> void:
+	var nosave_lbl := "✕  Salir sin guardar" if SaveManager.has_unsaved_changes else "✕  Salir"
 	_request_confirm(
 		"¿Salir del juego?",
 		"💾  Guardar y salir",
-		"✕  Salir sin guardar",
+		nosave_lbl,
 		func(): get_tree().quit()
 	)
 
 func _on_main_menu_pressed() -> void:
+	var nosave_lbl := "⌂  Ir sin guardar" if SaveManager.has_unsaved_changes else "⌂  Ir al menú principal"
 	_request_confirm(
 		"¿Volver al menú principal?",
 		"💾  Guardar e ir",
-		"⌂  Ir sin guardar",
+		nosave_lbl,
 		func():
 			AudioManager.stop_bgm()
 			get_tree().paused = false
@@ -2536,7 +2537,7 @@ func _build_confirm_panel() -> Control:
 
 	return root
 
-# Fila de estadística: "Nombre     XX" alineado a la derecha (estilo FF9).
+# Fila de stat
 func _equip_stat_row(stat_name: String, value: int) -> HBoxContainer:
 	var row := HBoxContainer.new()
 	row.add_theme_constant_override("separation", 0)

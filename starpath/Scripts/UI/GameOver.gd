@@ -1,6 +1,6 @@
 extends CanvasLayer
 
-# Pantalla de Game Over con animación de fade-in y opciones para el jugador.
+# Game Over
 
 @onready var background: Panel = $Background
 @onready var overlay: ColorRect = $Overlay
@@ -12,7 +12,7 @@ const WORLD_MAP_SCENE := "res://Scenes/World/WorldMap.tscn"
 
 
 func _ready() -> void:
-	# Empezar todo invisible y animar la entrada
+	# Fade in
 	background.modulate.a = 0.0
 	content.modulate.a = 0.0
 	overlay.color.a = 0.0
@@ -59,7 +59,7 @@ func _on_load_pressed() -> void:
 			if SaveManager.load_game(slot):
 				SceneTransition.go_to(WORLD_MAP_SCENE)
 				return
-	# Si no hay partidas, ir al menú
+	# Sin partida → menú
 	SceneTransition.go_to(MENU_SCENE)
 
 

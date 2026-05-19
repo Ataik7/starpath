@@ -30,12 +30,12 @@ const C_TEXT   := Color(0.90, 0.90, 0.90)
 const C_TITLE  := Color(1.0, 0.88, 0.30)
 
 func _ready() -> void:
-	# Si ya se unió (partida guardada), ocultarse de inmediato
+	# Ya en el grupo, ocultar
 	if Inventory.has_party_member(companion_id):
 		_hide_from_world()
 		return
 
-	# Sprite del NPC en el mapa
+	# Sprite
 	if npc_texture:
 		var atlas   := AtlasTexture.new()
 		atlas.atlas  = npc_texture
@@ -46,19 +46,19 @@ func _ready() -> void:
 	_interact_area.body_exited.connect(_on_body_exited)
 	_build_menu()
 
-# Elimina el NPC del mundo: oculta el sprite y desactiva colisiones.
+# Ocultar NPC
 func _hide_from_world() -> void:
 	visible = false
-	# Desactivar área de interacción
+	# Quitar área
 	if is_instance_valid(_interact_area):
 		_interact_area.set_deferred("monitoring",  false)
 		_interact_area.set_deferred("monitorable", false)
-	# Desactivar colisión física del cuerpo
+	# Quitar colisión
 	var body := get_node_or_null("Body") as StaticBody2D
 	if body != null:
 		body.set_deferred("collision_layer", 0)
 		body.set_deferred("collision_mask",  0)
-	# Cerrar menú si estuviera abierto
+	# Cerrar menú
 	if _menu_open:
 		_close_menu()
 

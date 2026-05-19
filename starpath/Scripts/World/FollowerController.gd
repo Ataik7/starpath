@@ -8,7 +8,7 @@ extends Node2D
 
 var _last_dir: String = "down"
 
-# Configurar animaciones del spritesheet Pipoya 3×4 (32×32 px por frame)
+# Animaciones del spritesheet
 
 func setup_texture(tex: Texture2D) -> void:
 	if tex == null:
@@ -40,7 +40,7 @@ func setup_texture(tex: Texture2D) -> void:
 	_sprite.offset        = Vector2(0, -16)
 	_sprite.play("idle_down")
 
-# Llamado cada frame por WorldMap con la posición del historial
+# Actualizar posición
 
 func update_from_history(target_pos: Vector2, target_dir: String) -> void:
 	var diff := target_pos - global_position

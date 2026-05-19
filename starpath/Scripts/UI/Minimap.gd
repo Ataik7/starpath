@@ -33,8 +33,7 @@ func _ready() -> void:
 	_build_fullmap()
 
 
-# ── Minimapa pequeño ────────────────────────────────────────────────────────
-
+	# Minimapa pequeño
 func _build_minimap() -> void:
 	var root := Control.new()
 	root.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -121,8 +120,7 @@ func _build_minimap() -> void:
 	vbox.add_child(hint)
 
 
-# ── Mapa completo ───────────────────────────────────────────────────────────
-
+	# Mapa completo
 func _build_fullmap() -> void:
 	_full_overlay = Control.new()
 	_full_overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
@@ -215,8 +213,7 @@ func _build_fullmap() -> void:
 	_full_overlay.hide()
 
 
-# ── Input ───────────────────────────────────────────────────────────────────
-
+	# Input
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
 		return
@@ -235,8 +232,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			_mini_root.visible = _minimap_visible
 
 
-# ── Process ─────────────────────────────────────────────────────────────────
-
+	# Process
 func _process(_delta: float) -> void:
 	if _mini_cam == null:
 		return
@@ -259,8 +255,7 @@ func _process(_delta: float) -> void:
 			dot.queue_redraw()
 
 
-# ── Clases internas ─────────────────────────────────────────────────────────
-
+	# Clases internas
 class _PlayerDot extends Control:
 	func _ready() -> void:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE

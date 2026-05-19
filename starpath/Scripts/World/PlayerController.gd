@@ -30,7 +30,7 @@ func _setup_animations(sprite_texture: Texture2D) -> void:
 	for i in dirs.size():
 		var row: int = i
 
-		# — Animación de caminar (3 frames) —
+		# Caminar
 		var walk := "walk_" + dirs[i]
 		frames.add_animation(walk)
 		frames.set_animation_speed(walk, 8.0)
@@ -41,7 +41,7 @@ func _setup_animations(sprite_texture: Texture2D) -> void:
 			atlas.region     = Rect2(col * 32, row * 32, 32, 32)
 			frames.add_frame(walk, atlas)
 
-		# — Animación idle (frame central de la fila) —
+		# Idle
 		var idle := "idle_" + dirs[i]
 		frames.add_animation(idle)
 		frames.set_animation_speed(idle, 1.0)
@@ -60,13 +60,13 @@ func _setup_animations(sprite_texture: Texture2D) -> void:
 # Movimiento y animación
 
 func _physics_process(_delta: float) -> void:
-	# Bloquear movimiento mientras hay un diálogo o tienda abiertos
+	# Bloquear si hay menú
 	if DialogManager.is_open or ShopManager.is_open:
 		velocity = Vector2.ZERO
 		move_and_slide()
 		return
 
-	# Tutorial de movimiento — solo la primera vez que el jugador se mueve
+	# Tutorial movimiento
 	if not _tutorial_moved and velocity != Vector2.ZERO:
 		_tutorial_moved = true
 		TutorialManager.try_show(

@@ -14,7 +14,7 @@ const FRAME_H: int = 32
 # Configuración exportable
 @export var entity_logic:  BaseEntity
 @export var sprite_texture: Texture2D = null
-# true = el sprite mira a la izquierda (enemigos); false = mira a la derecha (héroes)
+# true = enemigo (mira izquierda)
 @export var facing_left:   bool = false
 
 var is_selectable: bool = false
@@ -106,7 +106,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		clicked.emit(entity_logic)
 
 func _on_click_area_input(_viewport: Node, event: InputEvent, _shape_idx: int) -> void:
-	# Fallback por si _unhandled_input no llega (p.ej. enfoque en UI).
+	# Fallback clic
 	if not is_selectable:
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
@@ -150,7 +150,7 @@ func _on_defeated() -> void:
 
 # Número flotante de daño / curación
 
-# Llama esto externamente al aplicar daño para el flash de color.
+# Flash de daño
 func play_hit_flash(is_magical: bool = false) -> void:
 	var hit_color := Color(0.35, 0.55, 1.0) if is_magical else Color(1.0, 0.25, 0.25)
 	sprite.modulate = hit_color

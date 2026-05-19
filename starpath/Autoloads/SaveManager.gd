@@ -30,7 +30,7 @@ func _slot_path(slot: int) -> String:
 func has_save(slot: int) -> bool:
 	return FileAccess.file_exists(_slot_path(slot))
 
-# Returns {empty, save_date, gold} for display in the slot list.
+# Info del slot para mostrar
 func get_slot_info(slot: int) -> Dictionary:
 	if not has_save(slot):
 		return {"empty": true}
@@ -52,7 +52,7 @@ func save_game(slot: int) -> void:
 	var data: Dictionary = {}
 	data["save_date"]  = Time.get_datetime_string_from_system().replace("T", " ").left(16)
 	data["play_time"]  = get_total_play_time()
-	# Reiniciar sesión para evitar doble-conteo si se guarda varias veces
+	# Reiniciar sesión
 	play_time_sec  = data["play_time"]
 	_session_start = Time.get_unix_time_from_system()
 
@@ -156,11 +156,11 @@ func load_game(slot: int) -> bool:
 		var item_d: Dictionary = ca_data[k] as Dictionary
 		Inventory.companion_armor[str(k)] = _deserialize_item(item_d)
 
-	# Refrescar HP/MP según el nivel restaurado
+	# Refrescar HP/MP
 	Inventory.init_stats()
 	Inventory.changed.emit()
 
-	# Guardar posición pendiente; WorldMap la aplicará en _ready()
+	# Posición para restaurar
 	if data.has("pos_x"):
 		_pending_pos      = Vector2(float(data["pos_x"]), float(data["pos_y"]))
 		_pending_dir      = data.get("dir", "down")
@@ -169,7 +169,7 @@ func load_game(slot: int) -> bool:
 	game_loaded.emit(slot)
 	return true
 
-# Llamar desde WorldMap._ready() para colocar al jugador en la posición guardada.
+# Restaurar posición al cargar
 func apply_pending_spawn(player: PlayerController) -> void:
 	if not has_pending_spawn:
 		return

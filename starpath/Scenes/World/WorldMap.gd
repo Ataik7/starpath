@@ -3,7 +3,7 @@ extends Node2D
 @onready var player:     PlayerController = $Player
 @onready var pause_menu: PauseMenu        = $PauseMenu
 
-# Sistema de seguidores estilo Octopath
+# Sistema de seguidores
 const _FOLLOW_STEPS : int = 22   # frames de separación entre personajes
 const _HISTORY_MAX  : int = 300  # entradas máximas en el historial
 
@@ -35,7 +35,7 @@ func _ready() -> void:
 		call_deferred("_trigger_lore_tutorial")
 
 func _restore_pre_battle_state() -> void:
-	# Retroceder 64 px para no aparecer dentro del área de detección del enemigo.
+	# Alejarse del enemigo
 	var back := Vector2.ZERO
 	match Inventory.pre_battle_direction:
 		"up":    back = Vector2(  0,  64)
@@ -222,15 +222,15 @@ func _setup_character_layer() -> void:
 	chars_layer.z_as_relative  = false
 	add_child(chars_layer)
 
-	# Mueve el jugador al contenedor (conserva global_position).
+	# Jugador al contenedor
 	player.reparent(chars_layer, true)
 
-	# Mueve todos los CompanionNPC al mismo contenedor.
+	# Compañeros al contenedor
 	for child in get_children():
 		if child is CompanionNPC:
 			child.reparent(chars_layer, true)
 
-	# Guardar referencia y conectar señal para detectar cambios en el grupo
+	# Conectar señal de grupo
 	_chars_layer = chars_layer
 	Inventory.changed.connect(func():
 		if _last_party != Inventory.party_members:
@@ -258,7 +258,7 @@ func _physics_process(_delta: float) -> void:
 		if _path_history.size() > _HISTORY_MAX:
 			_path_history.pop_front()
 
-	# Mover cada seguidor a su posición correspondiente del historial
+	# Mover seguidores
 	for i in _followers.size():
 		var f     : FollowerController = _followers[i]
 		if not is_instance_valid(f):
@@ -268,7 +268,7 @@ func _physics_process(_delta: float) -> void:
 		var e     : Dictionary = _path_history[idx]
 		f.update_from_history(e["pos"] as Vector2, e["dir"] as String)
 
-# Convierte una dirección textual en vector unitario.
+# Dirección a vector
 func _dir_to_vec(dir: String) -> Vector2:
 	match dir:
 		"up":    return Vector2( 0, -1)
@@ -277,16 +277,16 @@ func _dir_to_vec(dir: String) -> Vector2:
 		"right": return Vector2( 1,  0)
 	return Vector2(0, 1)
 
-# Crea o destruye seguidores para que coincidan con Inventory.party_members.
+# Sync seguidores con el grupo
 func _update_followers() -> void:
 	if _chars_layer == null:
 		return
-	# Evitar recrear si el grupo no cambió
+	# Sin cambios, salir
 	if _last_party == Inventory.party_members:
 		return
 	_last_party = Inventory.party_members.duplicate()
 
-	# Eliminar seguidores anteriores
+	# Limpiar seguidores
 	for f in _followers:
 		if is_instance_valid(f):
 			f.queue_free()
@@ -298,13 +298,13 @@ func _update_followers() -> void:
 	var dir_vec : Vector2 = _dir_to_vec(player._last_dir)
 	var step    : float   = 2.5   # px/frame a velocidad normal (150 px/s a 60 fps)
 	for j in _HISTORY_MAX:
-		# j=0 → entrada más antigua (más lejos); j=_HISTORY_MAX-1 → más reciente (jugador)
+		# 0 = más lejos, MAX-1 = más cerca
 		var age    : int     = _HISTORY_MAX - 1 - j
 		var offset : Vector2 = -dir_vec * step * age
 		_path_history.append({"pos": player.global_position + offset,
 							  "dir": player._last_dir})
 
-	# Crear un seguidor por cada miembro del grupo
+	# Crear seguidores
 	var fol_scene := preload("res://Scenes/World/FollowerController.tscn")
 	for id in Inventory.party_members:
 		if not _FOLLOWER_TEX.has(id):
@@ -313,7 +313,7 @@ func _update_followers() -> void:
 		var tex_path : String             = _FOLLOWER_TEX[id]
 		var tex      : Texture2D          = load(tex_path) as Texture2D
 		_chars_layer.add_child(f)
-		# Posición inicial = la que le asignaría el historial en el primer frame
+		# Posición inicial
 		var delay   : int    = (_followers.size() + 1) * _FOLLOW_STEPS
 		var idx     : int    = max(0, _path_history.size() - 1 - delay)
 		var e       : Dictionary = _path_history[idx]
@@ -326,7 +326,7 @@ func _setup_camera_limits() -> void:
 	var map := get_node_or_null("map1")
 	if map == null:
 		return
-	# Usa la capa "ground" como referencia del área total del mapa
+	# Límites del mapa
 	var ref_layer: TileMapLayer = null
 	for child in map.get_children():
 		if child is TileMapLayer and child.name == "ground":

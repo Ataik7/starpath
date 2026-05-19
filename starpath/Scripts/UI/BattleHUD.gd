@@ -31,7 +31,7 @@ var _vbox:      VBoxContainer
 func _ready() -> void:
 	_font = load(FONT_PATH) if ResourceLoader.exists(FONT_PATH) else null
 
-	# Ocultar el Container heredado de la escena
+	# Ocultar container base
 	var legacy := get_node_or_null("Container")
 	if legacy:
 		legacy.hide()
@@ -54,7 +54,7 @@ func _ready() -> void:
 	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(panel)
 
-	# VBox con las tarjetas (una por personaje)
+	# Tarjetas de personaje
 	_vbox = VBoxContainer.new()
 	_vbox.add_theme_constant_override("separation", 0)
 	_vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -121,14 +121,14 @@ func _build_card(entity: BaseEntity) -> void:
 
 	entity.stats_changed.connect(func(): _refresh(entity))
 
-# Fila de estadística: "TAG   [====barra====]   val / max"
+# Fila de stat con barra
 func _stat_row(tag: String, val: int, max_val: int,
 			   fill: Color, bg_col: Color) -> Array:
 	var col := VBoxContainer.new()
 	col.add_theme_constant_override("separation", 2)
 	col.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
-	# — Fila superior: etiqueta + valor —
+	# Etiqueta + valor
 	var top_row := HBoxContainer.new()
 	top_row.add_theme_constant_override("separation", 4)
 	top_row.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -157,7 +157,7 @@ func _stat_row(tag: String, val: int, max_val: int,
 	val_lbl.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	top_row.add_child(val_lbl)
 
-	# — Barra de progreso —
+	# Barra
 	var bar := ProgressBar.new()
 	bar.show_percentage       = false
 	bar.custom_minimum_size   = Vector2(0, BAR_H)

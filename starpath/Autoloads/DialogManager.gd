@@ -11,7 +11,7 @@ extends CanvasLayer
 
 signal dialog_finished
 
-# true mientras el diálogo está abierto (el PlayerController lo comprueba)
+# true = diálogo activo
 var is_open: bool = false
 
 # Nodos UI
@@ -20,7 +20,7 @@ var _name_label: Label
 var _text_label: RichTextLabel
 var _hint_label: Label
 
-# Estado del efecto máquina de escribir
+# Typewriter
 var _lines:      Array[String] = []
 var _line_index: int           = 0
 var _full_text:  String        = ""
@@ -57,18 +57,18 @@ func _build_ui() -> void:
 	_panel.add_theme_stylebox_override("panel", panel_style)
 	add_child(_panel)
 
-	# Layout vertical dentro del panel
+	# Layout
 	var vbox := VBoxContainer.new()
 	vbox.add_theme_constant_override("separation", 6)
 	_panel.add_child(vbox)
 
-	# Nombre del hablante
+	# Nombre
 	_name_label = Label.new()
 	_name_label.add_theme_font_size_override("font_size", 14)
 	_name_label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.3))
 	vbox.add_child(_name_label)
 
-	# Texto del diálogo
+	# Texto
 	_text_label = RichTextLabel.new()
 	_text_label.bbcode_enabled      = false
 	_text_label.fit_content         = false
@@ -78,7 +78,7 @@ func _build_ui() -> void:
 	_text_label.add_theme_color_override("default_color", Color.WHITE)
 	vbox.add_child(_text_label)
 
-	# Indicador de avance ▼
+	# Indicador
 	_hint_label = Label.new()
 	_hint_label.text                 = "▼"
 	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -88,7 +88,7 @@ func _build_ui() -> void:
 	vbox.add_child(_hint_label)
 
 #
-# Inicia un diálogo.  `lines` = array de frases, `speaker` = nombre (opcional).
+# Iniciar diálogo
 func start_dialog(lines: Array[String], speaker: String = "") -> void:
 	if is_open or lines.is_empty():
 		return
@@ -108,7 +108,7 @@ func _show_line(text: String) -> void:
 	_hint_label.hide()
 	_text_label.text = ""
 
-# Máquina de escribir
+# Typewriter loop
 func _process(delta: float) -> void:
 	if not is_open or not _typing:
 		return
@@ -121,7 +121,7 @@ func _process(delta: float) -> void:
 			_typing = false
 			_hint_label.show()
 
-# Entrada del jugador
+# Input
 func _unhandled_input(event: InputEvent) -> void:
 	if not is_open:
 		return
@@ -129,7 +129,7 @@ func _unhandled_input(event: InputEvent) -> void:
 		return
 	get_viewport().set_input_as_handled()
 	if _typing:
-		# Saltar el efecto: mostrar la línea completa al instante
+		# Skip typewriter
 		_char_index      = _full_text.length()
 		_text_label.text = _full_text
 		_typing          = false

@@ -52,7 +52,7 @@ func _ready() -> void:
 		_freeze_timer = 4.0
 		_detect.set_deferred("monitoring", false)
 
-	# Sprite — usa la textura exportada o la por defecto con tinte rojo
+	# Sprite
 	var tex: Texture2D = enemy_texture
 	if tex == null:
 		tex = load(_DEFAULT_TEX)
@@ -142,7 +142,7 @@ func _physics_process(delta: float) -> void:
 		_wait_timer = randf_range(0.5, 1.4)
 		return
 
-	# Volver al punto de spawn si se aleja demasiado
+	# Volver al spawn
 	if global_position.distance_to(_spawn) > wander_radius:
 		_dir = (_spawn - global_position).normalized()
 
@@ -150,12 +150,12 @@ func _physics_process(delta: float) -> void:
 	var prev := global_position
 	move_and_slide()
 
-	# si lleva muchos frames sin moverse, probablemente está atascado contra algo
+	# Probablemente atascado
 	if global_position.distance_squared_to(prev) < 0.1:
 		_stuck_frames += 1
 		if _stuck_frames >= 8:
 			_stuck_frames = 0
-			# giramos entre 90 y 180 grados para intentar salir
+			# Girar para desatascarse
 			var escape_angle = _dir.angle() + randf_range(PI * 0.5, PI)
 			_dir = Vector2(cos(escape_angle), sin(escape_angle))
 			_move_timer = randf_range(0.8, 2.0)

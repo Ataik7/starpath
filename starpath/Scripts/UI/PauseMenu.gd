@@ -1392,7 +1392,6 @@ func _refresh_equip() -> void:
 	lv_lbl.text = "Lv %d" % lvl
 	lv_lbl.add_theme_font_size_override("font_size", 15)
 	lv_lbl.add_theme_color_override("font_color", C_TEXT)
-	info_sv.add_child(lv_lbl)
 	cn_row.add_child(lv_lbl)
 
 	# HP / MP

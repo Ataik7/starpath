@@ -79,7 +79,7 @@ script = ExtResource("99_minimap")
 z_as_relative = false
 position = Vector2(-956, -895)
 
-[node name="StaticBody" parent="map1/collision" parent_id_path=PackedInt32Array(1234282624, 1822860150) index="0" unique_id=920167155]
+[node name="StaticBody" parent="map1/collision" parent_id_path=PackedInt32Array(1234282624, 1788086438) index="0" unique_id=1333200683]
 visible = false
 
 [node name="BridgeArea" type="Area2D" parent="." unique_id=1638982597]

@@ -5,7 +5,7 @@
 ![Godot](https://img.shields.io/badge/Godot-4.x-478CBF?style=for-the-badge&logo=godot-engine&logoColor=white)
 ![GDScript](https://img.shields.io/badge/GDScript-language-blue?style=for-the-badge)
 ![License](https://img.shields.io/badge/Licencia-MIT-green?style=for-the-badge)
-![Status](https://img.shields.io/badge/Estado-En%20desarrollo-yellow?style=for-the-badge)
+![Status](https://img.shields.io/badge/Estado-Completado-brightgreen?style=for-the-badge)
 
 ---
 
@@ -13,7 +13,7 @@
 
 **Starpath RPG** es un videojuego de rol por turnos en 2D desarrollado como Trabajo de Fin de Grado del ciclo formativo de **Desarrollo de Aplicaciones Multiplataforma (DAM)**. El jugador explora un mundo de pixel art, interactúa con NPCs, compra objetos en tiendas y se enfrenta a enemigos en combates por turnos estratégicos.
 
-El proyecto incluye además una **página web promocional** desarrollada en Angular 19: [web-starpath.vercel.app](https://web-starpath.vercel.app)
+El proyecto incluye además una **página web promocional** desarrollada en Angular 21: [web-starpath.vercel.app](https://web-starpath.vercel.app)
 
 ---
 
@@ -61,7 +61,7 @@ El proyecto incluye además una **página web promocional** desarrollada en Angu
 | **GDScript** | Lenguaje de programación |
 | **JSON** | Sistema de guardado |
 | **Angular 21** | Web promocional |
-| **Supabase** | Autenticación web |
+| **Supabase** | Autenticación y almacenamiento web |
 | **Vercel** | Despliegue web |
 
 ---
@@ -122,7 +122,7 @@ Proyecto desarrollado en el **IES El Cañaveral** — Ciclo Formativo de Grado S
 La página web del juego está disponible en:
 **[https://web-starpath.vercel.app](https://web-starpath.vercel.app)**
 
-Desarrollada con Angular 19 + Supabase + Vercel.
+Desarrollada con Angular 21 + Supabase + Vercel. Incluye sistema de autenticación, página de perfil con avatar y versión jugable del juego en el navegador.
 
 ---
 

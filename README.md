@@ -60,7 +60,7 @@ El proyecto incluye además una **página web promocional** desarrollada en Angu
 | **Godot 4** | Motor de desarrollo |
 | **GDScript** | Lenguaje de programación |
 | **JSON** | Sistema de guardado |
-| **Angular 19** | Web promocional |
+| **Angular 21** | Web promocional |
 | **Supabase** | Autenticación web |
 | **Vercel** | Despliegue web |
 

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="115">
+<map version="1.10" tiledversion="1.12.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="15" nextobjectid="119">
  <tileset firstgid="1" source="[A]WaterFall_pipo.tsx"/>
  <tileset firstgid="577" name="[Base]BaseChip_pipo" tilewidth="32" tileheight="32" tilecount="1064" columns="8">
   <image source="[Base]BaseChip_pipo.png" width="256" height="4256"/>
@@ -543,8 +543,6 @@
     <object id="1" x="4" y="0" width="28" height="32"/>
    </objectgroup>
   </tile>
-  <tile id="237">
-  </tile>
   <tile id="238">
    <objectgroup draworder="index" id="2">
     <object id="1" x="3" y="0" width="29" height="31"/>
@@ -698,6 +696,11 @@
   <tile id="431">
    <objectgroup draworder="index" id="2">
     <object id="1" x="0" y="0" width="32" height="30"/>
+   </objectgroup>
+  </tile>
+  <tile id="446">
+   <objectgroup draworder="index" id="2">
+    <object id="1" x="0" y="0" width="32" height="32"/>
    </objectgroup>
   </tile>
   <tile id="447">
@@ -1285,6 +1288,9 @@
   <object id="107" x="1601" y="1854" width="31" height="32"/>
   <object id="108" x="1790" y="1855" width="32" height="30"/>
   <object id="112" x="77.6667" y="851.667"/>
+  <object id="115" x="180.5" y="711" rotation="-90"/>
+  <object id="117" x="31" y="704" width="160.5" height="93"/>
+  <object id="118" x="1663" y="1251" width="64.5" height="58"/>
  </objectgroup>
  <layer id="8" name="grass" width="60" height="60">
   <data encoding="csv">

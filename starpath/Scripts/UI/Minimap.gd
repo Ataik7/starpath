@@ -10,6 +10,12 @@ const ZOOM_LEVEL := 0.60         # cuánto mundo se ve (menor = más alejado)
 const FULLMAP_PX   := 840
 const FULLMAP_ZOOM := 0.43
 
+# Límites del mundo en coordenadas globales (centrado en el origen)
+const WORLD_LEFT   := -970.0
+const WORLD_RIGHT  :=  970.0
+const WORLD_TOP    := -970.0
+const WORLD_BOTTOM :=  970.0
+
 const C_PANEL  := Color(0.05, 0.04, 0.09, 0.90)
 const C_BORDER := Color(0.65, 0.50, 0.16, 1.00)
 const C_GOLD   := Color(0.96, 0.84, 0.40, 1.00)
@@ -53,8 +59,7 @@ func _build_minimap() -> void:
 
 	var sty := StyleBoxFlat.new()
 	sty.bg_color     = C_PANEL
-	sty.border_color = C_BORDER
-	sty.set_border_width_all(1)
+	sty.set_border_width_all(0)
 	sty.set_corner_radius_all(6)
 	sty.shadow_color  = Color(0, 0, 0, 0.65)
 	sty.shadow_size   = 12
@@ -95,7 +100,7 @@ func _build_minimap() -> void:
 	sv.size                      = Vector2i(int(MAP_PX), int(MAP_PX))
 	sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	sv.disable_3d                = true
-	sv.transparent_bg            = false
+	sv.transparent_bg            = true
 	svc.add_child(sv)
 
 	sv.call_deferred("set", "world_2d", get_viewport().world_2d)
@@ -144,8 +149,7 @@ func _build_fullmap() -> void:
 
 	var sty := StyleBoxFlat.new()
 	sty.bg_color     = Color(0.05, 0.04, 0.09, 0.97)
-	sty.border_color = C_BORDER
-	sty.set_border_width_all(2)
+	sty.set_border_width_all(0)
 	sty.set_corner_radius_all(8)
 	sty.content_margin_left   = 16
 	sty.content_margin_right  = 16
@@ -180,7 +184,7 @@ func _build_fullmap() -> void:
 	sv.size                      = Vector2i(FULLMAP_PX, FULLMAP_PX)
 	sv.render_target_update_mode = SubViewport.UPDATE_ALWAYS
 	sv.disable_3d                = true
-	sv.transparent_bg            = false
+	sv.transparent_bg            = true
 	svc.add_child(sv)
 
 	sv.call_deferred("set", "world_2d", get_viewport().world_2d)
@@ -242,8 +246,13 @@ func _process(_delta: float) -> void:
 			return
 		_player = group[0] as Node2D
 
-	# Minimapa sigue al jugador
-	_mini_cam.global_position = _player.global_position
+	# Minimapa sigue al jugador (clampeado para que no muestre fuera del mapa)
+	var view_half := (MAP_PX / 2.0) / ZOOM_LEVEL
+	var pos       := _player.global_position
+	_mini_cam.global_position = Vector2(
+		clampf(pos.x, WORLD_LEFT + view_half, WORLD_RIGHT - view_half),
+		clampf(pos.y, WORLD_TOP  + view_half, WORLD_BOTTOM - view_half)
+	)
 
 	# Punto del jugador en el mapa completo
 	if _fullmap_visible and _full_overlay != null:
@@ -272,5 +281,4 @@ class _FrameOverlay extends Control:
 		mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	func _draw() -> void:
-		var r := Rect2(Vector2.ZERO, size)
-		draw_rect(r, Color(0.65, 0.50, 0.16, 0.70), false, 1.5)
+		pass

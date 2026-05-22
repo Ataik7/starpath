@@ -3,6 +3,46 @@ extends Node2D
 @onready var player:     PlayerController = $Player
 @onready var pause_menu: PauseMenu        = $PauseMenu
 
+var _debug_label: Label = null
+
+func _input(event: InputEvent) -> void:
+	if event is InputEventKey and event.keycode == KEY_F2 and event.pressed:
+		if _debug_label == null:
+			var layer := CanvasLayer.new()
+			layer.layer = 99
+			add_child(layer)
+			_debug_label = Label.new()
+			_debug_label.add_theme_font_size_override("font_size", 16)
+			_debug_label.add_theme_color_override("font_color", Color.YELLOW)
+			_debug_label.position = Vector2(10, 10)
+			layer.add_child(_debug_label)
+		else:
+			_debug_label.get_parent().queue_free()
+			_debug_label = null
+
+func _process(_delta: float) -> void:
+	if _debug_label and is_instance_valid(player):
+		var p := player.global_position
+		_debug_label.text = "Pos: (%.0f, %.0f)" % [p.x, p.y]
+
+func _debug_print_tiles_at(world_pos: Vector2, rows_up: int = 1) -> void:
+	var map := get_node_or_null("map1")
+	if map == null:
+		return
+	for child in map.get_children():
+		var layer := child as TileMapLayer
+		if layer == null:
+			continue
+		var base_cell: Vector2i = layer.local_to_map(layer.to_local(world_pos))
+		for dy in range(-rows_up, 1):
+			for dx in range(-1, 2):
+				var cell: Vector2i = base_cell + Vector2i(dx, dy)
+				var src: int = layer.get_cell_source_id(cell)
+				if src == -1:
+					continue
+				var ac: Vector2i = layer.get_cell_atlas_coords(cell)
+				print("LETRERO → capa: %s | celda: %s | atlas: %s" % [layer.name, cell, ac])
+
 # Sistema de seguidores
 const _FOLLOW_STEPS : int = 22   # frames de separación entre personajes
 const _HISTORY_MAX  : int = 300  # entradas máximas en el historial
@@ -12,7 +52,7 @@ const _FOLLOWER_TEX : Dictionary = {
 	"byran":    "res://Assets/Characters/Heroes/Byran.png",
 }
 
-var _chars_layer  : Node2D        = null
+var _chars_layer  : Node2D = null
 var _path_history : Array         = []   # Array de {pos:Vector2, dir:String}
 var _followers    : Array         = []   # Array de FollowerController
 var _last_party   : Array[String] = []
@@ -26,6 +66,8 @@ func _ready() -> void:
 	call_deferred("_setup_rio_layer")
 	call_deferred("_setup_camera_limits")
 	call_deferred("_setup_character_layer")
+	call_deferred("_setup_ysort_board")
+	call_deferred("_setup_ysort_telescope")
 	if Inventory.returning_from_battle:
 		Inventory.returning_from_battle = false
 		call_deferred("_restore_pre_battle_state")
@@ -81,8 +123,8 @@ func _setup_map_layers() -> void:
 	var map := get_node_or_null("map1")
 	if map == null:
 		return
-	var ground_layers := ["ground", "grass", "water", "water_grass", "farm", "building"]
-	var object_layers := ["tree", "building_up", "farm_up"]
+	var ground_layers := ["ground", "grass", "water", "water_grass", "farm", "building", "building_up", "farm_up"]
+	var object_layers := ["tree"]
 	for child in map.get_children():
 		if child.name in ground_layers:
 			child.z_index       = -10
@@ -164,7 +206,7 @@ func _elevate_tall_objects() -> void:
 		map.add_child(tall_layer)
 
 		# Solo la CABEZA/LLAMA va a z=10; las PATAS se quedan en building.
-		var tall_coords := [Vector2i(3, 113), Vector2i(3, 115)]
+		var tall_coords := [Vector2i(5, 28)]
 
 		var cells_to_move: Array = []
 		for cell in building_layer.get_used_cells():
@@ -197,11 +239,12 @@ func _elevate_tall_objects() -> void:
 	tree_trunk.tile_set      = tree_layer2.tile_set
 	map.add_child(tree_trunk)
 
-	# Mueve SOLO los troncos a tree_trunk y los borra de la capa original.
-	# Las hojas permanecen en "tree" (z=10 tras _setup_map_layers).
+	# Mueve a tree_trunk todo lo que NO sea copa (atlas.y 0-1).
+	# Copa (atlas.y=0,1) permanece en "tree" (z=10).
+	# Troncos, tocones, troncos muertos, troncos caídos (atlas.y>=2) → z=-1.
 	var trunk_cells: Array = []
 	for cell in tree_layer2.get_used_cells():
-		if tree_layer2.get_cell_atlas_coords(cell).y == 2:
+		if tree_layer2.get_cell_atlas_coords(cell).y >= 2:
 			trunk_cells.append(cell)
 
 	for cell in trunk_cells:
@@ -321,6 +364,90 @@ func _update_followers() -> void:
 		if tex:
 			f.setup_texture(tex)
 		_followers.append(f)
+
+# Función genérica de y-sort para tiles de la capa "building".
+#
+# Agrupa los tiles coincidentes por COLUMNA X del mapa, creando una TileMapLayer
+# independiente por cada grupo. Así cada instancia del mismo objeto (aunque estén
+# en posiciones Y distintas) obtiene su propio sort anchor correcto:
+#   position.y = borde inferior del tile más al sur de esa columna
+#
+# Resultado: el y_sort de _chars_layer ordena cada personaje contra cada objeto
+# de forma completamente independiente y automática.
+func _setup_ysort_objects(name_prefix: String, atlas_coords: Array) -> void:
+	if _chars_layer == null:
+		return
+	var map := get_node_or_null("map1") as Node2D
+	if map == null:
+		return
+	var building_layer: TileMapLayer = null
+	for child in map.get_children():
+		if child.name == "building" and child is TileMapLayer:
+			building_layer = child
+			break
+	if building_layer == null:
+		return
+
+	var tile_size := building_layer.tile_set.tile_size
+
+	# Agrupar celdas por columna X de mapa
+	var col_groups: Dictionary = {}
+	for cell in building_layer.get_used_cells():
+		if building_layer.get_cell_atlas_coords(cell) in atlas_coords:
+			if not col_groups.has(cell.x):
+				col_groups[cell.x] = []
+			col_groups[cell.x].append(cell)
+
+	if col_groups.is_empty():
+		return
+
+	# Una TileMapLayer por grupo-columna
+	var idx := 0
+	for col_x: int in col_groups.keys():
+		var cells: Array = col_groups[col_x]
+
+		var max_cell_y := -9999
+		for c: Vector2i in cells:
+			if c.y > max_cell_y:
+				max_cell_y = c.y
+
+		var sort_anchor_y : float = building_layer.global_position.y + (max_cell_y + 1) * tile_size.y
+		var cell_y_offset : int   = -(max_cell_y + 1)
+
+		var obj_layer := TileMapLayer.new()
+		obj_layer.name          = "%s_%d" % [name_prefix, idx]
+		obj_layer.tile_set      = building_layer.tile_set
+		obj_layer.z_index       = 0
+		obj_layer.z_as_relative = true
+		_chars_layer.add_child(obj_layer)
+		obj_layer.global_position = Vector2(building_layer.global_position.x, sort_anchor_y)
+
+		for cell: Vector2i in cells:
+			var src := building_layer.get_cell_source_id(cell)
+			var alt := building_layer.get_cell_alternative_tile(cell)
+			var ac  := building_layer.get_cell_atlas_coords(cell)
+			obj_layer.set_cell(Vector2i(cell.x, cell.y + cell_y_offset), src, ac, alt)
+			building_layer.erase_cell(cell)
+
+		idx += 1
+
+
+# Tablón de anuncios — atlas columnas 6-7, filas 28-29
+func _setup_ysort_board() -> void:
+	_setup_ysort_objects("ysort_board", [
+		Vector2i(6, 28), Vector2i(7, 28),
+		Vector2i(6, 29), Vector2i(7, 29)
+	])
+
+
+# Telescopio/trípode — atlas(3, 113) parte superior, atlas(3, 114) base.
+# Hay dos instancias en el mapa; se genera una capa independiente por cada una.
+func _setup_ysort_telescope() -> void:
+	_setup_ysort_objects("ysort_telescope", [
+		Vector2i(3, 113),
+		Vector2i(3, 114)
+	])
+
 
 func _setup_camera_limits() -> void:
 	var map := get_node_or_null("map1")

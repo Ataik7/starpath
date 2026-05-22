@@ -544,9 +544,6 @@
    </objectgroup>
   </tile>
   <tile id="237">
-   <objectgroup draworder="index" id="2">
-    <object id="1" x="4" y="0" width="24" height="31"/>
-   </objectgroup>
   </tile>
   <tile id="238">
    <objectgroup draworder="index" id="2">

@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://cwuxkptq52e35" path="res://ui/menu_inicio.gd" id="1_menu"]
 [ext_resource type="Texture2D" uid="uid://dngc5ykrypope" path="res://Assets/Images/menu_background.jpeg" id="2_bg"]
 [ext_resource type="FontFile" uid="uid://c6xkn5sml1f3b" path="res://Assets/Fonts/CinzelDecorative-Bold.ttf" id="3_font"]
-[ext_resource type="AudioStream" uid="uid://d14r7rp3qkbg0" path="res://Assets/Audio/BGM/Zelda Main Theme.mp3" id="4_bgm"]
+[ext_resource type="AudioStream" uid="uid://dfb8dapvf81c2" path="res://Assets/Audio/BGM/Adventure_remaster.mp3" id="4_bgm"]
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_4gkdq"]
 texture = ExtResource("2_bg")

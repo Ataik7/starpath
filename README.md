@@ -126,6 +126,14 @@ Desarrollada con Angular 21 + Supabase + Vercel. Incluye sistema de autenticaci�
 
 ---
 
+## 🎵 Créditos y Atribuciones
+
+Este proyecto utiliza recursos externos bajo licencias libres:
+
+* **Música del Menú Principal:** *Adventure (remaster)* por Alexander Nakarada ([CreatorChords](https://www.creatorchords.com)). Licenciada bajo [Creative Commons BY Attribution 4.0](https://creativecommons.org/licenses/by/4.0/).
+
+---
+
 ## 📄 Licencia
 
 Este proyecto está bajo la licencia **MIT**. Consulta el archivo `LICENSE` para más detalles.

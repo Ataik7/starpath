@@ -25,6 +25,13 @@ func get_total_play_time() -> int:
 	return play_time_sec + int(Time.get_unix_time_from_system() - _session_start)
 
 func _slot_path(slot: int) -> String:
+	var uid := ""
+	if OS.get_name() == "Web":
+		uid = JavaScriptBridge.eval(
+			"new URLSearchParams(window.location.search).get('uid') || ''"
+		)
+	if uid != "":
+		return "user://slot_%02d_%s.save" % [slot, uid]
 	return "user://slot_%02d.save" % slot
 
 func has_save(slot: int) -> bool:

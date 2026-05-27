@@ -14,6 +14,7 @@ var _sfx_pct:        Label
 var _load_panel:     Control
 var _slot_list:      VBoxContainer
 var _confirm_overlay: Control
+var _subtitle_lbl:   Label
 var _font: Font
 
 const WORLD_MAP_SCENE := "res://Scenes/World/WorldMap.tscn"
@@ -111,6 +112,7 @@ func _add_subtitle() -> void:
 	lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 1))
 	lbl.add_theme_constant_override("shadow_offset_x", 3)
 	lbl.add_theme_constant_override("shadow_offset_y", 3)
+	_subtitle_lbl = lbl
 	add_child(lbl)
 
 
@@ -568,10 +570,14 @@ func _on_load_game_pressed() -> void:
 
 func _on_options_pressed() -> void:
 	main_buttons.visible  = false
+	$TitleLabel.visible   = false
+	if _subtitle_lbl: _subtitle_lbl.visible = false
 	options_panel.visible = true
 
 func _on_back_options_pressed() -> void:
 	options_panel.visible = false
+	$TitleLabel.visible   = true
+	if _subtitle_lbl: _subtitle_lbl.visible = true
 	main_buttons.visible  = true
 
 func _on_exit_pressed() -> void:

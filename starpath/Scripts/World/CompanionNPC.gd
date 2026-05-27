@@ -16,6 +16,7 @@ class_name CompanionNPC
 @export var post_join_dialog : Array[String] = ["Ya somos un equipo."]
 
 @onready var _sprite       : Sprite2D = $Sprite2D
+@onready var _hint         : Label    = $InteractHint
 @onready var _interact_area: Area2D   = $InteractArea
 
 var _player    : PlayerController = null
@@ -42,6 +43,7 @@ func _ready() -> void:
 		atlas.region = Rect2(32, sprite_row * 32, 32, 32)
 		_sprite.texture = atlas
 
+	_hint.hide()
 	_interact_area.body_entered.connect(_on_body_entered)
 	_interact_area.body_exited.connect(_on_body_exited)
 	_build_menu()
@@ -157,6 +159,8 @@ func _on_body_entered(body: Node2D) -> void:
 	_player   = body as PlayerController
 	_in_range = true
 	_player.interaction_requested.connect(_on_interact)
+	if not DialogManager.is_open:
+		_hint.show()
 
 func _on_body_exited(body: Node2D) -> void:
 	if body is not PlayerController:
@@ -165,6 +169,7 @@ func _on_body_exited(body: Node2D) -> void:
 	if _player and _player.interaction_requested.is_connected(_on_interact):
 		_player.interaction_requested.disconnect(_on_interact)
 	_player = null
+	_hint.hide()
 	if _menu_open:
 		_close_menu()
 
@@ -175,6 +180,7 @@ func _on_interact() -> void:
 		return
 	if DialogManager.is_open:
 		return
+	_hint.hide()
 	_menu_open = true
 	get_tree().paused = true
 	_join_btn.visible = not Inventory.has_party_member(companion_id)
@@ -184,6 +190,8 @@ func _close_menu() -> void:
 	_menu_open = false
 	get_tree().paused = false
 	_menu_layer.hide()
+	if _in_range:
+		_hint.show()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not _menu_open:

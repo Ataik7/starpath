@@ -31,6 +31,7 @@ script = ExtResource("1_npc")
 position = Vector2(0, -16)
 
 [node name="InteractHint" type="Label" parent="."]
+z_index = 100
 position = Vector2(-12, -66)
 theme_override_colors/font_color = Color(1.0, 0.96, 0.80, 1.0)
 theme_override_colors/font_shadow_color = Color(0.0, 0.0, 0.0, 1.0)

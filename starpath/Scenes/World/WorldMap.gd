@@ -276,7 +276,7 @@ func _setup_character_layer() -> void:
 	# Conectar señal de grupo
 	_chars_layer = chars_layer
 	Inventory.changed.connect(func():
-		if _last_party != Inventory.party_members:
+		if _last_party.hash() != Inventory.party_members.hash():  # Bug 19: != por referencia siempre era true
 			call_deferred("_update_followers")
 	)
 	call_deferred("_update_followers")
@@ -324,8 +324,8 @@ func _dir_to_vec(dir: String) -> Vector2:
 func _update_followers() -> void:
 	if _chars_layer == null:
 		return
-	# Sin cambios, salir
-	if _last_party == Inventory.party_members:
+	# Sin cambios, salir (Bug 19: usar hash para comparación por contenido)
+	if _last_party.hash() == Inventory.party_members.hash():
 		return
 	_last_party = Inventory.party_members.duplicate()
 

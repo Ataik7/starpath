@@ -78,6 +78,8 @@ func save_game(slot: int) -> void:
 		items_arr.append(_serialize_item(item))
 	data["items"] = items_arr
 
+	data["current_hp"]       = Inventory.current_hp   # Bug 18: guardar HP/MP actuales
+	data["current_mp"]       = Inventory.current_mp
 	data["equipped_weapon"]  = Inventory.equipped_weapon.item_name if Inventory.equipped_weapon else ""
 	data["equipped_armor"]   = Inventory.equipped_armor.item_name  if Inventory.equipped_armor  else ""
 	data["party_members"]    = Inventory.party_members
@@ -99,6 +101,9 @@ func save_game(slot: int) -> void:
 	data["companion_armor"]  = ca_dict
 
 	var file := FileAccess.open(_slot_path(slot), FileAccess.WRITE)
+	if file == null:   # Bug 17: nunca se comprobaba null antes de usar
+		push_error("SaveManager: no se pudo abrir slot %d para escritura" % slot)
+		return
 	file.store_string(JSON.stringify(data))
 	file.close()
 
@@ -163,8 +168,9 @@ func load_game(slot: int) -> bool:
 		var item_d: Dictionary = ca_data[k] as Dictionary
 		Inventory.companion_armor[str(k)] = _deserialize_item(item_d)
 
-	# Refrescar HP/MP
-	Inventory.init_stats()
+	# Restaurar HP/MP guardados (Bug 18: init_stats() los ponía al máximo siempre)
+	Inventory.current_hp = int(data.get("current_hp", Inventory.get_max_hp()))
+	Inventory.current_mp = int(data.get("current_mp", Inventory.get_max_mp()))
 	Inventory.changed.emit()
 
 	# Posición para restaurar

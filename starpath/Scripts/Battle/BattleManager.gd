@@ -8,6 +8,7 @@ var current_state: BattleState = BattleState.STARTING
 var _pending_attacker: BaseEntity = null
 var _pending_skill: SkillData     = null
 var _pending_item: ItemData       = null
+var _current_entity: BaseEntity   = null   # Bug 4: evita active_index - 1 cuando es 0
 
 # Recompensas de victoria (se leen desde BattleScene)
 var victory_xp:    int   = 0
@@ -58,6 +59,7 @@ func advance_to_next_turn() -> void:
 	
 	# 2. Pedimos a la cola de turnos quién va ahora
 	var active_entity = turn_queue.get_next_entity()
+	_current_entity = active_entity   # Bug 4: guardar referencia directa
 	_log("Es el turno de: " + active_entity.stats.character_name)
 	active_entity_changed.emit(active_entity)
 
@@ -78,9 +80,9 @@ func _execute_enemy_ai(enemy: BaseEntity) -> void:
 	await get_tree().create_timer(1.0).timeout
 
 	var alive_heroes = _get_alive_heroes()
-	# Sin héroes vivos
+	# Sin héroes vivos — comprobar derrota en lugar de avanzar turno (Bug 6: bucle infinito)
 	if alive_heroes.is_empty():
-		advance_to_next_turn()
+		_check_battle_end()
 		return
 
 	var target = alive_heroes[randi() % alive_heroes.size()]
@@ -123,7 +125,7 @@ func player_action_selected(action_name: String) -> void:
 	if current_state != BattleState.PLAYER_INPUT:
 		return
 
-	var attacker = turn_queue.queue[turn_queue.active_index - 1]
+	var attacker = _current_entity   # Bug 4: era active_index-1, índice -1 cuando 0
 
 	if action_name == "Atacar":
 		# Entra en selección de objetivo igual que las habilidades
@@ -160,7 +162,7 @@ func player_skill_selected(skill: SkillData) -> void:
 	if current_state != BattleState.PLAYER_INPUT:
 		return
 
-	var attacker = turn_queue.queue[turn_queue.active_index - 1]
+	var attacker = _current_entity   # Bug 4
 	action_menu_toggled.emit(false)
 
 	if skill.targets_enemy:
@@ -170,7 +172,7 @@ func player_skill_selected(skill: SkillData) -> void:
 		_log(attacker.stats.character_name + " lanza " + skill.skill_name + "!")
 		await get_tree().create_timer(1.0).timeout
 		if attacker.spend_mp(skill.mp_cost):
-			attacker.heal_self(-skill.damage, 0)  # daño negativo = curación
+			attacker.heal_hp(skill.damage)   # Bug 5: heal_self(-dmg,0) era llamada incorrecta
 		else:
 			_log("¡MP insuficiente!")
 		await get_tree().create_timer(1.0).timeout
@@ -247,7 +249,7 @@ func player_flee() -> void:
 func player_item_selected(item: ItemData) -> void:
 	if current_state != BattleState.PLAYER_INPUT:
 		return
-	var attacker = turn_queue.queue[turn_queue.active_index - 1]
+	var attacker = _current_entity   # Bug 4
 	action_menu_toggled.emit(false)
 	_pending_attacker = attacker
 	_pending_item     = item

@@ -77,8 +77,10 @@ func get_def_bonus_for(id: String) -> int:
 func equip_for(id: String, item: ItemData) -> void:
 	if item.item_type == ItemData.ItemType.WEAPON:
 		companion_weapon[id] = item
+		items.erase(item)   # Bug 12: al equipar se saca del inventario para evitar duplicados
 	elif item.item_type == ItemData.ItemType.ARMOR:
 		companion_armor[id] = item
+		items.erase(item)   # Bug 12
 	changed.emit()
 
 func unequip_for(id: String, item: ItemData) -> void:

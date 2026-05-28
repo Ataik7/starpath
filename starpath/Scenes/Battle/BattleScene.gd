@@ -49,6 +49,7 @@ var _first_turn : bool    = true
 var _active_hero: BaseEntity = null
 var _player_won: bool = false
 var _auto_mode: bool = false
+var _current_battle_scenes: Array[String] = []  # para reintentar con los mismos enemigos
 
 # Nombres de clase para el botón de habilidades
 const _COMPANION_STATS_PATHS: Dictionary = {
@@ -99,6 +100,7 @@ func _ready() -> void:
 	var scenes := Inventory.battle_enemy_scenes
 	if scenes.is_empty():
 		scenes = _DEFAULT_ENEMY_SCENES
+	_current_battle_scenes = scenes.duplicate()  # guardar para reintentar
 	Inventory.battle_enemy_scenes = []
 
 	for i in min(scenes.size(), 2):
@@ -268,7 +270,7 @@ func _on_menu_toggled(show_menu: bool) -> void:
 				_run_auto_action()
 
 func _on_target_selection_needed(enemies: Array[BaseEntity]) -> void:
-	for entity in [enemy_logic, enemy2_logic]:
+	for entity in _all_enemy_entities:  # Bug 1: era [enemy_logic, enemy2_logic], null crash en combate 1v1
 		var s := entity.get_parent() as CombatantSprite
 		if s:
 			s.is_selectable = false
@@ -439,6 +441,8 @@ func _on_battle_ended(player_won: bool) -> void:
 		await get_tree().create_timer(0.8).timeout
 		_show_victory_screen()
 	else:
+		# Restaurar los enemigos para que Reintentar cargue los mismos
+		Inventory.battle_enemy_scenes = _current_battle_scenes.duplicate()
 		# Pantalla de Game Over completa
 		AudioManager.stop_bgm()
 		await get_tree().create_timer(1.5).timeout
@@ -578,7 +582,10 @@ func _show_victory_screen() -> void:
 
 	# Compañeros
 	for id in Inventory.party_members:
-		var c_stats: CharacterStats = load(_COMPANION_STATS_PATHS.get(id, ""))
+		var stats_path: String = _COMPANION_STATS_PATHS.get(id, "")  # Bug 2: load("") crashea
+		if stats_path.is_empty():
+			continue
+		var c_stats: CharacterStats = load(stats_path)
 		if c_stats == null:
 			continue
 		var c_lv_b : int = comp_level_before.get(id, 1)

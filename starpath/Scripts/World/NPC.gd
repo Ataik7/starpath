@@ -84,7 +84,9 @@ func _build_menu() -> void:
 
 	vbox.add_child(_make_separator())
 
-	var btn_talk := _make_btn("💬  Hablar")
+	var btn_talk := _make_btn("  Hablar")
+	btn_talk.icon = load("res://Assets/Icons/UI/chat.svg") as Texture2D
+	btn_talk.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	btn_talk.pressed.connect(_on_hablar)
 	vbox.add_child(btn_talk)
 
@@ -155,7 +157,9 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	_player   = body as PlayerController
 	_in_range = true
-	_player.interaction_requested.connect(_on_interact)
+	# Bug 15: evitar doble conexión si el motor emite body_entered dos veces
+	if not _player.interaction_requested.is_connected(_on_interact):
+		_player.interaction_requested.connect(_on_interact)
 	if not DialogManager.is_open:
 		_hint.show()
 	TutorialManager.try_show(

@@ -18,7 +18,7 @@ var is_open: bool = false
 var _panel:      PanelContainer
 var _name_label: Label
 var _text_label: RichTextLabel
-var _hint_label: Label
+var _hint_label: Control
 
 # Typewriter
 var _lines:      Array[String] = []
@@ -78,14 +78,17 @@ func _build_ui() -> void:
 	_text_label.add_theme_color_override("default_color", Color.WHITE)
 	vbox.add_child(_text_label)
 
-	# Indicador
-	_hint_label = Label.new()
-	_hint_label.text                 = "▼"
-	_hint_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-	_hint_label.add_theme_font_size_override("font_size", 13)
-	_hint_label.add_theme_color_override("font_color", Color(0.85, 0.70, 0.15))
+	# Indicador ▼ como SVG
+	var hint_row := HBoxContainer.new()
+	hint_row.alignment = BoxContainer.ALIGNMENT_END
+	_hint_label = hint_row
 	_hint_label.visible = false
-	vbox.add_child(_hint_label)
+	var hint_icon := TextureRect.new()
+	hint_icon.texture = load("res://Assets/Icons/UI/arrow_down.svg") as Texture2D
+	hint_icon.custom_minimum_size = Vector2(16, 16)
+	hint_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	hint_row.add_child(hint_icon)
+	vbox.add_child(hint_row)
 
 #
 # Iniciar diálogo

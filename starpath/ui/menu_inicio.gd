@@ -521,7 +521,7 @@ func _populate_load_slots() -> void:
 			continue
 		has_any = true
 		var btn := Button.new()
-		btn.text                = "Slot %d   Nv.%d   %s   %d ✦" % [slot + 1, info.get("level", 1), info.get("save_date", "??"), info.get("gold", 0)]
+		btn.text                = "Slot %d   Nv.%d   %s   %d G" % [slot + 1, info.get("level", 1), info.get("save_date", "??"), info.get("gold", 0)]
 		btn.custom_minimum_size = Vector2(0, 44)
 		if _font:
 			btn.add_theme_font_override("font", _font)

@@ -2279,7 +2279,14 @@ func _refresh_options() -> void:
 	var fs      := SettingsManager.is_fullscreen()
 
 	if fs_btn:
-		fs_btn.text = "Pantalla completa  ✓" if fs else "Modo ventana"
+		fs_btn.text = "  Pantalla completa" if fs else "  Modo ventana"
+		if fs:
+			var check_tex := load("res://Assets/Icons/UI/check.svg") as Texture2D
+			if check_tex:
+				fs_btn.icon = check_tex
+				fs_btn.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+		else:
+			fs_btn.icon = null
 	if res_opt:
 		res_opt.selected = SettingsManager.get_resolution_idx()
 		res_opt.disabled = fs

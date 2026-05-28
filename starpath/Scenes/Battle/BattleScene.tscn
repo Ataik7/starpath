@@ -62,12 +62,12 @@ text = "Defender"
 [node name="MagiaButton" type="Button" parent="BattleUI/VBoxContainer" unique_id=320145682]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
-text = "Magia ▶"
+text = "Magia"
 
 [node name="ObjetosButton" type="Button" parent="BattleUI/VBoxContainer" unique_id=320145792]
 custom_minimum_size = Vector2(160, 0)
 layout_mode = 2
-text = "Objetos ▶"
+text = "Objetos"
 
 [node name="HuirButton" type="Button" parent="BattleUI/VBoxContainer" unique_id=320145810]
 custom_minimum_size = Vector2(160, 0)
@@ -79,7 +79,7 @@ offset_left = 20.0
 offset_top = 370.0
 offset_right = 180.0
 offset_bottom = 405.0
-text = "⚡ Auto: OFF"
+text = "Auto: OFF"
 toggle_mode = true
 
 [node name="CancelarButton" type="Button" parent="BattleUI" unique_id=320145800]

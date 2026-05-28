@@ -78,8 +78,16 @@ func _build_minimap() -> void:
 	vbox.add_theme_constant_override("separation", 4)
 	margin.add_child(vbox)
 
+	var title_row := HBoxContainer.new()
+	title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	title_row.add_theme_constant_override("separation", 4)
+	var t_spark := TextureRect.new()
+	t_spark.texture = load("res://Assets/Icons/UI/sparkle.svg") as Texture2D
+	t_spark.custom_minimum_size = Vector2(10, 10)
+	t_spark.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	title_row.add_child(t_spark)
 	var title := Label.new()
-	title.text = "✦  MAPA"
+	title.text = "MAPA"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.add_theme_font_size_override("font_size", 10)
 	title.add_theme_color_override("font_color",        C_GOLD)
@@ -88,7 +96,8 @@ func _build_minimap() -> void:
 	title.add_theme_constant_override("shadow_offset_y", 1)
 	if _font:
 		title.add_theme_font_override("font", _font)
-	vbox.add_child(title)
+	title_row.add_child(title)
+	vbox.add_child(title_row)
 
 	var svc := SubViewportContainer.new()
 	svc.custom_minimum_size = Vector2(MAP_PX, MAP_PX)
@@ -162,14 +171,25 @@ func _build_fullmap() -> void:
 	vbox.add_theme_constant_override("separation", 8)
 	panel.add_child(vbox)
 
-	var title := Label.new()
-	title.text = "✦  MAPA DEL MUNDO  ✦"
-	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	title.add_theme_font_size_override("font_size", 16)
-	title.add_theme_color_override("font_color", C_GOLD)
-	if _font:
-		title.add_theme_font_override("font", _font)
-	vbox.add_child(title)
+	var world_title_row := HBoxContainer.new()
+	world_title_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	world_title_row.add_theme_constant_override("separation", 6)
+	for _i in 2:
+		var sp := TextureRect.new()
+		sp.texture = load("res://Assets/Icons/UI/sparkle.svg") as Texture2D
+		sp.custom_minimum_size = Vector2(14, 14)
+		sp.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		world_title_row.add_child(sp)
+		if _i == 0:
+			var title := Label.new()
+			title.text = "MAPA DEL MUNDO"
+			title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			title.add_theme_font_size_override("font_size", 16)
+			title.add_theme_color_override("font_color", C_GOLD)
+			if _font:
+				title.add_theme_font_override("font", _font)
+			world_title_row.add_child(title)
+	vbox.add_child(world_title_row)
 
 	vbox.add_child(HSeparator.new())
 

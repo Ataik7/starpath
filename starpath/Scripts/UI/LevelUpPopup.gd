@@ -64,15 +64,26 @@ func _build() -> void:
 	vbox.add_theme_constant_override("separation", 8)
 	margin.add_child(vbox)
 
-	# Encabezado
-	var banner := Label.new()
-	banner.text                 = "✦  SUBIDA DE NIVEL  ✦"
-	banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	banner.add_theme_font_size_override("font_size", 13)
-	banner.add_theme_color_override("font_color", C_BORDER)
-	if _font:
-		banner.add_theme_font_override("font", _font)
-	vbox.add_child(banner)
+	# Encabezado con sparkles
+	var banner_row := HBoxContainer.new()
+	banner_row.alignment = BoxContainer.ALIGNMENT_CENTER
+	banner_row.add_theme_constant_override("separation", 6)
+	for _i in 2:
+		var sp := TextureRect.new()
+		sp.texture = load("res://Assets/Icons/UI/sparkle.svg") as Texture2D
+		sp.custom_minimum_size = Vector2(13, 13)
+		sp.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		banner_row.add_child(sp)
+		if _i == 0:
+			var banner := Label.new()
+			banner.text = "SUBIDA DE NIVEL"
+			banner.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			banner.add_theme_font_size_override("font_size", 13)
+			banner.add_theme_color_override("font_color", C_BORDER)
+			if _font:
+				banner.add_theme_font_override("font", _font)
+			banner_row.add_child(banner)
+	vbox.add_child(banner_row)
 
 	# Número de nivel (grande)
 	_level_lbl = Label.new()

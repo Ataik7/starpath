@@ -65,9 +65,16 @@ func _build_hud() -> void:
 	vbox.add_theme_constant_override("separation", 8)
 	margin.add_child(vbox)
 
-	# Nombre del personaje
+	# Nombre del personaje con sparkle
+	var name_row := HBoxContainer.new()
+	name_row.add_theme_constant_override("separation", 4)
+	var name_sparkle := TextureRect.new()
+	name_sparkle.texture = load("res://Assets/Icons/UI/sparkle.svg") as Texture2D
+	name_sparkle.custom_minimum_size = Vector2(12, 12)
+	name_sparkle.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	name_row.add_child(name_sparkle)
 	var name_lbl := Label.new()
-	name_lbl.text = "✦  LYRA"
+	name_lbl.text = "LYRA"
 	name_lbl.add_theme_font_size_override("font_size", 12)
 	name_lbl.add_theme_color_override("font_color",        Color(0.96, 0.84, 0.40))
 	name_lbl.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 1))
@@ -75,7 +82,8 @@ func _build_hud() -> void:
 	name_lbl.add_theme_constant_override("shadow_offset_y", 1)
 	if _font:
 		name_lbl.add_theme_font_override("font", _font)
-	vbox.add_child(name_lbl)
+	name_row.add_child(name_lbl)
+	vbox.add_child(name_row)
 
 	# Barra HP
 	vbox.add_child(_build_bar_row("HP", C_HP, C_HP_BG, true))

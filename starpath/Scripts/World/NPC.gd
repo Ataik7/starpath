@@ -89,22 +89,30 @@ func _build_menu() -> void:
 	vbox.add_child(btn_talk)
 
 	if is_merchant:
-		var btn_buy := _make_btn("🛒  Comprar")
+		var btn_buy := _make_btn("  Comprar")
+		btn_buy.icon = load("res://Assets/Icons/UI/cart.svg") as Texture2D
+		btn_buy.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn_buy.pressed.connect(_on_comprar)
 		vbox.add_child(btn_buy)
 
-		var btn_sell := _make_btn("✦  Vender")
+		var btn_sell := _make_btn("  Vender")
+		btn_sell.icon = load("res://Assets/Icons/UI/coin.svg") as Texture2D
+		btn_sell.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn_sell.pressed.connect(_on_vender)
 		vbox.add_child(btn_sell)
 
 	if is_innkeeper:
-		var btn_rest := _make_btn("🛏  Descansar  (%d ✦)" % rest_cost)
+		var btn_rest := _make_btn("  Descansar (%d G)" % rest_cost)
+		btn_rest.icon = load("res://Assets/Icons/UI/bed.svg") as Texture2D
+		btn_rest.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 		btn_rest.pressed.connect(_on_descansar)
 		vbox.add_child(btn_rest)
 
 	vbox.add_child(_make_separator())
 
-	var btn_close := _make_btn("✕  Cerrar")
+	var btn_close := _make_btn("  Cerrar")
+	btn_close.icon = load("res://Assets/Icons/UI/cancel.svg") as Texture2D
+	btn_close.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	btn_close.pressed.connect(_close_menu)
 	vbox.add_child(btn_close)
 
@@ -219,7 +227,7 @@ func _on_descansar() -> void:
 	if Inventory.gold < rest_cost:
 		DialogManager.start_dialog(
 			["No tienes suficiente oro para descansar aquí.",
-			 "Necesitas %d ✦." % rest_cost],
+			 "Necesitas %d G." % rest_cost],
 			speaker_name
 		)
 		DialogManager.dialog_finished.connect(_on_closed, CONNECT_ONE_SHOT)
@@ -236,7 +244,7 @@ func _on_descansar() -> void:
 
 	DialogManager.start_dialog(
 		["Descansad bien, viajeros.",
-		 "Todas vuestras fuerzas han sido restauradas.  (- %d ✦)" % rest_cost],
+		 "Todas vuestras fuerzas han sido restauradas.  (- %d G)" % rest_cost],
 		speaker_name
 	)
 	DialogManager.dialog_finished.connect(_on_closed, CONNECT_ONE_SHOT)

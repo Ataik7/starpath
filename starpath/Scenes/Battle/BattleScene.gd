@@ -215,7 +215,7 @@ func _update_menu_for_hero(hero: BaseEntity) -> void:
 	var has_skills: bool = not hero.stats.skills.is_empty()
 	magia_btn.visible = has_skills
 	if has_skills:
-		magia_btn.text = "Hab. de %s ▶" % class_label
+		magia_btn.text = "Hab. de %s" % class_label
 
 	# Curar: solo Sanador
 	curar_btn.visible = (class_id == CharacterStats.ClassType.SANADOR)
@@ -237,7 +237,7 @@ func _build_skill_buttons(hero: BaseEntity) -> void:
 
 func _on_auto_toggled(active: bool) -> void:
 	_auto_mode = active
-	auto_btn.text = "⚡ Auto: ON" if active else "⚡ Auto: OFF"
+	auto_btn.text = "Auto: ON" if active else "Auto: OFF"
 	if active and battle_manager.current_state == BattleManager.BattleState.PLAYER_INPUT:
 		_run_auto_action()
 
@@ -513,7 +513,7 @@ func _show_victory_screen() -> void:
 
 	# Título
 	var lbl_title := Label.new()
-	lbl_title.text = "★  ¡VICTORIA!  ★"
+	lbl_title.text = "-- ¡VICTORIA! --"
 	lbl_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	lbl_title.add_theme_font_size_override("font_size", 26)
 	lbl_title.modulate = Color(1.0, 0.92, 0.28)
@@ -540,7 +540,7 @@ func _show_victory_screen() -> void:
 	reward_hbox.add_child(lbl_sep)
 
 	var lbl_gold := Label.new()
-	lbl_gold.text = "+ %d ✦ oro" % gold_reward
+	lbl_gold.text = "+ %d oro" % gold_reward
 	lbl_gold.add_theme_font_size_override("font_size", 16)
 	lbl_gold.modulate = Color(1.0, 0.82, 0.22)
 	reward_hbox.add_child(lbl_gold)
@@ -568,7 +568,7 @@ func _show_victory_screen() -> void:
 
 		if lv_after > lv_before:
 			var lbl_up := Label.new()
-			lbl_up.text = "▲ ¡Nivel!"
+			lbl_up.text = "¡Nivel!"
 			lbl_up.add_theme_font_size_override("font_size", 14)
 			lbl_up.modulate = Color(1.0, 0.88, 0.20)
 			row.add_child(lbl_up)

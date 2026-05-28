@@ -300,7 +300,7 @@ func _check_battle_end() -> bool:
 				victory_xp   += xp_val
 				victory_gold += entity.stats.gold_reward
 		_log("¡Victoria! Los enemigos han sido derrotados.")
-		_log("+ %d EXP   + %d ✦" % [victory_xp, victory_gold])
+		_log("+ %d EXP   + %d G" % [victory_xp, victory_gold])
 		current_state = BattleState.WON
 		battle_ended.emit(true)
 		return true

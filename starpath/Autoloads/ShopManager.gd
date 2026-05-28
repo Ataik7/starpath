@@ -93,6 +93,11 @@ func _build_ui() -> void:
 	_title_label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
 	header.add_child(_title_label)
 
+	var gold_icon := TextureRect.new()
+	gold_icon.texture = load("res://Assets/Icons/UI/coin.svg") as Texture2D
+	gold_icon.custom_minimum_size = Vector2(16, 16)
+	gold_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	header.add_child(gold_icon)
 	_gold_label = Label.new()
 	_gold_label.add_theme_font_size_override("font_size", 14)
 	_gold_label.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
@@ -214,11 +219,11 @@ func _populate_items() -> void:
 		row.add_theme_constant_override("separation", 12)
 		_items_vbox.add_child(row)
 
-		# Flecha selección
-		var arrow := Label.new()
-		arrow.text = "▶"
-		arrow.add_theme_font_size_override("font_size", 14)
-		arrow.custom_minimum_size = Vector2(18, 0)
+		# Flecha selección (SVG)
+		var arrow := TextureRect.new()
+		arrow.texture = load("res://Assets/Icons/UI/arrow_right.svg") as Texture2D
+		arrow.custom_minimum_size = Vector2(14, 14)
+		arrow.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		row.add_child(arrow)
 
 		# Nombre
@@ -239,18 +244,23 @@ func _populate_items() -> void:
 			_:                        stat_lbl.text = ""
 		row.add_child(stat_lbl)
 
-		# Precio
+		# Precio con icono coin
 		var price_lbl := Label.new()
-		price_lbl.text = "%d ✦" % item.price
+		price_lbl.text = "%d" % item.price
 		price_lbl.add_theme_font_size_override("font_size", 13)
-		price_lbl.custom_minimum_size  = Vector2(56, 0)
+		price_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
 		price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		row.add_child(price_lbl)
+		var price_icon := TextureRect.new()
+		price_icon.texture = load("res://Assets/Icons/UI/coin.svg") as Texture2D
+		price_icon.custom_minimum_size = Vector2(14, 14)
+		price_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(price_icon)
 
 		_item_rows.append(row)
 
 func _refresh_gold() -> void:
-	_gold_label.text = "Oro: %d ✦" % Inventory.gold
+	_gold_label.text = "%d G" % Inventory.gold
 
 func _refresh_selection() -> void:
 	for i in _item_rows.size():
@@ -373,9 +383,14 @@ func _build_sell_ui() -> void:
 	title_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	title_lbl.add_theme_font_size_override("font_size", 17)
 	title_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
-	title_lbl.text = "✦  Vender"
+	title_lbl.text = "Vender"
 	header.add_child(title_lbl)
 
+	var sell_coin := TextureRect.new()
+	sell_coin.texture = load("res://Assets/Icons/UI/coin.svg") as Texture2D
+	sell_coin.custom_minimum_size = Vector2(16, 16)
+	sell_coin.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	header.add_child(sell_coin)
 	_sell_gold_lbl = Label.new()
 	_sell_gold_lbl.add_theme_font_size_override("font_size", 14)
 	_sell_gold_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
@@ -409,9 +424,9 @@ func open_sell(title: String = "Vender") -> void:
 	_sell_msg_lbl.text = ""
 	var title_lbl := _sell_panel.find_child("SellTitle", true, false) as Label
 	if title_lbl:
-		title_lbl.text = "✦  " + title
+		title_lbl.text = title
 	_populate_sell_items()
-	_sell_gold_lbl.text = "Oro: %d ✦" % Inventory.gold
+	_sell_gold_lbl.text = "%d G" % Inventory.gold
 	_overlay.show()
 	_sell_panel.show()
 	get_tree().paused = true
@@ -436,10 +451,10 @@ func _populate_sell_items() -> void:
 		row.add_theme_constant_override("separation", 12)
 		_sell_vbox.add_child(row)
 
-		var arrow := Label.new()
-		arrow.text = "▶"
-		arrow.add_theme_font_size_override("font_size", 14)
-		arrow.custom_minimum_size = Vector2(18, 0)
+		var arrow := TextureRect.new()
+		arrow.texture = load("res://Assets/Icons/UI/arrow_right.svg") as Texture2D
+		arrow.custom_minimum_size = Vector2(14, 14)
+		arrow.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		row.add_child(arrow)
 
 		var name_lbl := Label.new()
@@ -451,12 +466,16 @@ func _populate_sell_items() -> void:
 		row.add_child(name_lbl)
 
 		var price_lbl := Label.new()
-		price_lbl.text = "%d ✦" % sell_price
+		price_lbl.text = "%d" % sell_price
 		price_lbl.add_theme_font_size_override("font_size", 13)
-		price_lbl.custom_minimum_size  = Vector2(56, 0)
 		price_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
 		price_lbl.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
 		row.add_child(price_lbl)
+		var sell_price_icon := TextureRect.new()
+		sell_price_icon.texture = load("res://Assets/Icons/UI/coin.svg") as Texture2D
+		sell_price_icon.custom_minimum_size = Vector2(14, 14)
+		sell_price_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		row.add_child(sell_price_icon)
 
 	_refresh_sell_selection()
 
@@ -480,9 +499,9 @@ func _try_sell() -> void:
 	var sell_price: int = maxi(1, item.price >> 1)
 	Inventory.gold += sell_price
 	Inventory.remove_item(item)
-	_sell_msg_lbl.text = item.item_name + " vendido: +%d ✦" % sell_price
+	_sell_msg_lbl.text = item.item_name + " vendido: +%d G" % sell_price
 	_sell_msg_lbl.add_theme_color_override("font_color", Color(0.35, 1.0, 0.5))
-	_sell_gold_lbl.text = "Oro: %d ✦" % Inventory.gold
+	_sell_gold_lbl.text = "%d G" % Inventory.gold
 	_populate_sell_items()
 	if not _sell_items.is_empty():
 		_sell_selected = mini(_sell_selected, _sell_items.size() - 1)

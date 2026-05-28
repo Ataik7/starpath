@@ -104,17 +104,23 @@ func _build_menu() -> void:
 
 	vbox.add_child(_make_separator())
 
-	var btn_talk := _make_btn("💬  Hablar")
+	var btn_talk := _make_btn("  Hablar")
+	btn_talk.icon = load("res://Assets/Icons/UI/chat.svg") as Texture2D
+	btn_talk.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	btn_talk.pressed.connect(_on_hablar)
 	vbox.add_child(btn_talk)
 
-	_join_btn = _make_btn("⚔  Unirse al grupo")
+	_join_btn = _make_btn("  Unirse al grupo")
+	_join_btn.icon = load("res://Assets/Icons/UI/sword.svg") as Texture2D
+	_join_btn.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	_join_btn.pressed.connect(_on_unirse)
 	vbox.add_child(_join_btn)
 
 	vbox.add_child(_make_separator())
 
-	var btn_close := _make_btn("✕  Cerrar")
+	var btn_close := _make_btn("  Cerrar")
+	btn_close.icon = load("res://Assets/Icons/UI/cancel.svg") as Texture2D
+	btn_close.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
 	btn_close.pressed.connect(_close_menu)
 	vbox.add_child(btn_close)
 

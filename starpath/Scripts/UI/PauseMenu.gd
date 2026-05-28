@@ -31,7 +31,8 @@ const C_ACCENT    := Color(0.96, 0.84, 0.40, 1.00)   # oro acento
 const C_HP        := Color(0.88, 0.28, 0.28, 1.00)   # rojo vida
 const C_MP        := Color(0.35, 0.60, 1.00, 1.00)   # azul maná
 
-const MAIN_MENU_SCENE := "res://Scenes/UI/menu_inicio.tscn"
+const MAIN_MENU_SCENE  := "res://Scenes/UI/menu_inicio.tscn"
+const WORLD_MAP_SCENE  := "res://Scenes/World/WorldMap.tscn"
 
 const PORTRAIT_TEX: Dictionary = {
 	"lyra":     "res://Assets/Characters/Heroes/Lyra.png",
@@ -1946,13 +1947,13 @@ func _add_skill_row(parent: Node, sk: SkillData) -> void:
 func _do_save(slot: int) -> void:
 	SaveManager.save_game(slot)
 	_refresh_slot_list()
-	_show_slot_feedback("✓  Guardado en ranura %d" % (slot + 1))
+	_show_slot_feedback("Guardado en ranura %d" % (slot + 1))
 
 func _do_load(slot: int) -> void:
-	SaveManager.load_game(slot)
-	TutorialManager.skip_all()
-	_refresh_stats()
-	_show_slot_feedback("✓  Partida cargada")
+	if SaveManager.load_game(slot):
+		TutorialManager.skip_all()
+		get_tree().paused = false
+		SceneTransition.go_to(WORLD_MAP_SCENE)
 
 func _show_feedback(msg: String) -> void:
 	_feedback_lbl.text = msg

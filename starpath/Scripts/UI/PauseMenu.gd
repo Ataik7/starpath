@@ -346,11 +346,10 @@ func _build_main_panel() -> Control:
 	var time_row := HBoxContainer.new()
 	time_row.add_theme_constant_override("separation", 8)
 	tgo_vbox.add_child(time_row)
-	var time_icon := Label.new()
-	time_icon.text = "◷"
-	time_icon.add_theme_font_size_override("font_size", 14)
-	if _font:
-		time_icon.add_theme_font_override("font", _font)
+	var time_icon := TextureRect.new()
+	time_icon.texture = load("res://Assets/Icons/UI/clock.svg")
+	time_icon.custom_minimum_size = Vector2(16, 16)
+	time_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	time_row.add_child(time_icon)
 	var time_lbl := Label.new()
 	time_lbl.name = "TimeLbl"
@@ -366,12 +365,10 @@ func _build_main_panel() -> Control:
 	var gold_row := HBoxContainer.new()
 	gold_row.add_theme_constant_override("separation", 8)
 	tgo_vbox.add_child(gold_row)
-	var gold_icon := Label.new()
-	gold_icon.text = "✦"
-	gold_icon.add_theme_font_size_override("font_size", 14)
-	gold_icon.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
-	if _font:
-		gold_icon.add_theme_font_override("font", _font)
+	var gold_icon := TextureRect.new()
+	gold_icon.texture = load("res://Assets/Icons/UI/coin.svg")
+	gold_icon.custom_minimum_size = Vector2(16, 16)
+	gold_icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	gold_row.add_child(gold_icon)
 	var gold_val := Label.new()
 	gold_val.name = "TGOGoldLbl"
@@ -591,7 +588,7 @@ func _refresh_stats() -> void:
 	# Oro (barra inferior izquierda)
 	var gold_lbl := _main_panel.find_child("GoldLbl", true, false) as Label
 	if gold_lbl:
-		gold_lbl.text = "✦  Oro:  %d" % Inventory.gold
+		gold_lbl.text = "Oro:  %d G" % Inventory.gold
 
 	# Tiempo & Oro (panel inferior derecho)
 	var elapsed := int(SaveManager.get_total_play_time())
@@ -637,7 +634,7 @@ func _add_party_card(parent: Node, char_name: String, class_label: String,
 	vb.add_child(hdr)
 
 	var nlbl := Label.new()
-	nlbl.text = "✦ " + char_name
+	nlbl.text = char_name
 	nlbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	nlbl.add_theme_font_size_override("font_size", 12)
 	nlbl.add_theme_color_override("font_color", C_TITLE)
@@ -2088,10 +2085,10 @@ func _refresh_slot_list() -> void:
 		info_lbl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		info_lbl.add_theme_font_size_override("font_size", 13)
 		if info["empty"]:
-			info_lbl.text = "── Vacía ──"
+			info_lbl.text = "Vacía"
 			info_lbl.add_theme_color_override("font_color", C_MUTED)
 		else:
-			info_lbl.text = "%s   ✦ %d oro   Nv.%d" % [info["save_date"], info["gold"], info["level"]]
+			info_lbl.text = "%s   %d G   Nv.%d" % [info["save_date"], info["gold"], info["level"]]
 			info_lbl.add_theme_color_override("font_color", C_TEXT)
 		row.add_child(info_lbl)
 

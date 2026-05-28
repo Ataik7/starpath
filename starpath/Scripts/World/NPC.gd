@@ -157,7 +157,6 @@ func _on_body_entered(body: Node2D) -> void:
 		return
 	_player   = body as PlayerController
 	_in_range = true
-	# Bug 15: evitar doble conexión si el motor emite body_entered dos veces
 	if not _player.interaction_requested.is_connected(_on_interact):
 		_player.interaction_requested.connect(_on_interact)
 	if not DialogManager.is_open:

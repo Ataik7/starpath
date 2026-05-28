@@ -203,7 +203,7 @@ func _refresh_cat_buttons() -> void:
 
 func _populate_items() -> void:
 	for child in _items_vbox.get_children():
-		child.free()   # Bug 10: queue_free deja nodos zombi visibles hasta el frame siguiente
+		child.free()
 	_item_rows.clear()
 
 	if _filtered.is_empty():
@@ -433,7 +433,7 @@ func open_sell(title: String = "Vender") -> void:
 
 func _populate_sell_items() -> void:
 	for child in _sell_vbox.get_children():
-		child.free()   # Bug 10: igual que en compra, evitar race condition
+		child.free()
 
 	_sell_items = Inventory.get_available()
 

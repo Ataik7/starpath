@@ -31,7 +31,7 @@ const C_TEXT   := Color(0.90, 0.90, 0.90)
 const C_TITLE  := Color(1.0, 0.88, 0.30)
 
 func _ready() -> void:
-	process_mode = Node.PROCESS_MODE_ALWAYS   # Bug 14: sin esto, Escape no funciona cuando el juego está pausado
+	process_mode = Node.PROCESS_MODE_ALWAYS
 	# Ya en el grupo, ocultar
 	if Inventory.has_party_member(companion_id):
 		_hide_from_world()
@@ -218,7 +218,6 @@ func _on_hablar() -> void:
 func _on_unirse() -> void:
 	_close_menu()
 	DialogManager.start_dialog(join_dialog, speaker_name)
-	# Bug 13: evitar conexiones duplicadas si se activa varias veces antes de terminar el diálogo
 	if not DialogManager.dialog_finished.is_connected(_on_join_confirmed):
 		DialogManager.dialog_finished.connect(_on_join_confirmed, CONNECT_ONE_SHOT)
 

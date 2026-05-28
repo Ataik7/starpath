@@ -276,7 +276,7 @@ func _setup_character_layer() -> void:
 	# Conectar señal de grupo
 	_chars_layer = chars_layer
 	Inventory.changed.connect(func():
-		if _last_party.hash() != Inventory.party_members.hash():  # Bug 19: != por referencia siempre era true
+		if _last_party.hash() != Inventory.party_members.hash():
 			call_deferred("_update_followers")
 	)
 	call_deferred("_update_followers")

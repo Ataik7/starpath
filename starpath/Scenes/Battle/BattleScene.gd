@@ -270,7 +270,7 @@ func _on_menu_toggled(show_menu: bool) -> void:
 				_run_auto_action()
 
 func _on_target_selection_needed(enemies: Array[BaseEntity]) -> void:
-	for entity in _all_enemy_entities:  # Bug 1: era [enemy_logic, enemy2_logic], null crash en combate 1v1
+	for entity in _all_enemy_entities:
 		var s := entity.get_parent() as CombatantSprite
 		if s:
 			s.is_selectable = false
@@ -582,7 +582,7 @@ func _show_victory_screen() -> void:
 
 	# Compañeros
 	for id in Inventory.party_members:
-		var stats_path: String = _COMPANION_STATS_PATHS.get(id, "")  # Bug 2: load("") crashea
+		var stats_path: String = _COMPANION_STATS_PATHS.get(id, "")
 		if stats_path.is_empty():
 			continue
 		var c_stats: CharacterStats = load(stats_path)

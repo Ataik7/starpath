@@ -78,7 +78,7 @@ func save_game(slot: int) -> void:
 		items_arr.append(_serialize_item(item))
 	data["items"] = items_arr
 
-	data["current_hp"]       = Inventory.current_hp   # Bug 18: guardar HP/MP actuales
+	data["current_hp"]       = Inventory.current_hp
 	data["current_mp"]       = Inventory.current_mp
 	data["equipped_weapon"]  = Inventory.equipped_weapon.item_name if Inventory.equipped_weapon else ""
 	data["equipped_armor"]   = Inventory.equipped_armor.item_name  if Inventory.equipped_armor  else ""
@@ -101,7 +101,7 @@ func save_game(slot: int) -> void:
 	data["companion_armor"]  = ca_dict
 
 	var file := FileAccess.open(_slot_path(slot), FileAccess.WRITE)
-	if file == null:   # Bug 17: nunca se comprobaba null antes de usar
+	if file == null:
 		push_error("SaveManager: no se pudo abrir slot %d para escritura" % slot)
 		return
 	file.store_string(JSON.stringify(data))

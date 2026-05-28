@@ -8,7 +8,7 @@ var current_state: BattleState = BattleState.STARTING
 var _pending_attacker: BaseEntity = null
 var _pending_skill: SkillData     = null
 var _pending_item: ItemData       = null
-var _current_entity: BaseEntity   = null   # Bug 4: evita active_index - 1 cuando es 0
+var _current_entity: BaseEntity   = null
 
 # Recompensas de victoria (se leen desde BattleScene)
 var victory_xp:    int   = 0
@@ -59,7 +59,7 @@ func advance_to_next_turn() -> void:
 	
 	# 2. Pedimos a la cola de turnos quién va ahora
 	var active_entity = turn_queue.get_next_entity()
-	_current_entity = active_entity   # Bug 4: guardar referencia directa
+	_current_entity = active_entity
 	_log("Es el turno de: " + active_entity.stats.character_name)
 	active_entity_changed.emit(active_entity)
 
@@ -125,7 +125,7 @@ func player_action_selected(action_name: String) -> void:
 	if current_state != BattleState.PLAYER_INPUT:
 		return
 
-	var attacker = _current_entity   # Bug 4: era active_index-1, índice -1 cuando 0
+	var attacker = _current_entity
 
 	if action_name == "Atacar":
 		# Entra en selección de objetivo igual que las habilidades
@@ -162,7 +162,7 @@ func player_skill_selected(skill: SkillData) -> void:
 	if current_state != BattleState.PLAYER_INPUT:
 		return
 
-	var attacker = _current_entity   # Bug 4
+	var attacker = _current_entity
 	action_menu_toggled.emit(false)
 
 	if skill.targets_enemy:
@@ -172,7 +172,7 @@ func player_skill_selected(skill: SkillData) -> void:
 		_log(attacker.stats.character_name + " lanza " + skill.skill_name + "!")
 		await get_tree().create_timer(1.0).timeout
 		if attacker.spend_mp(skill.mp_cost):
-			attacker.heal_hp(skill.damage)   # Bug 5: heal_self(-dmg,0) era llamada incorrecta
+			attacker.heal_hp(skill.damage)
 		else:
 			_log("¡MP insuficiente!")
 		await get_tree().create_timer(1.0).timeout
@@ -249,7 +249,7 @@ func player_flee() -> void:
 func player_item_selected(item: ItemData) -> void:
 	if current_state != BattleState.PLAYER_INPUT:
 		return
-	var attacker = _current_entity   # Bug 4
+	var attacker = _current_entity
 	action_menu_toggled.emit(false)
 	_pending_attacker = attacker
 	_pending_item     = item

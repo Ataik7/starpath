@@ -87,7 +87,10 @@ var _btn_nosave_act:     Button
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
-	_font = load(FONT_PATH)
+	var font_file := load(FONT_PATH) as FontFile
+	if font_file:
+		font_file.fallbacks = [ThemeDB.fallback_font]
+	_font = font_file
 	_play_start_unix = Time.get_unix_time_from_system()
 	_build_ui()
 
@@ -254,41 +257,41 @@ func _build_main_panel() -> Control:
 	right_vbox.add_child(_separator_h(C_BORDER, 1))
 	right_vbox.add_child(_spacer(2))
 
-	var btn_equip := _make_button("⚔   Equipo", 220, 38)
+	var btn_equip := _make_icon_button("res://Assets/Icons/UI/sword.svg", "  Equipo", 220, 38)
 	btn_equip.pressed.connect(_show_equip)
 	right_vbox.add_child(btn_equip)
 
-	var btn_skills := _make_button("✦   Habilidades", 220, 38)
+	var btn_skills := _make_icon_button("res://Assets/Icons/UI/star.svg", "  Habilidades", 220, 38)
 	btn_skills.pressed.connect(_show_skills)
 	right_vbox.add_child(btn_skills)
 
-	var btn_items := _make_button("⚗   Objetos", 220, 38)
+	var btn_items := _make_icon_button("res://Assets/Icons/UI/bag.svg", "  Objetos", 220, 38)
 	btn_items.pressed.connect(_show_items)
 	right_vbox.add_child(btn_items)
 
 	right_vbox.add_child(_separator_h(C_BORDER2, 1))
 
-	var btn_save := _make_button("💾   Guardar", 220, 38)
+	var btn_save := _make_icon_button("res://Assets/Icons/UI/save.svg", "  Guardar", 220, 38)
 	btn_save.pressed.connect(func(): _show_slots("save"))
 	right_vbox.add_child(btn_save)
 
-	var btn_load := _make_button("📂   Cargar partida", 220, 38)
+	var btn_load := _make_icon_button("res://Assets/Icons/UI/load.svg", "  Cargar partida", 220, 38)
 	btn_load.pressed.connect(func(): _show_slots("load"))
 	right_vbox.add_child(btn_load)
 
-	var btn_opts := _make_button("⚙   Opciones", 220, 38)
+	var btn_opts := _make_icon_button("res://Assets/Icons/UI/gear.svg", "  Opciones", 220, 38)
 	btn_opts.pressed.connect(_show_options)
 	right_vbox.add_child(btn_opts)
 
 	right_vbox.add_child(_separator_h(C_BORDER2, 1))
 
-	var btn_main_menu := _make_button("⌂   Menú Principal", 220, 38)
+	var btn_main_menu := _make_icon_button("res://Assets/Icons/UI/home.svg", "  Menu Principal", 220, 38)
 	btn_main_menu.pressed.connect(_on_main_menu_pressed)
 	btn_main_menu.add_theme_color_override("font_color",       Color(0.60, 0.90, 1.00))
 	btn_main_menu.add_theme_color_override("font_hover_color", Color(0.85, 1.00, 1.00))
 	right_vbox.add_child(btn_main_menu)
 
-	var btn_quit := _make_button("⏻   Salir del juego", 220, 38)
+	var btn_quit := _make_icon_button("res://Assets/Icons/UI/cancel.svg", "  Salir del juego", 220, 38)
 	btn_quit.pressed.connect(_on_quit_pressed)
 	btn_quit.add_theme_color_override("font_color",       Color(1.0, 0.40, 0.40))
 	btn_quit.add_theme_color_override("font_hover_color", Color(1.0, 0.65, 0.65))
@@ -296,7 +299,7 @@ func _build_main_panel() -> Control:
 
 	right_vbox.add_child(_separator_h(C_BORDER2, 1))
 
-	var btn_close := _make_button("✕   Cerrar  [Esc]", 220, 38)
+	var btn_close := _make_icon_button("res://Assets/Icons/UI/cancel.svg", "  Cerrar  [Esc]", 220, 38)
 	btn_close.pressed.connect(close)
 	right_vbox.add_child(btn_close)
 
@@ -344,8 +347,10 @@ func _build_main_panel() -> Control:
 	time_row.add_theme_constant_override("separation", 8)
 	tgo_vbox.add_child(time_row)
 	var time_icon := Label.new()
-	time_icon.text = "⏱"
+	time_icon.text = "◷"
 	time_icon.add_theme_font_size_override("font_size", 14)
+	if _font:
+		time_icon.add_theme_font_override("font", _font)
 	time_row.add_child(time_icon)
 	var time_lbl := Label.new()
 	time_lbl.name = "TimeLbl"
@@ -365,6 +370,8 @@ func _build_main_panel() -> Control:
 	gold_icon.text = "✦"
 	gold_icon.add_theme_font_size_override("font_size", 14)
 	gold_icon.add_theme_color_override("font_color", Color(1.0, 0.88, 0.30))
+	if _font:
+		gold_icon.add_theme_font_override("font", _font)
 	gold_row.add_child(gold_icon)
 	var gold_val := Label.new()
 	gold_val.name = "TGOGoldLbl"
@@ -433,7 +440,7 @@ func _build_items_panel() -> Control:
 	sp.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	lv.add_child(sp)
 
-	var btn_back := _make_button("◀  Volver", 180, 38)
+	var btn_back := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "  Volver", 180, 38)
 	btn_back.pressed.connect(_show_main)
 	lv.add_child(btn_back)
 
@@ -1134,6 +1141,8 @@ func _make_button(text: String, w: int, h: int) -> Button:
 	btn.text = text
 	btn.custom_minimum_size = Vector2(w, h)
 	btn.alignment = HORIZONTAL_ALIGNMENT_LEFT
+	if _font:
+		btn.add_theme_font_override("font", _font)
 
 	# Estilo normal
 	var s_norm := StyleBoxFlat.new()
@@ -1187,6 +1196,17 @@ func _lbl_colored(parent: Node, text: String, size: int, color: Color) -> void:
 	lbl.add_theme_font_size_override("font_size", size)
 	lbl.add_theme_color_override("font_color", color)
 	parent.add_child(lbl)
+
+# Botón con icono SVG + texto — funciona en HTML5
+func _make_icon_button(icon_path: String, text: String, w: int, h: int) -> Button:
+	var btn := _make_button(text, w, h)
+	if icon_path != "" and ResourceLoader.exists(icon_path):
+		var tex := load(icon_path) as Texture2D
+		if tex:
+			btn.icon = tex
+			btn.icon_alignment = HORIZONTAL_ALIGNMENT_LEFT
+	return btn
+
 
 func _separator_h(color: Color, thickness: int = 1) -> HSeparator:
 	var sep := HSeparator.new()
@@ -1256,7 +1276,7 @@ func _build_equip_panel() -> Control:
 	left_vbox.add_child(_equip_info_vbox)
 
 	left_vbox.add_child(_spacer(8))
-	var btn_back := _make_button("◀  Volver", 160, 36)
+	var btn_back := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "  Volver", 160, 36)
 	btn_back.pressed.connect(_show_main)
 	left_vbox.add_child(btn_back)
 
@@ -1285,7 +1305,7 @@ func _build_equip_panel() -> Control:
 	sel_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	right_vbox.add_child(sel_row)
 
-	var btn_prev := _make_button("◀", 32, 30)
+	var btn_prev := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "", 32, 30)
 	btn_prev.pressed.connect(func():
 		var sz := _get_equip_chars().size()
 		_equip_hero_index = (_equip_hero_index - 1 + sz) % sz
@@ -1301,7 +1321,7 @@ func _build_equip_panel() -> Control:
 		_equip_char_lbl.add_theme_font_override("font", _font)
 	sel_row.add_child(_equip_char_lbl)
 
-	var btn_next := _make_button("▶", 32, 30)
+	var btn_next := _make_icon_button("res://Assets/Icons/UI/arrow_right.svg", "", 32, 30)
 	btn_next.pressed.connect(func():
 		var sz := _get_equip_chars().size()
 		_equip_hero_index = (_equip_hero_index + 1) % sz
@@ -1624,7 +1644,7 @@ func _show_equip_picker(char_id: String, slot_type: ItemData.ItemType) -> void:
 	if not found:
 		_lbl_colored(_equip_picker_vbox, "Sin equipo disponible.", 13, C_MUTED)
 
-	var cancel_btn := _make_button("✕  Cancelar", 120, 28)
+	var cancel_btn := _make_icon_button("res://Assets/Icons/UI/cancel.svg", "  Cancelar", 120, 28)
 	cancel_btn.pressed.connect(_hide_equip_picker)
 	_equip_picker_vbox.add_child(cancel_btn)
 	_equip_picker_vbox.visible = true
@@ -1696,7 +1716,7 @@ func _build_skills_panel() -> Control:
 	left_vbox.add_child(_skills_info_vbox)
 
 	left_vbox.add_child(_spacer(8))
-	var btn_back := _make_button("◀  Volver", 160, 36)
+	var btn_back := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "  Volver", 160, 36)
 	btn_back.pressed.connect(_show_main)
 	left_vbox.add_child(btn_back)
 
@@ -1725,7 +1745,7 @@ func _build_skills_panel() -> Control:
 	sel_row.alignment = BoxContainer.ALIGNMENT_CENTER
 	right_vbox.add_child(sel_row)
 
-	var btn_prev := _make_button("◀", 32, 30)
+	var btn_prev := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "", 32, 30)
 	btn_prev.pressed.connect(func():
 		var sz := _get_equip_chars().size()
 		_skills_char_index = (_skills_char_index - 1 + sz) % sz
@@ -1740,7 +1760,7 @@ func _build_skills_panel() -> Control:
 	if _font: _skills_char_lbl.add_theme_font_override("font", _font)
 	sel_row.add_child(_skills_char_lbl)
 
-	var btn_next := _make_button("▶", 32, 30)
+	var btn_next := _make_icon_button("res://Assets/Icons/UI/arrow_right.svg", "", 32, 30)
 	btn_next.pressed.connect(func():
 		var sz := _get_equip_chars().size()
 		_skills_char_index = (_skills_char_index + 1) % sz
@@ -2005,7 +2025,7 @@ func _build_slot_panel() -> Control:
 	sp.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	lv.add_child(sp)
 
-	var btn_back := _make_button("◀  Volver", 180, 38)
+	var btn_back := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "  Volver", 180, 38)
 	btn_back.pressed.connect(_show_main)
 	lv.add_child(btn_back)
 
@@ -2142,7 +2162,7 @@ func _build_options_panel() -> Control:
 	btn_keys.pressed.connect(_show_keyboard)
 	lv.add_child(btn_keys)
 
-	var btn_back := _make_button("◀  Volver", 180, 38)
+	var btn_back := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "  Volver", 180, 38)
 	btn_back.pressed.connect(_show_main)
 	lv.add_child(btn_back)
 
@@ -2328,7 +2348,7 @@ func _build_keyboard_panel() -> Control:
 	)
 	lv.add_child(btn_reset)
 
-	var btn_back := _make_button("◀  Volver", 180, 38)
+	var btn_back := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "  Volver", 180, 38)
 	btn_back.pressed.connect(_show_options)
 	lv.add_child(btn_back)
 
@@ -2451,19 +2471,19 @@ func _request_confirm(title: String, save_label: String, nosave_label: String, a
 	_confirm_panel.visible = true
 
 func _on_quit_pressed() -> void:
-	var nosave_lbl := "✕  Salir sin guardar" if SaveManager.has_unsaved_changes else "✕  Salir"
+	var nosave_lbl := "  Salir sin guardar" if SaveManager.has_unsaved_changes else "  Salir"
 	_request_confirm(
 		"¿Salir del juego?",
-		"💾  Guardar y salir",
+		"  Guardar y salir",
 		nosave_lbl,
 		func(): get_tree().quit()
 	)
 
 func _on_main_menu_pressed() -> void:
-	var nosave_lbl := "⌂  Ir sin guardar" if SaveManager.has_unsaved_changes else "⌂  Ir al menú principal"
+	var nosave_lbl := "  Ir sin guardar" if SaveManager.has_unsaved_changes else "  Ir al menú principal"
 	_request_confirm(
 		"¿Volver al menú principal?",
-		"💾  Guardar e ir",
+		"  Guardar e ir",
 		nosave_lbl,
 		func():
 			AudioManager.stop_bgm()
@@ -2512,13 +2532,13 @@ func _build_confirm_panel() -> Control:
 
 	var warn := Label.new()
 	warn.name = "WarnLbl"
-	warn.text = "⚠  Tienes cambios sin guardar."
+	warn.text = "!  Tienes cambios sin guardar."
 	warn.add_theme_font_size_override("font_size", 13)
 	warn.add_theme_color_override("font_color", Color(1.0, 0.80, 0.30))
 	warn.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	vbox.add_child(warn)
 
-	_btn_save_act = _make_button("💾  Guardar y salir", 320, 38)
+	_btn_save_act = _make_icon_button("res://Assets/Icons/UI/save.svg", "  Guardar y salir", 320, 38)
 	_btn_save_act.pressed.connect(func():
 		SaveManager.save_game(0)
 		root.visible = false
@@ -2527,7 +2547,7 @@ func _build_confirm_panel() -> Control:
 	)
 	vbox.add_child(_btn_save_act)
 
-	_btn_nosave_act = _make_button("✕  Salir sin guardar", 320, 38)
+	_btn_nosave_act = _make_icon_button("res://Assets/Icons/UI/cancel.svg", "  Salir sin guardar", 320, 38)
 	_btn_nosave_act.add_theme_color_override("font_color", Color(1.0, 0.45, 0.45))
 	_btn_nosave_act.pressed.connect(func():
 		root.visible = false
@@ -2536,7 +2556,7 @@ func _build_confirm_panel() -> Control:
 	)
 	vbox.add_child(_btn_nosave_act)
 
-	var btn_cancel := _make_button("←  Cancelar", 320, 38)
+	var btn_cancel := _make_icon_button("res://Assets/Icons/UI/arrow_left.svg", "  Cancelar", 320, 38)
 	btn_cancel.pressed.connect(func(): root.visible = false)
 	vbox.add_child(btn_cancel)
 
